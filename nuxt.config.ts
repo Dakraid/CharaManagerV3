@@ -36,6 +36,7 @@ export default defineNuxtConfig({
 		'@pinia/nuxt',
 		'pinia-plugin-persistedstate/nuxt',
 		'nuxt-auth-utils',
+		'nuxt-security',
 	],
 	css: ['./app/assets/css/tailwind.css'],
 	vite: {
@@ -49,7 +50,6 @@ export default defineNuxtConfig({
 	},
 	experimental: {
 		buildCache: true,
-		watcher: 'parcel',
 	},
 	shadcn: {
 		prefix: '',
