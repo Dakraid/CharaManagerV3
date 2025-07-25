@@ -1,0 +1,20 @@
+
+const cluster = require('cluster');
+
+const tasks = [
+  1, 2, 3
+]
+
+if (cluster.isMaster) {
+  for (let i = 0; i < tasks.length; i++) {
+    cluster.fork();
+  }
+} else {
+  const task = tasks[cluster.worker.id - 1];
+  console.log(`Worker ${cluster.worker.id} is processing task ${task}`);
+  // Do some work here
+  setTimeout( () => {
+     console.log(`Worker ${cluster.worker.id} finished task ${task}`);
+     process.exit(0);
+  }, Math.random() * 1000);
+}
