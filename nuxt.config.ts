@@ -36,7 +36,6 @@ export default defineNuxtConfig({
 		'@pinia/nuxt',
 		'pinia-plugin-persistedstate/nuxt',
 		'nuxt-auth-utils',
-		'nuxt-security',
 	],
 	css: ['./app/assets/css/tailwind.css'],
 	vite: {
@@ -68,6 +67,11 @@ export default defineNuxtConfig({
 		defaultLocale: 'en',
 		defaultTimezone: 'Europe/Berlin',
 	},
+	image: {
+		cloudflare: {
+			baseURL: '',
+		},
+	},
 	runtimeConfig: {
 		debug: true,
 		// PostgreSQL Database
@@ -76,6 +80,7 @@ export default defineNuxtConfig({
 		imageFolder: './images',
 		public: {
 			imageDomain: '',
+			imageProvider: 'ipx',
 			thumbnailWidth: 256,
 			thumbnailHeight: 384,
 			registrationEnabled: false,

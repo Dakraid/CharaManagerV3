@@ -11,12 +11,18 @@ const quality = settingsStore.imageQuality ?? 70;
 
 const img = useImage();
 
-const imageURI = img(`${runtimeConfig.public.imageDomain.replace(/\/$/, '')}/${props.character.character_id}`, {
-	width: width,
-	height: height,
-	quality: quality,
-	format: 'webp',
-});
+const imageURI = img(
+	`${runtimeConfig.public.imageDomain.replace(/\/$/, '')}/${props.character.character_id}`,
+	{
+		width: width,
+		height: height,
+		quality: quality,
+		format: 'webp',
+	},
+	{
+		provider: runtimeConfig.public.imageProvider,
+	}
+);
 
 const containerStyle = computed(() => {
 	return { gridTemplateRows: `50px 40px ${height}px 90px`, width: `${width}px` };
