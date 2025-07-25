@@ -27,19 +27,24 @@ const containerStyle = computed(() => {
 const isImageLoaded = ref(false);
 const imageBlobUrl = ref<string>('');
 
-onMounted(async () => {
+const fetchImage = async () => {
 	try {
-		const response = await fetch(`${runtimeConfig.public.imageDomain.replace(/\/$/, '')}/${props.character.character_id}`);
+		const response = await fetch(imageURI);
+
+		if (!response.ok) {
+			throw new Error('Failed to fetch image');
+		}
 
 		const blob = await response.blob();
-		if (blob) {
-			imageBlobUrl.value = URL.createObjectURL(blob);
-			isImageLoaded.value = true;
-		}
+		imageBlobUrl.value = URL.createObjectURL(blob);
+		isImageLoaded.value = true;
 	} catch (error) {
-		console.error('Failed to load image: ', error);
-		isImageLoaded.value = false;
+		console.error('Failed to load image:', error);
 	}
+};
+
+onMounted(() => {
+	fetchImage();
 });
 
 onUnmounted(() => {

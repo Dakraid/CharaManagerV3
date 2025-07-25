@@ -18,27 +18,28 @@ export default defineEventHandler(async (event) => {
 	}
 
 	try {
-		const data = await loadImageById(id.data);
+		let data = await loadImageById(id.data);
 
-		// const acceptsEncoding = getHeader(event, 'accept-encoding') || '';
-		//
-		// if (acceptsEncoding.includes('br')) {
-		// 	event.node.res.setHeader('Content-Encoding', 'br');
-		// 	data = await brotliCompress(data);
-		// } else if (acceptsEncoding.includes('gzip')) {
-		// 	event.node.res.setHeader('Content-Encoding', 'gzip');
-		// 	data = await gzip(data);
-		// } else if (acceptsEncoding.includes('deflate')) {
-		// 	event.node.res.setHeader('Content-Encoding', 'deflate');
-		// 	data = await deflate(data);
-		// }
+		const acceptsEncoding = getHeader(event, 'accept-encoding') || '';
 
-		event.node.res.setHeader('Content-Type', 'image/png');
-		event.node.res.setHeader('Cache-Control', 'public, max-age=3600');
-		event.node.res.setHeader('Access-Control-Allow-Origin', '*');
-		event.node.res.setHeader('ETag', createHash('md5').update(data).digest('hex'));
+		if (acceptsEncoding.includes('br')) {
+			setHeader(event, 'Content-Encoding', 'br');
+			data = await brotliCompress(data);
+		} else if (acceptsEncoding.includes('gzip')) {
+			setHeader(event, 'Content-Encoding', 'gzip');
+			data = await gzip(data);
+		} else if (acceptsEncoding.includes('deflate')) {
+			setHeader(event, 'Content-Encoding', 'deflate');
+			data = await deflate(data);
+		}
 
-		event.node.res.write(data);
+		setHeader(event, 'Content-Type', 'image/png');
+		setHeader(event, 'Cache-Control', 'public, max-age=3600');
+		setHeader(event, 'Access-Control-Allow-Origin', '*');
+		setHeader(event, 'ETag', createHash('md5').update(data).digest('hex'));
+
+		// Convert Uint8Array to Blob and return it
+		return new Blob([data], { type: 'image/png' });
 	} catch (error: any) {
 		throw createError({
 			statusCode: StatusCode.NOT_FOUND,
