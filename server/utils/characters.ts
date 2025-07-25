@@ -28,7 +28,6 @@ export async function getCharacterList(perPage: number, page: number, userId?: s
 	try {
 		const cached = await useCache().getItem(cacheKey);
 		if (cached) {
-			console.log('Cache hit');
 			const results = safeDestr<Character[]>(cached);
 			return { characterArray: results };
 		}
@@ -70,7 +69,6 @@ export async function getCharacterList(perPage: number, page: number, userId?: s
 
 	const json = JSON.stringify(results);
 	try {
-		console.log('Cache miss');
 		await useCache().setItem(cacheKey, json);
 	} catch (error: any) {
 		console.error(error);

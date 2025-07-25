@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { toast } from 'vue-sonner';
+
 const props = defineProps<{
 	character: Character;
 }>();
@@ -11,21 +13,39 @@ const quality = settingsStore.imageQuality ?? 70;
 
 const img = useImage();
 
-const imageURI = img(
-	`${runtimeConfig.public.imageDomain.replace(/\/$/, '')}/${props.character.character_id}`,
-	{
-		width: width,
-		height: height,
-		quality: quality,
-		format: 'webp',
-	},
-	{
-		provider: runtimeConfig.public.imageProvider,
-	}
-);
+const imageURI = img(`${runtimeConfig.public.imageDomain.replace(/\/$/, '')}/${props.character.character_id}`, {
+	width: width,
+	height: height,
+	quality: quality,
+	format: 'webp',
+});
 
 const containerStyle = computed(() => {
 	return { gridTemplateRows: `50px 40px ${height}px 90px`, width: `${width}px` };
+});
+
+const isImageLoaded = ref(false);
+const imageBlobUrl = ref<string>('');
+
+onMounted(async () => {
+	try {
+		const response = await fetch(`${runtimeConfig.public.imageDomain.replace(/\/$/, '')}/${props.character.character_id}`);
+
+		const blob = await response.blob();
+		if (blob) {
+			imageBlobUrl.value = URL.createObjectURL(blob);
+			isImageLoaded.value = true;
+		}
+	} catch (error) {
+		console.error('Failed to load image: ', error);
+		isImageLoaded.value = false;
+	}
+});
+
+onUnmounted(() => {
+	if (imageBlobUrl.value) {
+		URL.revokeObjectURL(imageBlobUrl.value);
+	}
 });
 </script>
 
@@ -33,9 +53,9 @@ const containerStyle = computed(() => {
 	<ClientOnly>
 		<GlowBorderHover :color="['#A07CFE', '#FE8FB5', '#FFBE7B']" :border-radius="16" class="h-min">
 			<div class="Container morph overflow-hidden border" :style="containerStyle">
-				<CharacterCardBackground :image-url="imageURI" :censored="settingsStore.censorImages" />
+				<CharacterCardBackground :image-blob-url="imageBlobUrl" :censored="settingsStore.censorImages" />
 				<CharacterCardHeader :character="character" :censored="settingsStore.censorNames" :width="width" />
-				<CharacterCardBody :image-url="imageURI" :censored="settingsStore.censorImages" />
+				<CharacterCardBody :image-blob-url="imageBlobUrl" :is-image-loaded="isImageLoaded" :censored="settingsStore.censorImages" />
 				<CharacterCardFooter :character="character" />
 			</div>
 		</GlowBorderHover>

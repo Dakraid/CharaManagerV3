@@ -67,20 +67,14 @@ export default defineNuxtConfig({
 		defaultLocale: 'en',
 		defaultTimezone: 'Europe/Berlin',
 	},
-	image: {
-		cloudflare: {
-			baseURL: '',
-		},
-	},
 	runtimeConfig: {
-		debug: true,
 		// PostgreSQL Database
 		dbURL: '',
 		// Image Storage
 		imageFolder: './images',
 		public: {
+			debug: true,
 			imageDomain: '',
-			imageProvider: 'ipx',
 			thumbnailWidth: 256,
 			thumbnailHeight: 384,
 			registrationEnabled: false,

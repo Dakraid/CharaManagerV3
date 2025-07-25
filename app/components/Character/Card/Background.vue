@@ -2,7 +2,7 @@
 import { cn } from '~~/lib/utils';
 
 const props = defineProps<{
-	imageUrl: string;
+	imageBlobUrl: string;
 	censored?: boolean;
 }>();
 
@@ -11,7 +11,7 @@ const width = runtimeConfig.public.thumbnailWidth ?? 256;
 const height = runtimeConfig.public.thumbnailHeight ?? 384;
 
 const backgroundStyles = computed(() => {
-	return { backgroundImage: `url('${props.imageUrl}')`, height: `${180 + height}px`, width: `${width}px` };
+	return { backgroundImage: `url('${props.imageBlobUrl}')`, height: `${180 + height}px`, width: `${width}px` };
 });
 </script>
 
