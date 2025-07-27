@@ -72,8 +72,11 @@ export default defineNuxtConfig({
 		dbURL: '',
 		// Image Storage
 		imageFolder: './images',
+		// Caching
+		ttl: 1000 * 60 * 60 * 24, // In milliseconds, default 24 Hours
+		redisURL: '', // redis://<REDIS_USER>:<REDIS_PASSWORD>@<REDIS_HOST>:<REDIS_PORT>
 		public: {
-			debug: true,
+			debug: false,
 			imageDomain: '',
 			thumbnailWidth: 256,
 			thumbnailHeight: 384,
