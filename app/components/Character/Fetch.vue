@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { toast } from 'vue-sonner';
+
 const uploadStore = useUploadStore();
 
 const textUrls = ref('');
@@ -46,6 +48,7 @@ const onSubmit = async () => {
 				await uploadStore.add({ file: newFile, origin: result.origin, public: result.public });
 			} catch (err: any) {
 				failed.push(url);
+				toast('Failed to fetch: ' + err.message);
 			}
 		} else {
 			try {
@@ -69,6 +72,7 @@ const onSubmit = async () => {
 				await uploadStore.add({ file: newFile, origin: result.origin, public: result.public });
 			} catch (err: any) {
 				failed.push(url);
+				toast('Failed to fetch: ' + err.message);
 			}
 		}
 	}
