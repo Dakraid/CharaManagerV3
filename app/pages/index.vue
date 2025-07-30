@@ -8,23 +8,22 @@ appStore.isFetching = true;
 const characterStore = useCharacterStore();
 const { loggedIn, clear } = useUserSession();
 
-if (loggedIn.value) {
-	const validation = await $fetch('/api/auth/validate', {
-		method: 'POST',
-	});
-
-	if (validation.statusCode !== 200) {
-		await clear();
-		await characterStore.fetch();
-		toast('Session expired. Please login again.');
-	}
-}
-
 const refresh = async () => {
 	await characterStore.fetch(false);
 };
 
 onMounted(async () => {
+	if (loggedIn.value) {
+		const validation = await $fetch('/api/auth/validate', {
+			method: 'POST',
+		});
+
+		if (validation.statusCode !== 200) {
+			await clear();
+			toast('Session expired. Please login again.');
+		}
+	}
+
 	await characterStore.fetch(true);
 });
 </script>
