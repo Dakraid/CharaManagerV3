@@ -17,15 +17,13 @@ onMounted(async () => {
 
 <template>
 	<div class="h-screen overflow-hidden">
-		<div class="layout relative top-40 grid h-[calc(100vh-133px)] w-full md:top-24">
+		<div class="relative top-40 h-[calc(100vh-133px)] w-full md:top-24">
 			<Transition name="fade" mode="out-in">
-				<div v-if="appStore.isFetching" class="absolute inset-0 z-20 grid">
-					<div class="area-pagination h-full min-h-[36px] w-full animate-pulse rounded-md bg-accent/80"></div>
-					<div class="area-pagination h-full min-h-[36px] w-full rounded-md backdrop-blur-md"></div>
-					<div class="area-content mt-4 h-full w-full animate-pulse rounded-md bg-accent/80"></div>
-					<div class="area-content mt-4 h-full w-full rounded-md backdrop-blur-md"></div>
+				<div v-if="appStore.isFetching" class="layout absolute inset-0 z-20">
+					<div class="area-pagination relative h-[36px] w-full animate-pulse rounded-md bg-accent/80"></div>
+					<div class="area-content mt-4 h-[calc(100%-52px)] w-full animate-pulse rounded-md bg-accent/80"></div>
 				</div>
-				<div v-else class="relative inset-0 grid">
+				<div v-else class="layout relative inset-0 grid h-full">
 					<CharacterPagination class="area-pagination" @refresh="refresh" />
 
 					<div v-if="characterStore.characterList && characterStore.characterList.length > 0" class="area-content h-full overflow-hidden">
@@ -62,7 +60,7 @@ onMounted(async () => {
 		'Content';
 
 	@media (width >= 48rem) {
-		grid-template-columns: 1fr min-content;
+		grid-template-columns: 1fr 420px;
 		grid-template-rows: min-content 1fr;
 		grid-template-areas:
 			'Pagination Pagination'

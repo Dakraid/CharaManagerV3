@@ -126,6 +126,12 @@
 		width: 100%;
 	}
 
+	.height-fix > div > div {
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+
 	.glass-background {
 		background-color: color-mix(in oklab, var(--color-white) /* #fff = #ffffff */ 50%, transparent);
 
@@ -145,6 +151,31 @@ html.dark {
 
 html.light {
 	color-scheme: light;
+}
+
+::-webkit-scrollbar {
+	width: 0.625rem;
+}
+
+::-webkit-scrollbar-track {
+	background: var(--accent);
+	border: 1px solid var(--accent);
+	border-radius: calc(var(--radius) - 2px);
+}
+
+::-webkit-scrollbar-corner {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: var(--background);
+	border: 1px solid var(--accent);
+	border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background-color: var(--accent-foreground);
+	border-radius: 9999px;
 }
 
 /* Censor Utility */

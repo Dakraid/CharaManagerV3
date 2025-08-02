@@ -21,6 +21,12 @@ const updateVisibility = async () => {
 	await characterStore.updateVisibility(props.character.character_id, !props.character.public_visible);
 };
 
+const openCharacter = async () => {
+	await navigateTo({
+		path: `/character/${props.character.character_id}`,
+	});
+};
+
 const columnStyle = computed(() => {
 	return { gridTemplateColumns: props.character.owned ? '1fr 1fr 1fr' : '1fr 1fr' };
 });
@@ -32,7 +38,7 @@ const columnStyle = computed(() => {
 		<CharacterButtonVisibility v-if="character.owned" :visibility="character.public_visible" @click="updateVisibility" />
 		<h1 class="grow text-center text-sm">Perma: {{ character.perma_token_count }}</h1>
 		<CharacterButtonDownload :single-width="character.owned" :is-downloading="isDownloading" @click="downloadCharacter" />
-		<CharacterButtonEdit v-if="character.owned" />
+		<CharacterButtonEdit v-if="character.owned" @click="openCharacter" />
 		<CharacterButtonDelete v-if="character.owned" @click="deleteCharacter" />
 	</div>
 </template>

@@ -16,14 +16,6 @@ const character = ref<FullCharacter>();
 const isImageLoaded = ref(false);
 const imageBlobUrl = ref<string>('');
 
-if (route.params.id && !Array.isArray(route.params.id) && !isNaN(Number(route.params.id))) {
-	character.value = await characterStore.getCharacter(Number(route.params.id));
-
-	if (!character.value || !character.value.character || !character.value.definition) {
-		throw new Error('Character not found or failed to fetch. Please try again later.');
-	}
-}
-
 const fetchImage = async () => {
 	try {
 		const imageURI = img(`${runtimeConfig.public.imageDomain.replace(/\/$/, '')}/${character.value?.character.character_id}`, {
@@ -46,6 +38,14 @@ const fetchImage = async () => {
 };
 
 onMounted(async () => {
+	if (route.params.id && !Array.isArray(route.params.id) && !isNaN(Number(route.params.id))) {
+		character.value = await characterStore.getCharacter(Number(route.params.id));
+
+		if (!character.value || !character.value.character || !character.value.definition) {
+			throw new Error('Character not found or failed to fetch. Please try again later.');
+		}
+	}
+
 	await fetchImage();
 });
 
@@ -57,16 +57,37 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<div class="flex h-full w-full flex-wrap items-center justify-center gap-2 overflow-y-auto px-4 lg:flex-nowrap">
-		<div class="flex h-full w-full flex-col flex-nowrap items-center justify-center gap-2 overflow-y-auto lg:max-w-[434px]">
-			<Button id="clear" type="submit" variant="outline" class="w-full" @click="$router.back()">
-				<span class="sr-only">Back</span>
-				<Icon name="lucide:back-2" class="h-[1.2rem] w-[1.2rem]" />
-			</Button>
-			<CharacterPageImage :image-blob-url="imageBlobUrl" :is-image-loaded="isImageLoaded" :censored="settingsStore.censorImages" />
+	<Transition name="fade" mode="out-in">
+		<div v-if="character" class="layout relative top-40 grid h-[calc(100vh-133px)] w-full gap-4 md:top-24">
+			<div class="area-image flex h-full w-full flex-col flex-nowrap items-center justify-center gap-2 overflow-y-auto lg:max-w-[434px]">
+				<Button id="clear" type="submit" class="w-full bg-background" variant="outline" @click="$router.back()">
+					<span class="sr-only">Back</span>
+					<Icon name="lucide:undo-2" size="1.5em" />
+				</Button>
+				<CharacterPageImage :image-blob-url="imageBlobUrl" :is-image-loaded="isImageLoaded" :censored="settingsStore.censorImages" />
+				<Button id="clear" type="submit" class="w-full bg-background" variant="outline" @click="$router.back()">
+					<span class="sr-only">Back</span>
+					<Icon name="lucide:upload" size="1.5em" />
+				</Button>
+			</div>
+			<CharacterPageEditor :definition="character?.definition!" class="area-content" />
 		</div>
-		<CharacterPageEditor :definition="character?.definition!" />
-	</div>
+	</Transition>
 </template>
 
-<style></style>
+<style scoped>
+.layout {
+	padding: 0 calc(var(--spacing) * 4) calc(var(--spacing) * 4) calc(var(--spacing) * 4);
+	grid-template-columns: max-content 1fr;
+	grid-template-rows: 1fr;
+	grid-template-areas: 'Image Content';
+}
+
+.area-image {
+	grid-area: Image;
+}
+
+.area-content {
+	grid-area: Content;
+}
+</style>

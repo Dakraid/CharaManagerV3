@@ -40,7 +40,7 @@ function isCurrentRoute(target: string) {
 			</NavigationMenuList>
 		</NavigationMenu>
 		<div class="area-user flex flex-row items-center gap-2 justify-self-end">
-			<CommonNavigationDebugMenu v-if="runtimeConfig.public.debug" />
+			<CommonNavigationDebugMenu />
 			<CommonNavigationUserMenu />
 		</div>
 	</header>

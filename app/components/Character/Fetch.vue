@@ -85,33 +85,25 @@ const onSubmit = async () => {
 
 <template>
 	<div class="flex h-full w-full flex-col gap-2">
-		<div class="flex min-h-0 w-full flex-1 flex-col">
-			<div class="grid-layout relative h-full">
-				<Transition name="fade" mode="out-in">
-					<div v-if="isFetching" class="grid-area absolute inset-0 z-20 flex h-full w-full items-center justify-center bg-accent/50">
-						<Icon name="lucide:loader-circle" size="1.5rem" class="animate-spin" />
-					</div>
-					<Textarea
-						v-else
-						:model-value="textUrls"
-						placeholder="Paste URLs here..."
-						class="grid-area absolute inset-0 h-full w-full resize-none"
-						:disabled="isFetching"
-						@update:model-value="onEdit" />
-				</Transition>
+		<Transition name="fade" mode="out-in" class="grid-layout relative">
+			<div v-if="isFetching" class="grid-area absolute inset-0 z-20 flex h-full w-full items-center justify-center bg-accent/50">
+				<Icon name="lucide:loader-circle" size="1.5rem" class="animate-spin" />
 			</div>
-			<Label class="mt-1 text-sm text-muted-foreground">One URL per line.</Label>
-			<Label class="text-sm text-muted-foreground">Supported are ChubAI and WyvernChat, example:</Label>
+			<Textarea
+				v-else
+				:model-value="textUrls"
+				placeholder="Paste URLs here..."
+				class="grid-area absolute inset-0 h-full max-h-[300px] w-full resize-none"
+				:disabled="isFetching"
+				@update:model-value="onEdit" />
+		</Transition>
+		<Label v-if="errorMessage !== ''" class="absolute inset-0 text-sm text-red-500">{{ errorMessage }}</Label>
+		<div class="flex flex-col">
+			<Label class="mt-1 text-sm text-muted-foreground">One URL per line, supported are:</Label>
 			<div class="mt-1 rounded-md border p-2">
 				<Label class="text-sm font-light text-muted-foreground">https://chub.ai/characters/author/charactername</Label>
 				<Label class="text-sm font-light text-muted-foreground">https://app.wyvern.chat/characters/randomstuff</Label>
 			</div>
-		</div>
-		<div class="relative h-6">
-			<Transition name="fade" mode="out-in">
-				<Label v-if="errorMessage !== ''" class="absolute inset-0 text-sm text-red-500">{{ errorMessage }}</Label>
-				<div v-else class="absolute inset-0"></div>
-			</Transition>
 		</div>
 		<Button variant="outline" type="submit" @click="onSubmit">Fetch</Button>
 	</div>
