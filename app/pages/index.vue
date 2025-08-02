@@ -16,37 +16,37 @@ onMounted(async () => {
 </script>
 
 <template>
-	<div class="overflow-hidden">
-		<Transition name="fade">
-			<div v-if="appStore.isFetching" class="layout absolute top-40 z-20 grid h-[calc(100%-133px)] w-full md:top-24">
-				<div class="area-pagination h-full min-h-[36px] w-full animate-pulse rounded-md bg-accent/80"></div>
-				<div class="area-pagination h-full min-h-[36px] w-full rounded-md backdrop-blur-md"></div>
-				<div class="area-content mt-4 h-full w-full animate-pulse rounded-md bg-accent/80"></div>
-				<div class="area-content mt-4 h-full w-full rounded-md backdrop-blur-md"></div>
-			</div>
-		</Transition>
-		<div class="layout absolute top-40 grid h-[calc(100%-133px)] w-full md:top-24">
-			<CharacterPagination class="area-pagination" @refresh="refresh" />
-
-			<div v-if="characterStore.characterList && characterStore.characterList.length > 0" class="area-content h-full overflow-hidden">
-				<ScrollArea class="h-full rounded-xl border bg-background">
-					<div class="flex h-full w-full flex-wrap justify-around gap-4 p-6">
-						<LazyCharacterCard v-for="character in characterStore.characterList" :key="character.character_id" :character="character" />
-					</div>
-				</ScrollArea>
-			</div>
-			<div v-else class="area-content h-full overflow-hidden">
-				<div class="flex h-full w-full flex-col items-center justify-center gap-4">
-					<Icon name="lucide:file-question-mark" size="5rem" class="animate-bounce" />
-					<div class="flex flex-col items-center justify-center">
-						<h1 class="text-2xl font-bold">No characters to list.</h1>
-						<h1 class="text-xl font-normal">Please login to also see your private characters.</h1>
-					</div>
+	<div class="h-screen overflow-hidden">
+		<div class="layout relative top-40 grid h-[calc(100vh-133px)] w-full md:top-24">
+			<Transition name="fade" mode="out-in">
+				<div v-if="appStore.isFetching" class="absolute inset-0 z-20 grid">
+					<div class="area-pagination h-full min-h-[36px] w-full animate-pulse rounded-md bg-accent/80"></div>
+					<div class="area-pagination h-full min-h-[36px] w-full rounded-md backdrop-blur-md"></div>
+					<div class="area-content mt-4 h-full w-full animate-pulse rounded-md bg-accent/80"></div>
+					<div class="area-content mt-4 h-full w-full rounded-md backdrop-blur-md"></div>
 				</div>
-			</div>
+				<div v-else class="relative inset-0 grid">
+					<CharacterPagination class="area-pagination" @refresh="refresh" />
 
-			<Transition>
-				<CharacterSidebar v-if="loggedIn" class="area-actions" @refresh="refresh" />
+					<div v-if="characterStore.characterList && characterStore.characterList.length > 0" class="area-content h-full overflow-hidden">
+						<ScrollArea class="h-full rounded-xl border bg-background">
+							<div class="flex h-full w-full flex-wrap justify-around gap-4 p-6">
+								<LazyCharacterCard v-for="character in characterStore.characterList" :key="character.character_id" :character="character" />
+							</div>
+						</ScrollArea>
+					</div>
+					<div v-else class="area-content h-full overflow-hidden">
+						<div class="flex h-full w-full flex-col items-center justify-center gap-4">
+							<Icon name="lucide:file-question-mark" size="5rem" class="animate-bounce" />
+							<div class="flex flex-col items-center justify-center">
+								<h1 class="text-2xl font-bold">No characters to list.</h1>
+								<h1 class="text-xl font-normal">Please login to also see your private characters.</h1>
+							</div>
+						</div>
+					</div>
+
+					<CharacterSidebar v-if="loggedIn" class="area-actions" @refresh="refresh" />
+				</div>
 			</Transition>
 		</div>
 	</div>
@@ -86,6 +86,7 @@ onMounted(async () => {
 		grid-area: Actions;
 		display: block;
 		opacity: 100;
+		height: 100%;
 	}
 }
 </style>

@@ -118,7 +118,7 @@ const circleStyle = computed(() => ({
 </script>
 
 <template>
-	<div class="relative flex w-full flex-col justify-center gap-2 rounded-md">
+	<div class="relative flex min-h-0 w-full flex-1 flex-col justify-center gap-2 rounded-md">
 		<div class="grid w-full grid-cols-[1fr_min-content] justify-center gap-2">
 			<Button
 				variant="ghost"
@@ -138,14 +138,17 @@ const circleStyle = computed(() => ({
 					:style="circleStyle"></div>
 				<h1 class="z-10">Click to select or drop files here...</h1>
 			</Button>
-			<Transition name="fade">
-				<Button v-if="uploadStore.files.length > 0" variant="destructive" size="icon" class="h-full" @click="handleClear">
-					<Icon name="lucide:trash" size="1.25rem" />
-				</Button>
-			</Transition>
+			<div class="relative h-full">
+				<Transition name="fade" mode="out-in">
+					<Button v-if="uploadStore.files.length > 0" variant="destructive" size="icon" class="absolute inset-0 h-full" @click="handleClear">
+						<Icon name="lucide:trash" size="1.25rem" />
+					</Button>
+					<div v-else class="absolute inset-0"></div>
+				</Transition>
+			</div>
 		</div>
 
-		<ScrollArea v-if="uploadStore.files.length > 0" class="flex max-h-[600px] w-full flex-col rounded-md border p-2">
+		<ScrollArea v-if="uploadStore.files.length > 0" class="flex min-h-0 w-full flex-1 flex-col rounded-md border p-2">
 			<CharacterFilesItem
 				v-for="upload in uploadStore.files"
 				:key="upload.file.name"

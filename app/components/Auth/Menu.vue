@@ -89,7 +89,7 @@ async function showRegister(set: boolean) {
 
 <template>
 	<ClientOnly>
-		<Transition>
+		<Transition name="fade" mode="out-in">
 			<div v-if="loggedIn" class="flex w-full flex-col gap-2">
 				<h1 class="text-center">Welcome {{ user?.username }}!</h1>
 				<Button variant="destructive" @click="logout">Logout</Button>

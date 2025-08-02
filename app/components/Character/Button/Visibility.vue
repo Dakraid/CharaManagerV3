@@ -13,7 +13,7 @@ defineProps<{
 				<TooltipTrigger as-child>
 					<AlertDialogTrigger as-child>
 						<Button variant="ghost" size="icon" class="mx-auto cursor-pointer">
-							<Transition>
+							<Transition name="fade" mode="out-in">
 								<Icon v-if="visibility" name="lucide:eye" size="1.5rem" />
 								<Icon v-else name="lucide:eye-closed" size="1.5rem" />
 							</Transition>

@@ -2,7 +2,7 @@
 
 <template>
 	<CommonNavigation />
-	<main class="max-h-screen max-w-screen overflow-clip">
+	<main class="h-screen max-w-screen overflow-hidden">
 		<slot />
 	</main>
 	<CommonFooter />
