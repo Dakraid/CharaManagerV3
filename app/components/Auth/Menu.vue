@@ -34,42 +34,52 @@ const signInForm = useForm({
 });
 
 const onSignUp = signUpForm.handleSubmit(async (values) => {
-	const result = await $fetch('/api/auth/register', {
-		method: 'POST',
-		body: {
-			email: values.email,
-			username: values.username,
-			password: values.password,
-		},
-	});
+	try {
+		const result = await $fetch('/api/auth/register', {
+			method: 'POST',
+			body: {
+				email: values.email,
+				username: values.username,
+				password: values.password,
+			},
+		});
 
-	if (result.statusCode !== 200) {
-		toast(result.message);
-		return;
+		if (result.statusCode !== 200) {
+			toast(result.message);
+			return;
+		}
+
+		await fetch();
+		await characterStore.fetch();
+		toast('User registered in successfully');
+	} catch (error) {
+		console.error('Registration error:', error);
+		toast('Registration failed. Please try again.');
 	}
-
-	await fetch();
-	await characterStore.fetch();
-	toast('User registered in successfully');
 });
 
 const onSignIn = signInForm.handleSubmit(async (values) => {
-	const result = await $fetch('/api/auth/login', {
-		method: 'POST',
-		body: {
-			login: values.login,
-			password: values.password,
-		},
-	});
+	try {
+		const result = await $fetch('/api/auth/login', {
+			method: 'POST',
+			body: {
+				login: values.login,
+				password: values.password,
+			},
+		});
 
-	if (result.statusCode !== 200) {
-		toast(result.message);
-		return;
+		if (result.statusCode !== 200) {
+			toast(result.message);
+			return;
+		}
+
+		await fetch();
+		await characterStore.fetch();
+		toast('User logged in successfully');
+	} catch (error) {
+		console.error('Login error:', error);
+		toast('Login failed. Please check your credentials.');
 	}
-
-	await fetch();
-	await characterStore.fetch();
-	toast('User logged in successfully');
 });
 
 async function logout() {

@@ -73,6 +73,16 @@ export default defineNuxtConfig({
 		// Caching
 		ttl: 1000 * 60 * 60 * 24, // In milliseconds, default 24 Hours
 		redisURL: '', // optional, redis://<REDIS_USER>:<REDIS_PASSWORD>@<REDIS_HOST>:<REDIS_PORT>
+		// Session configuration for nuxt-auth-utils
+		session: {
+			maxAge: 60 * 60 * 24 * 7, // 1 week
+			cookieName: 'auth_session',
+			cookieAttributes: {
+				secure: process.env.NODE_ENV === 'production',
+				sameSite: 'lax',
+				httpOnly: true,
+			},
+		},
 		public: {
 			debug: false,
 			imageDomain: '',
