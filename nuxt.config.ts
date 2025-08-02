@@ -67,12 +67,12 @@ export default defineNuxtConfig({
 	},
 	runtimeConfig: {
 		// PostgreSQL Database
-		dbURL: '',
+		postgresqlURL: '', // postgresql://<PG_USER>:<PG_PASSWORD>@<PG_HOST>:<PG_PORT>/<PG_DATABASE>
 		// Image Storage
 		imageFolder: './images',
 		// Caching
 		ttl: 1000 * 60 * 60 * 24, // In milliseconds, default 24 Hours
-		redisURL: '', // redis://<REDIS_USER>:<REDIS_PASSWORD>@<REDIS_HOST>:<REDIS_PORT>
+		redisURL: '', // optional, redis://<REDIS_USER>:<REDIS_PASSWORD>@<REDIS_HOST>:<REDIS_PORT>
 		public: {
 			debug: false,
 			imageDomain: '',

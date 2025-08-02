@@ -45,7 +45,7 @@ const uploadFile = async () => {
 	formData.append('public', `${props.upload.public}`);
 
 	try {
-		const response = await fetch('/api/character/upload', {
+		const response = await fetch('/api/character', {
 			method: 'PUT',
 			body: formData,
 		});

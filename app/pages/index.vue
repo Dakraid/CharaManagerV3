@@ -1,29 +1,16 @@
 <!--suppress CssUnusedSymbol -->
 <script setup lang="ts">
-import { toast } from 'vue-sonner';
-
 const appStore = useAppStore();
 appStore.isFetching = true;
 
 const characterStore = useCharacterStore();
-const { loggedIn, clear } = useUserSession();
+const { loggedIn } = useUserSession();
 
 const refresh = async () => {
 	await characterStore.fetch(false);
 };
 
 onMounted(async () => {
-	if (loggedIn.value) {
-		const validation = await $fetch('/api/auth/validate', {
-			method: 'POST',
-		});
-
-		if (validation.statusCode !== 200) {
-			await clear();
-			toast('Session expired. Please login again.');
-		}
-	}
-
 	await characterStore.fetch(true);
 });
 </script>

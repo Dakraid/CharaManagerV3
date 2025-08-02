@@ -1,11 +1,7 @@
 import type { V2 } from 'character-card-utils';
 import safeDestr from 'destr';
-import { desc, eq, or, sql } from 'drizzle-orm';
+import { and, desc, eq, or, sql } from 'drizzle-orm';
 import { createHash } from 'node:crypto';
-import fs from 'node:fs/promises';
-import path from 'node:path';
-
-const runtimeConfig = useRuntimeConfig();
 
 export async function getCharacterCount(userId?: string): Promise<number> {
 	const db = useDrizzle();
@@ -77,6 +73,33 @@ export async function getCharacterList(perPage: number, page: number, userId?: s
 	return { characterArray: results };
 }
 
+export async function getCharacterById(characterId: number, userId: string): Promise<FullCharacter | undefined> {
+	const db = useDrizzle();
+
+	if (await hasAccess(characterId, userId)) {
+		try {
+			const result = await db
+				.select()
+				.from(characters)
+				.innerJoin(definitions, eq(definitions.character_id, characters.character_id))
+				.where(and(eq(characters.character_id, characterId), eq(characters.owner_id, userId)));
+
+			if (result.length === 0) {
+				return undefined;
+			}
+
+			return { character: result[0].characters, definition: result[0].definitions };
+		} catch (error: any) {
+			throw createError({
+				statusCode: StatusCode.INTERNAL_SERVER_ERROR,
+				message: error.message,
+			});
+		}
+	}
+
+	return undefined;
+}
+
 export async function deleteCharacterById(characterId: number, userId: string): Promise<responseType> {
 	const db = useDrizzle();
 
@@ -142,7 +165,6 @@ export async function downloadCharacterById(characterId: number, userId: string)
 	}
 }
 
-// Character Upload Handling
 export async function saveCharacter(upload: Upload, userId: string): Promise<UploadResult> {
 	const db = useDrizzle();
 
@@ -210,38 +232,4 @@ export async function saveCharacter(upload: Upload, userId: string): Promise<Upl
 			return { file_name: upload.file.name, success: false, error: originalError.message };
 		}
 	});
-}
-
-// Character Image Handling
-export async function loadImageById(id: number): Promise<Uint8Array> {
-	try {
-		const value = await useCache().getItemRaw<Uint8Array>(id.toString());
-		if (value) {
-			return value;
-		}
-
-		const file = await fs.readFile(path.join(runtimeConfig.imageFolder, `${id}.png`));
-		await useCache().setItemRaw(id.toString(), file);
-
-		return file;
-	} catch (error: any) {
-		throw new Error(`Failed to load image to file system: ${error.message}`);
-	}
-}
-
-export async function saveImageById(id: number, data: Uint8Array): Promise<void> {
-	try {
-		await fs.writeFile(path.join(runtimeConfig.imageFolder, `${id}.png`), data);
-		await useCache().setItemRaw(id.toString(), data);
-	} catch (error: any) {
-		throw new Error(`Failed to save image to file system: ${error.message}`);
-	}
-}
-
-export async function deleteImageById(id: number): Promise<void> {
-	try {
-		await fs.unlink(path.join(runtimeConfig.imageFolder, `${id}.png`));
-	} catch (error: any) {
-		throw new Error(`Failed to save image to file system: ${error.message}`);
-	}
 }

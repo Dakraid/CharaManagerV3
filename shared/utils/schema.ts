@@ -1,3 +1,4 @@
+import type { V2 } from 'character-card-utils';
 import { sql } from 'drizzle-orm';
 import {
 	boolean,
@@ -34,7 +35,7 @@ export const definitions = pgTable(
 		change_date: timestamp({ withTimezone: true, mode: 'date' })
 			.default(sql`CURRENT_TIMESTAMP`)
 			.notNull(),
-		content: jsonb().notNull(),
+		content: jsonb().$type<V2>().notNull(),
 		hash: text().generatedAlwaysAs(sql`encode(digest(content #>> '{}', 'sha256'), 'hex')`),
 		name: text().generatedAlwaysAs(sql`((content -> 'data'::text) ->> 'name'::text)`),
 		description: text().generatedAlwaysAs(sql`((content -> 'data'::text) ->> 'description'::text)`),

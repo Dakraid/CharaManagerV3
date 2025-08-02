@@ -1,7 +1,7 @@
 import type { V1, V2 } from 'character-card-utils';
 import { v1ToV2 } from 'character-card-utils';
 import { safeDestr } from 'destr';
-import { decode, decodeAsyncGenerator, decodeGenerator, encode, encodeChat, encodeGenerator, isWithinTokenLimit } from 'gpt-tokenizer';
+import { encode } from 'gpt-tokenizer';
 import * as pngText from 'png-chunk-text';
 import encodeChunks from 'png-chunks-encode';
 import extractChunks from 'png-chunks-extract';

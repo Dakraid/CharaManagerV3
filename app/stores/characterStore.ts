@@ -9,7 +9,7 @@ export const useCharacterStore = defineStore('character', {
 	},
 	getters: {},
 	actions: {
-		async fetch(indicate: boolean = true) {
+		async fetch(indicate: boolean = true): Promise<void> {
 			const appStore = useAppStore();
 			const settingsStore = useSettingsStore();
 			appStore.isFetching = indicate ? true : appStore.isFetching;
@@ -33,8 +33,22 @@ export const useCharacterStore = defineStore('character', {
 
 			appStore.isFetching = indicate ? false : appStore.isFetching;
 		},
-		async deleteCharacter(id: number) {
-			const result = await $fetch('/api/character/character', {
+		async getCharacter(id: number): Promise<FullCharacter | undefined> {
+			const result = await $fetch<FullCharacter | undefined>('/api/character', {
+				method: 'GET',
+				query: {
+					id: id,
+				},
+			});
+
+			if (result) {
+				return result;
+			} else {
+				toast('Failed to fetch complete character. Please try again later.');
+			}
+		},
+		async deleteCharacter(id: number): Promise<void> {
+			const result = await $fetch('/api/character', {
 				method: 'DELETE',
 				body: {
 					id: id,
@@ -48,7 +62,7 @@ export const useCharacterStore = defineStore('character', {
 				toast('Failed to update visibility. Please try again later.');
 			}
 		},
-		async downloadCharacter(id: number) {
+		async downloadCharacter(id: number): Promise<void> {
 			const response = await $fetch<Blob>('/api/character/download', {
 				method: 'POST',
 				body: {
@@ -71,7 +85,7 @@ export const useCharacterStore = defineStore('character', {
 			document.body.removeChild(anchor);
 			URL.revokeObjectURL(url);
 		},
-		async updateVisibility(id: number, visibility: boolean) {
+		async updateVisibility(id: number, visibility: boolean): Promise<void> {
 			const result = await $fetch('/api/character/visibility', {
 				method: 'PATCH',
 				body: {

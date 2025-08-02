@@ -8,12 +8,12 @@ let db: ReturnType<typeof drizzle>;
 
 export function useDrizzle() {
 	if (!pool) {
-		if (!runtimeConfig.dbURL) {
+		if (!runtimeConfig.postgresqlURL) {
 			throw new Error('DATABASE_URL environment variable is not set');
 		}
 
 		pool = new Pool({
-			connectionString: runtimeConfig.dbURL,
+			connectionString: runtimeConfig.postgresqlURL,
 			max: 500,
 			idleTimeoutMillis: 300000,
 			connectionTimeoutMillis: 20000,

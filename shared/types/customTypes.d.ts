@@ -36,3 +36,20 @@ export type CharacterWithOwnerId = {
 	perma_token_count: number;
 	evaluation_score: number;
 };
+
+export type Definition = {
+	id: number;
+	character_id: number;
+	change_date: Date;
+	content: V2;
+	hash: string | null;
+	name: string | null;
+	description: string | null;
+	personality: string | null;
+	scenario: string | null;
+}
+
+export type FullCharacter = {
+	character: CharacterWithOwnerId;
+	definition: Definition;
+}
