@@ -55,37 +55,37 @@ jobs:
                   tags: ${{ steps.metadata.outputs.tags }}
                   labels: ${{ steps.metadata.outputs.labels }}
 
-        Linux:
-            runs-on: ubuntu-latest
+    Linux:
+        runs-on: ubuntu-latest
 
-            steps:
-                - name: Checkout
-                  uses: actions/checkout@master
+        steps:
+            - name: Checkout
+              uses: actions/checkout@master
 
-                - name: Secret Scanning
-                  uses: trufflesecurity/trufflehog@main
-                  with:
-                      extra_args: --results=verified,unknown
+            - name: Secret Scanning
+              uses: trufflesecurity/trufflehog@main
+              with:
+                  extra_args: --results=verified,unknown
 
-                - name: Setup node env
-                  uses: actions/setup-node@v4
-                  with:
-                      node-version: latest
-                      check-latest: true
+            - name: Setup node env
+              uses: actions/setup-node@v4
+              with:
+                  node-version: latest
+                  check-latest: true
 
-                - name: Install dependencies
-                  run: npm ci --quiet
+            - name: Install dependencies
+              run: npm ci --quiet
 
-                - name: Run prepare
-                  run: npm run prepare
+            - name: Run prepare
+              run: npm run prepare
 
-                - name: Run linter
-                  run: npm run lint
+            - name: Run linter
+              run: npm run lint
 
-                - name: Run build
-                  run: npm run build
+            - name: Run build
+              run: npm run build
 
-                - uses: actions/upload-artifact@v4
-                  with:
-                      name: Build-Linux
-                      path: .output
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: Build-Linux
+                  path: .output
