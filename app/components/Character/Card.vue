@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import { cn } from '~~/lib/utils';
+
 const props = defineProps<{
 	character: Character;
 }>();
+
+const img = useImage();
 
 const runtimeConfig = useRuntimeConfig();
 const settingsStore = useSettingsStore();
@@ -9,7 +13,8 @@ const width = runtimeConfig.public.thumbnailWidth ?? 256;
 const height = runtimeConfig.public.thumbnailHeight ?? 384;
 const quality = settingsStore.imageQuality ?? 70;
 
-const img = useImage();
+const isImageLoaded = ref(false);
+const imageBlobUrl = ref<string>('');
 
 const imageURI = img(`${runtimeConfig.public.imageDomain.replace(/\/$/, '')}/${props.character.character_id}`, {
 	width: width,
@@ -18,12 +23,19 @@ const imageURI = img(`${runtimeConfig.public.imageDomain.replace(/\/$/, '')}/${p
 	format: 'webp',
 });
 
+const replaceLettersWithHash = (str: string): string => str.replace(/\S/g, '#');
+
+const widthClamp = computed(() => {
+	return { width: `${width}px` };
+});
+
 const containerStyle = computed(() => {
 	return { gridTemplateRows: `50px 40px ${height}px 90px`, width: `${width}px` };
 });
 
-const isImageLoaded = ref(false);
-const imageBlobUrl = ref<string>('');
+const backgroundStyles = computed(() => {
+	return { backgroundImage: `url('${imageBlobUrl.value}')`, height: `${180 + height}px`, width: `${width}px` };
+});
 
 const fetchImage = async () => {
 	try {
@@ -54,11 +66,56 @@ onUnmounted(() => {
 
 <template>
 	<ClientOnly>
-		<GlowBorderHover :color="['#A07CFE', '#FE8FB5', '#FFBE7B']" :border-radius="16" class="h-min">
-			<div class="Container morph overflow-hidden border" :style="containerStyle">
-				<CharacterCardBackground :image-blob-url="imageBlobUrl" :censored="settingsStore.censorImages" />
-				<CharacterCardHeader :character="character" :censored="settingsStore.censorNames" :width="width" />
-				<CharacterCardBody :image-blob-url="imageBlobUrl" :is-image-loaded="isImageLoaded" :censored="settingsStore.censorImages" />
+		<GlowBorderHover :color="['#A07CFE', '#FE8FB5', '#FFBE7B']" :border-radius="16">
+			<div class="Card-Container morph overflow-hidden border" :style="containerStyle">
+				<div
+					:class="cn('Card-Background h-full w-full bg-cover bg-center bg-no-repeat blur-xl', settingsStore.censorImages ? 'censor' : '')"
+					:style="backgroundStyles"></div>
+
+				<div class="Card-Header-Title glass-background flex items-center justify-between gap-2 px-2" :style="widthClamp">
+					<h1 class="w-full truncate text-start text-xl font-bold">
+						{{ settingsStore.censorNames ? replaceLettersWithHash(character.character_name) : character.character_name }}
+					</h1>
+					<TooltipProvider>
+						<Tooltip>
+							<TooltipTrigger as-child>
+								<Icon name="lucide:info" size="1.5rem" class="min-w-[25px]" />
+							</TooltipTrigger>
+							<TooltipContent side="bottom">
+								<div class="grid grid-cols-[min-content_1fr] grid-rows-3 gap-1">
+									<p>Identifier:</p>
+									<p class="col-start-2">{{ character.character_id }}</p>
+									<p>Uploaded:</p>
+									<p class="col-start-2">{{ new Date(character.upload_date).toLocaleString() }}</p>
+									<p>Filename:</p>
+									<p class="col-start-2">{{ `${character.character_id}.png` }}</p>
+								</div>
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
+				</div>
+
+				<div class="Card-Header-Evaluation glass-background flex items-center justify-center px-2">
+					<CharacterCardEvaluation :score="character.evaluation_score" />
+				</div>
+
+				<div class="Card-Body">
+					<Skeleton v-if="!isImageLoaded" class="h-full w-full" />
+					<img
+						:src="imageBlobUrl"
+						loading="lazy"
+						crossorigin="use-credentials"
+						alt="Character Image"
+						:class="
+							cn(
+								'h-full w-full object-cover transition-all duration-300',
+								isImageLoaded ? 'opacity-100' : 'opacity-0',
+								settingsStore.censorImages ? 'censor' : ''
+							)
+						"
+						:style="`min-height: ${height}px; min-width: ${width}px; max-height: ${height}px; max-width: ${width}px;`" />
+				</div>
+
 				<CharacterCardFooter :character="character" />
 			</div>
 		</GlowBorderHover>
@@ -66,10 +123,28 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-.Container {
+.Card-Container {
 	display: grid;
 	grid-template-columns: 1fr;
 	grid-auto-flow: row;
 	border-radius: calc(var(--radius) + 4px);
+}
+
+.Card-Background {
+	grid-area: 1 / 1 / 5 / 2;
+}
+
+.Card-Body {
+	grid-area: 3 / 1 / 4 / 2;
+}
+
+.Card-Header-Title {
+	grid-area: 1 / 1 / 2 / 2;
+	height: 50px;
+}
+
+.Card-Header-Evaluation {
+	grid-area: 2 / 1 / 3 / 2;
+	height: 40px;
 }
 </style>

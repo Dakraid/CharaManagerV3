@@ -17,7 +17,7 @@ const updatePerPage = (payload: string | number) => {
 </script>
 
 <template>
-	<div class="flex w-full flex-row flex-nowrap items-center justify-between gap-2 justify-self-center pb-4">
+	<div class="flex w-full max-w-7xl flex-row flex-nowrap items-center justify-between gap-2 justify-self-center">
 		<div class="flex w-full flex-row flex-nowrap items-center justify-center gap-2">
 			<Pagination
 				v-slot="{ page }"

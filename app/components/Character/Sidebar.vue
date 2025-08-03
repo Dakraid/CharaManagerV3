@@ -5,14 +5,14 @@ const appStore = useAppStore();
 </script>
 
 <template>
-	<div :class="cn('h-full overflow-hidden pl-4 transition-all duration-300', appStore.showActions ? 'z-10 opacity-100' : '-z-10 opacity-0')">
-		<div class="layout grid h-full gap-4 overflow-hidden rounded-xl border bg-background p-2">
-			<div class="area-upload flex flex-col gap-2">
+	<div :class="cn('h-full overflow-hidden transition-all duration-300', appStore.showActions ? '' : 'Sidebar-Disable')">
+		<div class="Sidebar-Layout grid h-full gap-4 overflow-hidden rounded-xl border bg-background p-2">
+			<div class="Sidebar-Upload flex flex-col gap-2">
 				<h1 class="rounded-md border bg-accent p-1 text-center text-xl font-bold">File Upload</h1>
 				<CharacterFiles />
 			</div>
-			<Separator orientation="horizontal" class="area-separator" />
-			<div class="area-fetch flex min-h-[238px] flex-col gap-2">
+			<Separator orientation="horizontal" class="Sidebar-Separator" />
+			<div class="Sidebar-Fetch flex min-h-[238px] flex-col gap-2">
 				<h1 class="rounded-md border bg-accent p-1 text-center text-xl font-bold">Fetch from URL</h1>
 				<CharacterFetch />
 			</div>
@@ -21,7 +21,7 @@ const appStore = useAppStore();
 </template>
 
 <style scoped>
-.layout {
+.Sidebar-Layout {
 	grid-template-columns: 1fr;
 	grid-template-rows: min-content min-content min-content;
 	grid-template-areas:
@@ -30,15 +30,25 @@ const appStore = useAppStore();
 		'Fetch';
 }
 
-.area-upload {
+.Sidebar-Disable {
+	opacity: 0;
+	z-index: -10;
+
+	@media (width >= 48rem) {
+		opacity: 100;
+		z-index: 30;
+	}
+}
+
+.Sidebar-Upload {
 	grid-area: Upload;
 }
 
-.area-separator {
+.Sidebar-Separator {
 	grid-area: Separator;
 }
 
-.area-fetch {
+.Sidebar-Fetch {
 	grid-area: Fetch;
 }
 </style>

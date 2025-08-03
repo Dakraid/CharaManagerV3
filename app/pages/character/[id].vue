@@ -58,7 +58,7 @@ onUnmounted(() => {
 
 <template>
 	<Transition name="fade" mode="out-in">
-		<div v-if="character" class="layout relative top-40 grid h-[calc(100vh-133px)] w-full gap-4 md:top-24">
+		<div v-if="character" class="navigation-layout relative top-40 grid h-[calc(100vh-133px)] w-full gap-4 md:top-24">
 			<div class="area-image flex h-full w-full flex-col flex-nowrap items-center justify-center gap-2 overflow-y-auto lg:max-w-[434px]">
 				<Button id="clear" type="submit" class="w-full bg-background" variant="outline" @click="$router.back()">
 					<span class="sr-only">Back</span>
@@ -76,7 +76,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-.layout {
+.navigation-layout {
 	padding: 0 calc(var(--spacing) * 4) calc(var(--spacing) * 4) calc(var(--spacing) * 4);
 	grid-template-columns: max-content 1fr;
 	grid-template-rows: 1fr;

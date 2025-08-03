@@ -4,12 +4,6 @@ const props = defineProps<{
 	width: number;
 	censored: boolean;
 }>();
-
-const replaceLettersWithHash = (str: string): string => str.replace(/\S/g, '#');
-
-const widthClamp = computed(() => {
-	return { width: `${props.width}px` };
-});
 </script>
 
 <template>
