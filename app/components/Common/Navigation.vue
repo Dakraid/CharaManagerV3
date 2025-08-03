@@ -2,7 +2,6 @@
 import { cn } from '~~/lib/utils';
 
 const route = useRoute();
-const runtimeConfig = useRuntimeConfig();
 
 function isCurrentRoute(target: string) {
 	return route.path === target ? 'bg-primary-foreground border' : '';
@@ -10,8 +9,7 @@ function isCurrentRoute(target: string) {
 </script>
 
 <template>
-	<header
-		class="layout fixed inset-x-0 top-4 z-20 grid h-32 w-full max-w-7xl items-center justify-items-center gap-2 border bg-background p-2 px-4 transition-all md:mx-auto md:h-16 md:rounded-md">
+	<header class="navigation-layout mx-auto h-full w-full max-w-7xl gap-2 rounded-b-md border border-t-0 bg-background p-2 px-4 transition-all">
 		<CommonNavigationLogo class="area-logo" />
 		<NavigationMenu class="area-menu w-full p-0 *:w-full">
 			<NavigationMenuList class="grid w-full grid-cols-3 gap-4">
@@ -40,14 +38,15 @@ function isCurrentRoute(target: string) {
 			</NavigationMenuList>
 		</NavigationMenu>
 		<div class="area-user flex flex-row items-center gap-2 justify-self-end">
-			<CommonNavigationDebugMenu v-if="runtimeConfig.public.debug" />
+			<CommonNavigationDebugMenu />
 			<CommonNavigationUserMenu />
 		</div>
 	</header>
 </template>
 
 <style scoped>
-.layout {
+.navigation-layout {
+	display: grid;
 	grid-template-columns: minmax(max-content, 1fr) minmax(max-content, 1fr);
 	grid-template-rows: minmax(max-content, 1fr) minmax(max-content, 1fr);
 	grid-template-areas:

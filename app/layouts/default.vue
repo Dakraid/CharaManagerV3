@@ -1,11 +1,11 @@
 <script setup lang="ts"></script>
 
 <template>
-	<CommonNavigation />
-	<main class="h-screen max-w-screen overflow-hidden">
+	<CommonNavigation class="Viewport-Navigation" />
+	<main class="Viewport-Content">
 		<slot />
 	</main>
-	<CommonFooter />
+	<CommonFooter class="Viewport-Footer" />
 </template>
 
 <style scoped></style>

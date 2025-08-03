@@ -1,10 +1,12 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+defineEmits(['click']);
+</script>
 
 <template>
 	<TooltipProvider>
 		<Tooltip>
 			<TooltipTrigger as-child>
-				<Button class="grow cursor-pointer" variant="secondary">
+				<Button class="grow cursor-pointer" variant="secondary" @click="$emit('click')">
 					<Icon name="lucide:notebook-pen" size="1.5rem" />
 				</Button>
 			</TooltipTrigger>

@@ -1,4 +1,5 @@
 import type { z } from 'zod/v4';
+import type { V2 } from 'character-card-utils';
 
 export type Upload = z.infer<typeof uploadSchema>;
 
