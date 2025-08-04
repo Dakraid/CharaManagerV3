@@ -1,12 +1,8 @@
 <script setup lang="ts">
 const route = useRoute();
-const img = useImage();
 
-const runtimeConfig = useRuntimeConfig();
 const settingsStore = useSettingsStore();
 const characterStore = useCharacterStore();
-
-const quality = settingsStore.imageQuality ?? 70;
 
 definePageMeta({
 	middleware: ['authenticated'],
@@ -18,12 +14,7 @@ const imageBlobUrl = ref<string>('');
 
 const fetchImage = async () => {
 	try {
-		const imageURI = img(`${runtimeConfig.public.imageDomain.replace(/\/$/, '')}/${character.value?.character.character_id}`, {
-			quality: quality,
-			format: 'webp',
-		});
-
-		const response = await fetch(imageURI);
+		const response = await fetch(`/api/image/full/${character.value?.character.character_id}`);
 
 		if (!response.ok) {
 			throw new Error('Failed to fetch image');
@@ -58,8 +49,8 @@ onUnmounted(() => {
 
 <template>
 	<Transition name="fade" mode="out-in">
-		<div v-if="character" class="navigation-layout relative top-40 grid h-[calc(100vh-133px)] w-full gap-4 md:top-24">
-			<div class="area-image flex h-full w-full flex-col flex-nowrap items-center justify-center gap-2 overflow-y-auto lg:max-w-[434px]">
+		<div v-if="character" class="Editor-Layout gap-4 overflow-hidden">
+			<div class="Editor-Image flex h-full w-full flex-col flex-nowrap items-center justify-center gap-2 overflow-y-auto rounded-md lg:max-w-[434px]">
 				<Button id="clear" type="submit" class="w-full bg-background" variant="outline" @click="$router.back()">
 					<span class="sr-only">Back</span>
 					<Icon name="lucide:undo-2" size="1.5em" />
@@ -70,24 +61,9 @@ onUnmounted(() => {
 					<Icon name="lucide:upload" size="1.5em" />
 				</Button>
 			</div>
-			<CharacterPageEditor :definition="character?.definition!" class="area-content" />
 		</div>
 	</Transition>
+	<CharacterPageEditor :definition="character?.definition!" class="Editor-Content" />
 </template>
 
-<style scoped>
-.navigation-layout {
-	padding: 0 calc(var(--spacing) * 4) calc(var(--spacing) * 4) calc(var(--spacing) * 4);
-	grid-template-columns: max-content 1fr;
-	grid-template-rows: 1fr;
-	grid-template-areas: 'Image Content';
-}
-
-.area-image {
-	grid-area: Image;
-}
-
-.area-content {
-	grid-area: Content;
-}
-</style>
+<style scoped></style>

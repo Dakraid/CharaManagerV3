@@ -87,20 +87,6 @@ const settingsStore = useSettingsStore();
 					</div>
 				</div>
 			</DropdownMenuLabel>
-			<Separator class="mt-1" />
-			<DropdownMenuLabel class="flex w-full grow flex-col gap-2">
-				<h1 class="text-md text-center font-bold">Performance</h1>
-				<h2 class="text-center text-sm">Image Quality (1 Worst - 100 Best)</h2>
-				<div class="items-top flex w-full gap-2">
-					<NumberField id="imageQuality" :default-value="settingsStore.imageQuality" :min="1" :max="100" class="grow">
-						<NumberFieldContent>
-							<NumberFieldDecrement class="cursor-pointer" />
-							<NumberFieldInput />
-							<NumberFieldIncrement class="cursor-pointer" />
-						</NumberFieldContent>
-					</NumberField>
-				</div>
-			</DropdownMenuLabel>
 		</DropdownMenuContent>
 	</DropdownMenu>
 </template>

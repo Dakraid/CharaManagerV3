@@ -4,7 +4,6 @@ export const useSettingsStore = defineStore('settings', {
 			perPage: 30,
 			censorImages: false,
 			censorNames: false,
-			imageQuality: 70,
 		};
 	},
 	getters: {},

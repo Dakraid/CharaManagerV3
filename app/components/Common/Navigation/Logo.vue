@@ -2,7 +2,7 @@
 
 <template>
 	<div class="shine flex flex-row items-center gap-2 justify-self-start transition-all duration-300">
-		<NuxtImg src="/logo.svg" alt="CharaManagerV3 Logo" class="h-10 min-h-10 w-10 min-w-10" />
+		<img src="/logo.svg" alt="CharaManagerV3 Logo" class="h-10 min-h-10 w-10 min-w-10" />
 		<h1 class="text-md cursor-default font-bold md:text-xl">
 			<a href="/">CharaManagerV3</a>
 		</h1>

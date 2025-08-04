@@ -5,41 +5,24 @@ const props = defineProps<{
 	character: Character;
 }>();
 
-const img = useImage();
-
-const runtimeConfig = useRuntimeConfig();
 const settingsStore = useSettingsStore();
-const width = runtimeConfig.public.thumbnailWidth ?? 256;
-const height = runtimeConfig.public.thumbnailHeight ?? 384;
-const quality = settingsStore.imageQuality ?? 70;
 
 const isImageLoaded = ref(false);
 const imageBlobUrl = ref<string>('');
 
-const imageURI = img(`${runtimeConfig.public.imageDomain.replace(/\/$/, '')}/${props.character.character_id}`, {
-	width: width,
-	height: height,
-	quality: quality,
-	format: 'webp',
-});
-
 const replaceLettersWithHash = (str: string): string => str.replace(/\S/g, '#');
 
-const widthClamp = computed(() => {
-	return { width: `${width}px` };
-});
-
 const containerStyle = computed(() => {
-	return { gridTemplateRows: `50px 40px ${height}px 90px`, width: `${width}px` };
+	return { gridTemplateRows: `50px 40px 384px 90px` };
 });
 
 const backgroundStyles = computed(() => {
-	return { backgroundImage: `url('${imageBlobUrl.value}')`, height: `${180 + height}px`, width: `${width}px` };
+	return { backgroundImage: `url('${imageBlobUrl.value}')` };
 });
 
 const fetchImage = async () => {
 	try {
-		const response = await fetch(imageURI);
+		const response = await fetch(`/api/image/thumb/${props.character.character_id}`);
 
 		if (!response.ok) {
 			throw new Error('Failed to fetch image');
@@ -66,13 +49,13 @@ onUnmounted(() => {
 
 <template>
 	<ClientOnly>
-		<GlowBorderHover :color="['#A07CFE', '#FE8FB5', '#FFBE7B']" :border-radius="16">
-			<div class="Card-Container morph overflow-hidden border" :style="containerStyle">
+		<GlowBorderHover :color="['#A07CFE', '#FE8FB5', '#FFBE7B']" :border-radius="16" class="h-min w-min">
+			<div class="Card-Container morph w-[256px] overflow-hidden border" :style="containerStyle">
 				<div
-					:class="cn('Card-Background h-full w-full bg-cover bg-center bg-no-repeat blur-xl', settingsStore.censorImages ? 'censor' : '')"
+					:class="cn('Card-Background h-[564px] w-[256px] bg-cover bg-center bg-no-repeat blur-xl', settingsStore.censorImages ? 'censor' : '')"
 					:style="backgroundStyles"></div>
 
-				<div class="Card-Header-Title glass-background flex items-center justify-between gap-2 px-2" :style="widthClamp">
+				<div class="Card-Header-Title glass-background flex w-[256px] items-center justify-between gap-2 px-2">
 					<h1 class="w-full truncate text-start text-xl font-bold">
 						{{ settingsStore.censorNames ? replaceLettersWithHash(character.character_name) : character.character_name }}
 					</h1>
@@ -108,12 +91,11 @@ onUnmounted(() => {
 						alt="Character Image"
 						:class="
 							cn(
-								'h-full w-full object-cover transition-all duration-300',
+								'h-[384px] w-[256px] object-cover transition-all duration-300',
 								isImageLoaded ? 'opacity-100' : 'opacity-0',
 								settingsStore.censorImages ? 'censor' : ''
 							)
-						"
-						:style="`min-height: ${height}px; min-width: ${width}px; max-height: ${height}px; max-width: ${width}px;`" />
+						" />
 				</div>
 
 				<CharacterCardFooter :character="character" />

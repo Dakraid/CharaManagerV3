@@ -51,6 +51,7 @@
 		"png-chunks-extract": "^1.0.0",
 		"reka-ui": "^2.4.1",
 		"shadcn-nuxt": "^2.2.0",
+		"sharp": "^0.34.3",
 		"tailwindcss": "^4.1.11",
 		"tw-animate-css": "^1.3.6",
 		"vaul-vue": "^0.4.1",

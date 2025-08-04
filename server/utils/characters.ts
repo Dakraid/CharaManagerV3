@@ -2,6 +2,7 @@ import type { V2 } from 'character-card-utils';
 import safeDestr from 'destr';
 import { and, desc, eq, or, sql } from 'drizzle-orm';
 import { createHash } from 'node:crypto';
+import sharp from 'sharp';
 
 export async function hasAccess(characterId: number, userId: string): Promise<boolean> {
 	const db = useDrizzle();
@@ -165,7 +166,7 @@ export async function downloadCharacterById(characterId: number, userId: string)
 			});
 		}
 
-		const image = await loadImageById(characterId);
+		const image = await loadImageById(characterId, false);
 
 		if (!definition || !image) {
 			throw createError({
@@ -174,7 +175,8 @@ export async function downloadCharacterById(characterId: number, userId: string)
 			});
 		}
 
-		const png = embedTextInPng(image, definition);
+		const imagePng = await sharp(image).png().toBuffer();
+		const png = embedTextInPng(imagePng, definition);
 		return new Blob([png]);
 	}
 }
