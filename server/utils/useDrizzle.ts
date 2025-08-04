@@ -25,9 +25,3 @@ export function useDrizzle() {
 
 	return db;
 }
-
-export async function closeDrizzle() {
-	if (pool) {
-		await pool.end();
-	}
-}

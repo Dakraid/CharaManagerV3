@@ -297,13 +297,19 @@ html.light {
 	}
 }
 
+.Gallery-Layout-NoActions {
+	grid-template-areas:
+			'Pagination Pagination Pagination'
+			'. . .'
+			'Content Content Content';
+}
+
 .Gallery-Pagination {
 	grid-area: Pagination;
 }
 
 .Gallery-Content {
 	grid-area: Content;
-	column-span: 1;
 }
 
 .Gallery-Actions {
@@ -315,4 +321,20 @@ html.light {
 		opacity: 100;
 		height: 100%;
 	}
+}
+
+.Editor-Layout {
+	display: grid;
+	padding: 0 calc(var(--spacing) * 4) calc(var(--spacing) * 4) calc(var(--spacing) * 4);
+	grid-template-columns: max-content 1fr;
+	grid-template-rows: 1fr;
+	grid-template-areas: 'Image Content';
+}
+
+.Editor-Image {
+	grid-area: Image;
+}
+
+.Editor-Content {
+	grid-area: Content;
 }

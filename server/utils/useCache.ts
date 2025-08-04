@@ -14,7 +14,7 @@ export function useCache() {
 				driver: redisDriver({
 					base: 'CMV3',
 					url: runtimeConfig.redisURL,
-					tls: true as any,
+					tls: runtimeConfig.redisTLS as any,
 					ttl: runtimeConfig.ttl / 1000,
 				}),
 			});
@@ -26,10 +26,4 @@ export function useCache() {
 	}
 
 	return storage;
-}
-
-export async function closeCache() {
-	if (storage) {
-		await storage.dispose();
-	}
 }

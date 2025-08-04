@@ -22,22 +22,21 @@ const refresh = async () => {
 
 	<div
 		v-else
-		class="Gallery-Content flex h-full w-full flex-wrap justify-between gap-4 overflow-x-hidden overflow-y-scroll rounded-md border border-r-0 px-4 py-6">
+		class="Gallery-Content flex h-full w-full flex-wrap justify-evenly gap-4 overflow-x-hidden overflow-y-scroll rounded-md border border-r-0 bg-background px-4 py-6">
 		<LazyCharacterCard v-for="character in characterStore.characterList" :key="character.character_id" :character="character" />
 	</div>
-
-	<div class="Gallery-Content test" />
 
 	<CharacterSidebar v-if="loggedIn" class="Gallery-Actions" @refresh="refresh" />
 </template>
 
 <style scoped>
-.test {
+.Fader {
 	box-shadow: inset 0 -20px 25px -5px rgb(0 0 0);
 	height: 50px;
-	width: 100%;
+	width: calc(100% - 0.625rem);
 	z-index: 30;
 	margin-top: auto;
 	border-radius: 0 0 calc(var(--radius) - 2px) calc(var(--radius) - 2px);
+	position: relative;
 }
 </style>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { cn } from '~~/lib/utils';
 
+const runtimeConfig = useRuntimeConfig();
 const route = useRoute();
 
 function isCurrentRoute(target: string) {
@@ -38,7 +39,7 @@ function isCurrentRoute(target: string) {
 			</NavigationMenuList>
 		</NavigationMenu>
 		<div class="area-user flex flex-row items-center gap-2 justify-self-end">
-			<CommonNavigationDebugMenu />
+			<CommonNavigationDebugMenu v-if="runtimeConfig.public.debug" />
 			<CommonNavigationUserMenu />
 		</div>
 	</header>

@@ -9,8 +9,8 @@ defineProps<{
 </script>
 
 <template>
-	<div class="h-full rounded-md border">
-		<Skeleton v-if="!isImageLoaded" class="h-full w-full" />
+	<div class="h-full overflow-hidden rounded-md border">
+		<Skeleton v-if="!isImageLoaded" class="h-full w-full animate-pulse rounded-md bg-accent" />
 		<img
 			:src="imageBlobUrl"
 			loading="lazy"

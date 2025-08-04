@@ -164,7 +164,7 @@ onMounted(async () => {
 </script>
 
 <template>
-	<Card class="flex h-full max-h-[calc(100vh_-_149px)] w-full flex-col">
+	<Card class="flex h-full w-full flex-col">
 		<CardHeader class="flex flex-col p-6 pb-0">
 			<CardTitle class="flex h-full w-full flex-row">
 				<Badge variant="outline" class="flex h-10 w-48 justify-center rounded-md rounded-r-none">#{{ definition.character_id }}</Badge>
@@ -192,7 +192,7 @@ onMounted(async () => {
 				</Select>
 			</CardDescription>
 		</CardHeader>
-		<CardContent class="mr-6 overflow-y-auto">
+		<CardContent class="mr-6 h-full overflow-y-auto">
 			<div v-if="selectedEditor === 'general'" class="flex flex-col flex-nowrap gap-8 rounded-md border p-2 pb-11">
 				<div class="relative h-96">
 					<Label for="description" class="text-xl">Description</Label>
@@ -248,20 +248,16 @@ onMounted(async () => {
 			</div>
 			<ScrollArea v-else-if="selectedEditor === 'alternatives'" class="height-fix flex h-full w-full flex-col gap-8 rounded-md border p-3 pr-6">
 				<Label for="alt_greetings" class="my-2 text-xl">Alternative Greetings</Label>
-				<Button id="save" type="submit" variant="outline" class="my-2" @click="addGreeting">
+				<Button id="save" type="submit" class="my-2" variant="secondary" @click="addGreeting">
 					<span class="sr-only">Add Greeting</span>
-					<Icon name="lucide:message-square-plus" class="h-6 w-6" />
+					<Icon name="lucide:message-square-plus" size="1.5em" />
 				</Button>
 				<ScrollArea id="alt_greetings" class="height-fix">
 					<div v-for="(item, index) in definition.content.data.alternate_greetings" :key="item" class="mb-2 grid h-full grid-cols-[1fr_48px] gap-2">
 						<Textarea v-model="definition.content.data.alternate_greetings[index]" class="h-full" spellcheck="true" />
-						<Button
-							type="submit"
-							variant="outline"
-							class="h-full border-destructive p-0 text-destructive-foreground hover:bg-destructive/20"
-							@click="deleteAlternativeMessage(index)">
+						<Button type="submit" variant="destructive" class="h-full p-0" @click="deleteAlternativeMessage(index)">
 							<span class="sr-only">Delete</span>
-							<Icon name="lucide:trash-2" class="h-6 w-6 stroke-destructive" />
+							<Icon name="lucide:trash-2" size="2em" />
 						</Button>
 					</div>
 				</ScrollArea>

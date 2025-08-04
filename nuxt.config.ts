@@ -24,7 +24,6 @@ export default defineNuxtConfig({
 	modules: [
 		'@nuxt/eslint',
 		'@nuxt/icon',
-		'@nuxt/image',
 		'@nuxt/scripts',
 		'shadcn-nuxt',
 		'@nuxtjs/color-mode',
@@ -42,6 +41,12 @@ export default defineNuxtConfig({
 		compressPublicAssets: {
 			gzip: true,
 			brotli: true,
+		},
+		experimental: {
+			tasks: true,
+		},
+		scheduledTasks: {
+			'*/30 * * * *': ['images:migrate'],
 		},
 	},
 	experimental: {
@@ -68,16 +73,19 @@ export default defineNuxtConfig({
 	runtimeConfig: {
 		// PostgreSQL Database
 		postgresqlURL: '', // postgresql://<PG_USER>:<PG_PASSWORD>@<PG_HOST>:<PG_PORT>/<PG_DATABASE>
-		// Image Storage
-		imageFolder: './images',
+		// Images
+		originalQuality: 90,
+		thumbnailQuality: 70,
 		// Caching
 		ttl: 1000 * 60 * 60 * 24, // In milliseconds, default 24 Hours
 		redisURL: '', // optional, redis://<REDIS_USER>:<REDIS_PASSWORD>@<REDIS_HOST>:<REDIS_PORT>
+		redisTLS: true,
 		// Session configuration for nuxt-auth-utils
 		session: {
+			password: process.env.SESSION_PASSWORD ?? '',
 			maxAge: 60 * 60 * 24 * 7, // 1 week
-			cookieName: 'auth_session',
-			cookieAttributes: {
+			name: 'auth_session',
+			cookie: {
 				secure: process.env.NODE_ENV === 'production',
 				sameSite: 'lax',
 				httpOnly: true,
@@ -85,9 +93,6 @@ export default defineNuxtConfig({
 		},
 		public: {
 			debug: false,
-			imageDomain: '',
-			thumbnailWidth: 256,
-			thumbnailHeight: 384,
 			registrationEnabled: false,
 			batchSize: 20,
 		},
