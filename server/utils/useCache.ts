@@ -14,7 +14,7 @@ export function useCache() {
 				driver: redisDriver({
 					base: 'CMV3',
 					url: runtimeConfig.redisURL,
-					tls: true as any,
+					tls: runtimeConfig.redisTLS,
 					ttl: runtimeConfig.ttl / 1000,
 				}),
 			});

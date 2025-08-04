@@ -3,6 +3,20 @@ import safeDestr from 'destr';
 import { and, desc, eq, or, sql } from 'drizzle-orm';
 import { createHash } from 'node:crypto';
 
+export async function hasAccess(characterId: number, userId: string): Promise<boolean> {
+	const db = useDrizzle();
+	const result = await db.execute(sql<boolean>`SELECT public.has_access(${userId}, ${characterId})`);
+
+	if (result.rows[0]['has_access'] === true) {
+		return true;
+	}
+
+	throw createError({
+		statusCode: 401,
+		message: 'User has no access to this character.',
+	});
+}
+
 export async function getCharacterCount(userId?: string): Promise<number> {
 	const db = useDrizzle();
 
