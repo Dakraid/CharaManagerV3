@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const route = useRoute();
+const router = useRouter();
 
+const appStore = useAppStore();
 const settingsStore = useSettingsStore();
 const characterStore = useCharacterStore();
 
@@ -11,6 +13,11 @@ definePageMeta({
 const character = ref<FullCharacter>();
 const isImageLoaded = ref(false);
 const imageBlobUrl = ref<string>('');
+
+const goBack = () => {
+	appStore.showOverlay = true;
+	router.back();
+};
 
 const fetchImage = async () => {
 	try {
@@ -38,6 +45,7 @@ onMounted(async () => {
 	}
 
 	await fetchImage();
+	appStore.showOverlay = false;
 });
 
 onUnmounted(() => {
@@ -48,22 +56,20 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<Transition name="fade" mode="out-in">
-		<div v-if="character" class="Editor-Layout gap-4 overflow-hidden">
-			<div class="Editor-Image flex h-full w-full flex-col flex-nowrap items-center justify-center gap-2 overflow-y-auto rounded-md lg:max-w-[434px]">
-				<Button id="clear" type="submit" class="w-full bg-background" variant="outline" @click="$router.back()">
-					<span class="sr-only">Back</span>
-					<Icon name="lucide:undo-2" size="1.5em" />
-				</Button>
-				<CharacterPageImage :image-blob-url="imageBlobUrl" :is-image-loaded="isImageLoaded" :censored="settingsStore.censorImages" />
-				<Button id="clear" type="submit" class="w-full bg-background" variant="outline" @click="$router.back()">
-					<span class="sr-only">Back</span>
-					<Icon name="lucide:upload" size="1.5em" />
-				</Button>
-			</div>
+	<div v-if="character" class="Character-Page-Layout h-full w-full gap-4">
+		<div class="Character-Page-Image flex h-full w-full flex-col flex-nowrap items-center justify-center gap-2 overflow-y-auto rounded-md lg:max-w-[434px]">
+			<Button id="clear" type="submit" class="w-full bg-background" variant="outline" @click="goBack">
+				<span class="sr-only">Back</span>
+				<Icon name="lucide:undo-2" size="1.5em" />
+			</Button>
+			<CharacterPageImage :image-blob-url="imageBlobUrl" :is-image-loaded="isImageLoaded" :censored="settingsStore.censorImages" />
+			<Button id="clear" type="submit" class="w-full bg-background" variant="outline">
+				<span class="sr-only">Back</span>
+				<Icon name="lucide:upload" size="1.5em" />
+			</Button>
 		</div>
-	</Transition>
-	<CharacterPageEditor :definition="character?.definition!" class="Editor-Content" />
+		<CharacterPageEditorNew :definition="character?.definition!" class="Character-Page-Editor" />
+	</div>
 </template>
 
 <style scoped></style>

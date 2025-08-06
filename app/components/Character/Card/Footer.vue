@@ -5,6 +5,7 @@ const props = defineProps<{
 
 const isDownloading = ref(false);
 
+const appStore = useAppStore();
 const characterStore = useCharacterStore();
 
 const downloadCharacter = async () => {
@@ -22,6 +23,7 @@ const updateVisibility = async () => {
 };
 
 const openCharacter = async () => {
+	appStore.showOverlay = true;
 	await navigateTo({
 		path: `/character/${props.character.character_id}`,
 	});

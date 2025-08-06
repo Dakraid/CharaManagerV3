@@ -46,7 +46,7 @@ export default defineNuxtConfig({
 			tasks: true,
 		},
 		scheduledTasks: {
-			'*/30 * * * *': ['images:migrate'],
+			'0 * * * *': ['images:migrate'],
 		},
 	},
 	experimental: {

@@ -41,6 +41,29 @@ async function getCompleteImageIds(directoryPath: string): Promise<number[]> {
 	}
 }
 
+async function exportImage(character: { id: number; raw: string | null }) {
+	try {
+		if (!character.raw) {
+			return;
+		}
+		const fileData = JSON.parse(character.raw);
+		const base64 = fileData.content.split(',')[1];
+		const bytes = atob(base64);
+		const array = new Uint8Array(bytes.length);
+		for (let i = 0; i < bytes.length; i++) {
+			array[i] = bytes.charCodeAt(i);
+		}
+
+		const chunks = extractChunks(array);
+		const strippedChunks = chunks.filter((c) => c.name !== 'tEXt');
+		const encoded = encodeChunks(strippedChunks);
+
+		await saveImageById(character.id, encoded);
+	} catch (error: any) {
+		console.error(`Error migrating character ${character.id}: ${error.message}`);
+	}
+}
+
 export default defineTask({
 	meta: {
 		name: 'images:migrate',
@@ -61,28 +84,7 @@ export default defineTask({
 
 			console.log('Found ', missingCharacters.length, ' missing character images. Migrating them now...');
 
-			for (const character of missingCharacters) {
-				try {
-					if (!character.raw) {
-						continue;
-					}
-					const fileData = JSON.parse(character.raw);
-					const base64 = fileData.content.split(',')[1];
-					const bytes = atob(base64);
-					const array = new Uint8Array(bytes.length);
-					for (let i = 0; i < bytes.length; i++) {
-						array[i] = bytes.charCodeAt(i);
-					}
-
-					const chunks = extractChunks(array);
-					const strippedChunks = chunks.filter((c) => c.name !== 'tEXt');
-					const encoded = encodeChunks(strippedChunks);
-
-					await saveImageById(character.id, encoded);
-				} catch (error: any) {
-					console.error(`Error migrating character ${character.id}: ${error.message}`);
-				}
-			}
+			await Promise.allSettled(missingCharacters.map((character) => exportImage(character)));
 
 			console.log('Finished migrating images.');
 			return { result: true };
