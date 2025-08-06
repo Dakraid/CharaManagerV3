@@ -4,6 +4,7 @@ export const useAppStore = defineStore('app', {
 			currentPage: 1,
 			isFetching: true,
 			showActions: false,
+			showOverlay: false,
 		};
 	},
 	getters: {},

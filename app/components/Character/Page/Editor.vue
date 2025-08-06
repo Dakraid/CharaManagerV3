@@ -4,8 +4,7 @@ import dayjs from 'dayjs';
 const definition = defineModel<Definition>('definition', { required: true });
 
 const selectedEditor = ref('general');
-const jsonDump = ref(JSON.stringify(definition.value.content, null, 4));
-
+const jsonDump = ref<string>('');
 const previousContent = ref<{
 	description: string;
 	first_mes: string;
@@ -14,15 +13,49 @@ const previousContent = ref<{
 	alternate_greetings: string[];
 }>({ description: '', first_mes: '', personality: '', scenario: '', alternate_greetings: [] });
 
+async function addGreeting() {
+	definition.value.content.alternate_greetings.push('');
+}
+
+async function deleteAlternativeMessage(index: number) {
+	definition.value.content.data.alternate_greetings.splice(index, 1);
+}
+
+async function setContentHeight() {
+	if (selectedEditor.value === 'alternatives') {
+		await nextTick();
+		const scrollElement = document.getElementById('alt_greetings');
+		if (scrollElement) {
+			const parentElement = scrollElement.parentElement;
+
+			if (parentElement) {
+				scrollElement.style.maxHeight = `${parentElement.offsetHeight - 100}px`;
+			}
+		}
+
+		return;
+	}
+
+	if (selectedEditor.value === 'general') {
+		await nextTick();
+		const scrollElement = document.getElementById('general');
+		if (scrollElement) {
+			const parentElement = scrollElement.parentElement;
+
+			if (parentElement) {
+				scrollElement.style.maxHeight = `${parentElement.offsetHeight}px`;
+			}
+		}
+
+		return;
+	}
+}
+
 // async function navigateHome() {
 // 	await navigateTo({
 // 		path: `/`,
 // 	});
 // }
-
-async function addGreeting() {
-	definition.value.content.alternate_greetings.push('');
-}
 
 // async function saveActiveDefinition() {
 // 	characterStore.isFetching = true;
@@ -58,40 +91,6 @@ async function addGreeting() {
 // 	await deleteCharacter(characterStore.loadedCharacter!.character);
 // 	await navigateHome();
 // }
-
-async function deleteAlternativeMessage(index: number) {
-	definition.value.content.data.alternate_greetings.splice(index, 1);
-}
-
-async function setContentHeight() {
-	if (selectedEditor.value === 'alternatives') {
-		await nextTick();
-		const scrollElement = document.getElementById('alt_greetings');
-		if (scrollElement) {
-			const parentElement = scrollElement.parentElement;
-
-			if (parentElement) {
-				scrollElement.style.maxHeight = `${parentElement.offsetHeight - 100}px`;
-			}
-		}
-
-		return;
-	}
-
-	if (selectedEditor.value === 'general') {
-		await nextTick();
-		const scrollElement = document.getElementById('general');
-		if (scrollElement) {
-			const parentElement = scrollElement.parentElement;
-
-			if (parentElement) {
-				scrollElement.style.maxHeight = `${parentElement.offsetHeight}px`;
-			}
-		}
-
-		return;
-	}
-}
 
 // async function llmEdit(source: string, content: string, type: number, source_index: number = 0) {
 // 	const response = await $fetch<{ source: string; content: string }>('/api/llm/edit', {
@@ -158,6 +157,7 @@ async function setContentHeight() {
 // }
 
 onMounted(async () => {
+	jsonDump.value = JSON.stringify(definition.value.content, null, 4);
 	await setContentHeight();
 	window.addEventListener('resize', async () => await setContentHeight());
 });

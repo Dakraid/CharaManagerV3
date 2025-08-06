@@ -1,4 +1,11 @@
+import dayjs from 'dayjs';
 import fs from 'node:fs/promises';
+import { createStorage } from 'unstorage';
+import fsDriver from 'unstorage/drivers/fs';
+
+const manageStorage = createStorage({
+	driver: fsDriver({ base: './tmp' }),
+});
 
 async function createPathIfNotExists() {
 	try {
@@ -10,4 +17,14 @@ async function createPathIfNotExists() {
 
 export default defineNitroPlugin(async () => {
 	await createPathIfNotExists();
+
+	const lastRun = await manageStorage.getItem<number>('manage:tasks');
+	if (lastRun && dayjs(lastRun).add(1, 'hour') > dayjs()) {
+		return;
+	}
+
+	const p1 = runTask('images:migrate', { payload: {} });
+	await Promise.allSettled([p1]);
+
+	await manageStorage.setItem<number>('manage:tasks', dayjs().unix());
 });

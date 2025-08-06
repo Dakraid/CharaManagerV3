@@ -112,6 +112,13 @@
 	body {
 		@apply bg-background text-foreground;
 		background-color: color-mix(in oklab, var(--accent) 40%, transparent);
+		height: 100vh;
+		max-height: 100vh;
+		min-height: 100vh;
+		width: 100vw;
+		max-width: 100vw;
+		min-width: 100vw;
+		overflow: hidden;
 	}
 
 	nav a {
@@ -188,16 +195,6 @@ html.light {
 }
 
 /* Vue Transitions */
-.page-enter-active,
-.page-leave-active {
-	transition: all 0.4s;
-}
-.page-enter-from,
-.page-leave-to {
-	opacity: 0;
-	filter: blur(1rem);
-}
-
 .v-enter-active,
 .v-leave-active {
 	transition: opacity 0.3s ease-in-out;
@@ -299,9 +296,9 @@ html.light {
 
 .Gallery-Layout-NoActions {
 	grid-template-areas:
-			'Pagination Pagination Pagination'
-			'. . .'
-			'Content Content Content';
+		'Pagination Pagination Pagination'
+		'. . .'
+		'Content Content Content';
 }
 
 .Gallery-Pagination {
@@ -323,7 +320,7 @@ html.light {
 	}
 }
 
-.Editor-Layout {
+.Character-Page-Layout {
 	display: grid;
 	padding: 0 calc(var(--spacing) * 4) calc(var(--spacing) * 4) calc(var(--spacing) * 4);
 	grid-template-columns: max-content 1fr;
@@ -331,10 +328,29 @@ html.light {
 	grid-template-areas: 'Image Content';
 }
 
-.Editor-Image {
+.Character-Page-Image {
 	grid-area: Image;
 }
 
-.Editor-Content {
+.Character-Page-Editor {
+	grid-area: Content;
+}
+
+.Character-Editor-Layout {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: min-content 1fr;
+	grid-template-areas: 'Title Selector' 'Content Content';
+}
+
+.Character-Editor-Title {
+	grid-area: Title;
+}
+
+.Character-Editor-Selector {
+	grid-area: Selector;
+}
+
+.Character-Editor-Content {
 	grid-area: Content;
 }

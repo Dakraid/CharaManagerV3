@@ -17,7 +17,7 @@
 	},
 	"dependencies": {
 		"@jimp/types": "^1.6.0",
-		"@nuxt/eslint": "^1.7.1",
+		"@nuxt/eslint": "^1.8.0",
 		"@nuxt/fonts": "^0.11.4",
 		"@nuxt/icon": "^1.15.0",
 		"@nuxt/image": "^1.11.0",
@@ -26,7 +26,7 @@
 		"@pinia/nuxt": "^0.11.2",
 		"@tailwindcss/vite": "^4.1.11",
 		"@tanstack/vue-table": "^8.21.3",
-		"@unhead/vue": "^2.0.13",
+		"@unhead/vue": "^2.0.14",
 		"@vee-validate/zod": "^4.15.1",
 		"@vueuse/core": "^13.6.0",
 		"character-card-utils": "^2.0.3",
@@ -39,9 +39,9 @@
 		"eslint": "^9.32.0",
 		"gpt-tokenizer": "^3.0.1",
 		"lucide-vue-next": "^0.536.0",
-		"motion-v": "^1.6.1",
-		"nuxt": "^4.0.2",
-		"nuxt-auth-utils": "^0.5.22",
+		"motion-v": "^1.7.0",
+		"nuxt": "^4.0.3",
+		"nuxt-auth-utils": "^0.5.23",
 		"nuxt-security": "^2.3.0",
 		"pg": "^8.16.3",
 		"pinia": "^3.0.3",
@@ -59,7 +59,7 @@
 		"vue": "^3.5.18",
 		"vue-router": "^4.5.1",
 		"vue-sonner": "^2.0.2",
-		"zod": "^4.0.14"
+		"zod": "^4.0.15"
 	},
 	"devDependencies": {
 		"@iconify-json/lucide": "^1.2.60",
@@ -68,7 +68,7 @@
 		"@nuxtjs/color-mode": "^3.5.2",
 		"@nuxtjs/robots": "^5.4.0",
 		"@trivago/prettier-plugin-sort-imports": "^5.2.2",
-		"@types/node": "^24.1.0",
+		"@types/node": "^24.2.0",
 		"@types/pg": "^8.15.5",
 		"@types/png-chunk-text": "^1.0.3",
 		"@types/png-chunks-encode": "^1.0.2",
@@ -84,6 +84,6 @@
 		"tsx": "^4.20.3"
 	},
 	"overrides": {
-		"zod": "^4.0.14"
+		"zod": "^4.0.15"
 	}
 }

@@ -124,3 +124,4 @@ $RECYCLE.BIN/
 # We ignore content as this is only relevant for deployment and will be pulled during CI/CD
 images
 !server/**/images
+tmp

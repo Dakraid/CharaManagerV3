@@ -36,7 +36,7 @@ const appStore = useAppStore();
 
 	@media (width >= 48rem) {
 		opacity: 100;
-		z-index: 30;
+		z-index: 20;
 	}
 }
 
