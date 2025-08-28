@@ -41,5 +41,5 @@ export default defineEventHandler(async (event) => {
 		});
 	}
 
-	return await saveCharacter(request.data, userId);
+	return await useManagerService(userId).put(request.data);
 });

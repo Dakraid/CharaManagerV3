@@ -70,6 +70,45 @@ function b64EncodeUnicode(str: string) {
 }
 
 /**
+ * Strips embedded character definition from a PNG and returns only the image.
+ *
+ * @param imageBytes  Raw PNG data
+ * @returns           The clean PNG (without the tEXt chunk).
+ */
+export function cleanPNG(imageBytes: Uint8Array): Uint8Array {
+	const chunks = extractChunks(imageBytes);
+
+	let foundText: string | null = null;
+
+	for (const c of chunks) {
+		if (c.name !== 'tEXt') continue;
+		const { keyword, text } = pngText.decode(c.data);
+		if (keyword.toLowerCase() === 'chara') {
+			foundText = b64DecodeUnicode(text);
+			break;
+		}
+	}
+
+	if (!foundText?.length) {
+		return imageBytes;
+	}
+
+	const definition = parseDefinition(foundText);
+
+	// Legacy clean-up for numeric positions
+	if (definition.data.character_book?.entries) {
+		definition.data.character_book.entries.forEach((entry: any) => {
+			if (entry.position !== 'before_char' && entry.position !== 'after_char') {
+				entry.position = entry.position === 0 ? 'before_char' : 'after_char';
+			}
+		});
+	}
+
+	const strippedChunks = chunks.filter((c) => c.name !== 'tEXt');
+	return encodeChunks(strippedChunks);
+}
+
+/**
  * Extracts the embedded character definition from a PNG and strips it out.
  *
  * @param imageBytes  Raw PNG data

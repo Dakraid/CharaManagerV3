@@ -2,5 +2,5 @@
 export default defineEventHandler(async (event) => {
 	const userId = await authenticateOptional(event);
 	const request = await validateRequestBody(event, listingSchema);
-	return await getCharacterList(request.perPage, request.page, userId);
+	return await useManagerService(userId).get(request.perPage, request.page);
 });

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { toast } from 'vue-sonner';
+
 const route = useRoute();
 const router = useRouter();
 
@@ -10,7 +12,7 @@ definePageMeta({
 	middleware: ['authenticated'],
 });
 
-const character = ref<FullCharacter>();
+const character = ref<{ character: Character; definition?: Definition }>();
 const isImageLoaded = ref(false);
 const imageBlobUrl = ref<string>('');
 
@@ -37,15 +39,16 @@ const fetchImage = async () => {
 
 onMounted(async () => {
 	if (route.params.id && !Array.isArray(route.params.id) && !isNaN(Number(route.params.id))) {
-		character.value = await characterStore.getCharacter(Number(route.params.id));
-
-		if (!character.value || !character.value.character || !character.value.definition) {
-			throw new Error('Character not found or failed to fetch. Please try again later.');
+		character.value = await characterStore.getCharacterWithDefinition(Number(route.params.id));
+		if (!character.value.character || !character.value.definition) {
+			toast.error('Character not found');
+			await router.push('/');
+			return;
 		}
-	}
 
-	await fetchImage();
-	appStore.showOverlay = false;
+		await fetchImage();
+		appStore.showOverlay = false;
+	}
 });
 
 onUnmounted(() => {

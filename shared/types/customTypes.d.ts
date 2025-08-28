@@ -12,9 +12,8 @@ export type UploadProgress = {
 
 export type UploadResult = { file_name: string; success: boolean; error?: string };
 
-export type CharacterList = { characterArray: Character[] };
-
 export type Character = {
+	owner_id?: string;
 	character_id: number;
 	public_visible: boolean;
 	character_name: string;
@@ -23,19 +22,7 @@ export type Character = {
 	total_token_count: number;
 	perma_token_count: number;
 	evaluation_score: number;
-	owned: boolean;
-};
-
-export type CharacterWithOwnerId = {
-	character_id: number;
-	owner_id: string;
-	public_visible: boolean;
-	character_name: string;
-	upload_date: Date;
-	image_etag: string;
-	total_token_count: number;
-	perma_token_count: number;
-	evaluation_score: number;
+	owned?: boolean;
 };
 
 export type Definition = {
@@ -48,9 +35,4 @@ export type Definition = {
 	description: string | null;
 	personality: string | null;
 	scenario: string | null;
-}
-
-export type FullCharacter = {
-	character: CharacterWithOwnerId;
-	definition: Definition;
 }

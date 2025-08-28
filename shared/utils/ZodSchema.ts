@@ -27,12 +27,7 @@ export const visibilityChangeSchema = characterIdSchema.extend({
 });
 
 export const definitionChangeSchema = characterIdSchema.extend({
-	content: z.preprocess((val) => {
-		if (typeof val === 'string') {
-			return Cards.v2.parse(val);
-		}
-		return val;
-	}, Cards.v2),
+	content: Cards.v2.strict(),
 });
 
 export const uploadSchema = z.object({

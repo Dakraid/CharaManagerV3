@@ -18,7 +18,7 @@ export const useCharacterStore = defineStore('character', {
 				method: 'POST',
 			});
 
-			const { characterArray } = await $fetch<CharacterList>('/api/characters/list', {
+			const characterArray = await $fetch<Character[]>('/api/characters/list', {
 				method: 'POST',
 				body: {
 					perPage: settingsStore.perPage,
@@ -33,19 +33,13 @@ export const useCharacterStore = defineStore('character', {
 
 			appStore.isFetching = indicate ? false : appStore.isFetching;
 		},
-		async getCharacter(id: number): Promise<FullCharacter | undefined> {
-			const result = await $fetch<FullCharacter | undefined>('/api/character', {
+		async getCharacterWithDefinition(id: number): Promise<{ character: Character; definition?: Definition }> {
+			return await $fetch<{ character: Character; definition?: Definition }>('/api/character', {
 				method: 'GET',
 				query: {
 					id: id,
 				},
 			});
-
-			if (result) {
-				return result;
-			} else {
-				toast('Failed to fetch complete character. Please try again later.');
-			}
 		},
 		async deleteCharacter(id: number): Promise<void> {
 			const result = await $fetch('/api/character', {
