@@ -1,0 +1,1 @@
+ALTER TABLE "originals" RENAME COLUMN "fileraw" TO "file_raw";
