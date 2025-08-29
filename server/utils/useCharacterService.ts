@@ -263,6 +263,12 @@ class characterService {
 			});
 		}
 
+		try {
+			await this.updateEmbeddings();
+		} catch (error: any) {
+			// Ignore errors here, we don't want to block the user from uploading a character.
+		}
+
 		return { statusCode: StatusCode.OK, message: 'Character updated successfully.' };
 	}
 

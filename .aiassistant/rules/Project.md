@@ -10,7 +10,7 @@ CharaManagerV3 is a Nuxt 4 application for managing TavernV2 character cards. It
 
 ## Key Technologies
 
-- **Nuxt 4**: Vue.js framework with server-side rendering
+- **Nuxt 4**: Vue.js framework with server-side rendering powered by Nitro
 - **TypeScript**: Primary language
 - **Drizzle ORM**: Database ORM with PostgreSQL
 - **shadcn-nuxt**: UI component library based on Tailwind CSS
