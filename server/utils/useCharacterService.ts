@@ -5,16 +5,40 @@ import type { drizzle } from 'drizzle-orm/node-postgres';
 import { createHash } from 'node:crypto';
 import sharp from 'sharp';
 
-const activeCharacterServices: Record<string, characterService> = {};
+const SERVICE_TTL_MS = 60 * 1000; // 10 minutes of idle time before disposal
+const activeCharacterServices = new Map<string, ServiceEntry>();
+
+function keyFor(characterId: number, userId: string) {
+	return `${characterId}-${userId}`;
+}
+
+function scheduleDispose(key: string) {
+	const entry = activeCharacterServices.get(key);
+	if (!entry) return;
+	if (entry.timer) clearTimeout(entry.timer);
+	entry.timer = setTimeout(() => {
+		// If you ever add explicit cleanup in characterService (e.g., close handles), call it here.
+		activeCharacterServices.delete(key);
+	}, SERVICE_TTL_MS);
+}
 
 export function useCharacterService(characterId: number, userId: string): characterService {
-	if (!activeCharacterServices[`${characterId}-${userId}`]) {
+	const key = keyFor(characterId, userId);
+	let entry = activeCharacterServices.get(key);
+
+	if (!entry) {
 		console.log(`Creating new character service for ${characterId} and ${userId}...`);
-		activeCharacterServices[`${characterId}-${userId}`] = new characterService(characterId, userId);
+		const service = new characterService(characterId, userId);
+		entry = { service, timer: setTimeout(() => {}, 0) as unknown as NodeJS.Timeout };
+		activeCharacterServices.set(key, entry);
 	}
 
-	console.log(`Currently active character services: ${Object.keys(activeCharacterServices).length}`);
-	return activeCharacterServices[`${characterId}-${userId}`];
+	// Reset idle timer on every access
+	scheduleDispose(key);
+
+	console.log(`Getting character service for ${characterId} and ${userId}`);
+	console.log(`Currently active character services: ${activeCharacterServices.size}`);
+	return entry.service;
 }
 
 class characterService {
@@ -66,6 +90,7 @@ class characterService {
 					.from(characters)
 					.innerJoin(definitions, eq(definitions.character_id, characters.character_id))
 					.where(and(eq(characters.character_id, this.character_id), eq(characters.owner_id, this.user_id)))
+					.orderBy(desc(definitions.change_date))
 					.limit(1);
 
 				if (select.length === 0) {
@@ -165,7 +190,12 @@ class characterService {
 
 		let definition: V2;
 		try {
-			const result = await this.db.select({ definition: definitions.content }).from(definitions).where(eq(definitions.character_id, this.character_id));
+			const result = await this.db
+				.select({ definition: definitions.content })
+				.from(definitions)
+				.where(eq(definitions.character_id, this.character_id))
+				.orderBy(desc(definitions.change_date))
+				.limit(1);
 			const definitionRaw = result[0].definition;
 			definition = safeDestr<V2>(definitionRaw);
 		} catch (error: any) {
@@ -222,7 +252,10 @@ class characterService {
 
 		try {
 			await this.db.update(characters).set({ character_name: definition.data.name }).where(eq(characters.character_id, this.character_id));
-			await this.db.update(definitions).set({ content: definition }).where(eq(characters.character_id, this.character_id));
+			await this.db.insert(definitions).values({
+				character_id: this.character_id,
+				content: definition,
+			});
 		} catch (error: any) {
 			throw createError({
 				statusCode: StatusCode.INTERNAL_SERVER_ERROR,

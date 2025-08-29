@@ -1,6 +1,11 @@
 import type { z } from 'zod/v4';
 import type { V2 } from 'character-card-utils';
 
+export type ServiceEntry = {
+	service: characterService | managerService;
+	timer: NodeJS.Timeout;
+};
+
 export type Upload = z.infer<typeof uploadSchema>;
 
 export type UploadProgress = {

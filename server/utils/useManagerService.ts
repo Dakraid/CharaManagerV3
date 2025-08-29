@@ -3,16 +3,40 @@ import { desc, eq, or, sql } from 'drizzle-orm';
 import type { drizzle } from 'drizzle-orm/node-postgres';
 import { createHash } from 'node:crypto';
 
-const activeManagerServices: Record<string, managerService> = {};
+const SERVICE_TTL_MS = 10 * 60 * 1000; // 10 minutes of idle time before disposal
+const activeManagerServices = new Map<string, ServiceEntry>();
+
+function keyFor(userId: string) {
+	return `${userId}`;
+}
+
+function scheduleDispose(key: string) {
+	const entry = activeManagerServices.get(key);
+	if (!entry) return;
+	if (entry.timer) clearTimeout(entry.timer);
+	entry.timer = setTimeout(() => {
+		// If you ever add explicit cleanup in characterService (e.g., close handles), call it here.
+		activeManagerServices.delete(key);
+	}, SERVICE_TTL_MS);
+}
 
 export function useManagerService(userId?: string): managerService {
-	if (!activeManagerServices[userId ?? 'public']) {
-		console.log(`Creating new character service for ${userId ?? 'public'}...`);
-		activeManagerServices[userId ?? 'public'] = new managerService(userId ?? 'public');
+	const key = keyFor(userId ?? 'public');
+	let entry = activeManagerServices.get(key);
+
+	if (!entry) {
+		console.log(`Creating new manager service for ${key}...`);
+		const service = new managerService(key);
+		entry = { service, timer: setTimeout(() => {}, 0) as unknown as NodeJS.Timeout };
+		activeManagerServices.set(key, entry);
 	}
 
-	console.log(`Currently active manager services: ${Object.keys(activeManagerServices).length}`);
-	return activeManagerServices[userId ?? 'public'];
+	// Reset idle timer on every access
+	scheduleDispose(key);
+
+	console.log(`Getting manager service for ${key}`);
+	console.log(`Currently active manager services: ${activeManagerServices.size}`);
+	return entry.service;
 }
 
 class managerService {
@@ -99,8 +123,8 @@ class managerService {
 			});
 		}
 
-		return await this.db.transaction(async (tx) => {
-			let characterId: number = -1;
+		let characterId: number = -1;
+		const result = await this.db.transaction(async (tx) => {
 			try {
 				const file = await upload.file.bytes();
 				const fileText = await fileToText(upload.file);
@@ -148,12 +172,6 @@ class managerService {
 
 				await saveImageById(characterId, png);
 
-				try {
-					await useCharacterService(characterId, this.user_id!).updateEmbeddings();
-				} catch (error: any) {
-					// Ignore errors here, we don't want to block the user from uploading a character.
-				}
-
 				return { file_name: upload.file.name, success: true };
 			} catch (error: any) {
 				const originalError = error;
@@ -169,5 +187,13 @@ class managerService {
 				return { file_name: upload.file.name, success: false, error: originalError.message };
 			}
 		});
+
+		try {
+			await useCharacterService(characterId, this.user_id!).updateEmbeddings();
+		} catch (error: any) {
+			// Ignore errors here, we don't want to block the user from uploading a character.
+		}
+
+		return result;
 	}
 }

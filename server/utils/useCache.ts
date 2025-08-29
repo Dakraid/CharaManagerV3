@@ -3,12 +3,11 @@ import type { Storage as UnstorageStorage } from 'unstorage';
 import lruCacheDriver from 'unstorage/drivers/lru-cache';
 import redisDriver from 'unstorage/drivers/redis';
 
-const runtimeConfig = useRuntimeConfig();
-
 let storage: UnstorageStorage;
 
 export function useCache() {
 	if (!storage) {
+		const runtimeConfig = useRuntimeConfig();
 		if (runtimeConfig.redisURL.startsWith('redis://')) {
 			storage = createStorage({
 				driver: redisDriver({
