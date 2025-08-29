@@ -84,40 +84,54 @@ const onSubmit = async () => {
 </script>
 
 <template>
-	<div class="flex h-full w-full flex-col gap-2">
-		<Transition name="fade" mode="out-in" class="grid-layout relative">
-			<div v-if="isFetching" class="grid-area absolute inset-0 z-20 flex h-full w-full items-center justify-center bg-accent/50">
-				<Icon name="lucide:loader-circle" size="1.5rem" class="animate-spin" />
+	<div id="remoteFetch" class="Fetch-Layout h-full w-full gap-2">
+		<div class="Fetch-Hint flex flex-col">
+			<Label class="text-sm text-muted-foreground">One URL per line, supported are:</Label>
+			<Label class="text-sm font-light text-muted-foreground">https://chub.ai/characters/author/charactername</Label>
+			<Label class="text-sm font-light text-muted-foreground">https://app.wyvern.chat/characters/randomstuff</Label>
+		</div>
+
+		<Transition name="fade" mode="out-in" class="Fetch-Input">
+			<div v-if="isFetching" class="z-20 flex h-full w-full items-center justify-center rounded-md bg-accent/80">
+				<Icon name="lucide:loader-circle" size="2rem" class="mx-auto w-full animate-spin" />
 			</div>
+		</Transition>
+
+		<div class="Fetch-Input flex w-full flex-col">
 			<Textarea
-				v-else
 				:model-value="textUrls"
 				placeholder="Paste URLs here..."
-				class="grid-area absolute inset-0 h-full max-h-[300px] w-full resize-none"
+				class="Fetch-Input max-h-[200px] w-full resize-none"
 				:disabled="isFetching"
 				@update:model-value="onEdit" />
-		</Transition>
-		<Label v-if="errorMessage !== ''" class="absolute inset-0 text-sm text-red-500">{{ errorMessage }}</Label>
-		<div class="flex flex-col">
-			<Label class="mt-1 text-sm text-muted-foreground">One URL per line, supported are:</Label>
-			<div class="mt-1 rounded-md border p-2">
-				<Label class="text-sm font-light text-muted-foreground">https://chub.ai/characters/author/charactername</Label>
-				<Label class="text-sm font-light text-muted-foreground">https://app.wyvern.chat/characters/randomstuff</Label>
-			</div>
+
+			<Label v-if="errorMessage !== ''" class="w-full text-xs text-red-500">{{ errorMessage }}</Label>
 		</div>
-		<Button variant="outline" type="submit" @click="onSubmit">Fetch</Button>
+
+		<Button variant="outline" type="submit" class="Fetch-Submit" @click="onSubmit">Fetch</Button>
 	</div>
 </template>
 
 <style scoped>
-.grid-layout {
+.Fetch-Layout {
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: 1fr;
-	grid-template-areas: 'layout';
+	grid-template-rows: min-content 1fr min-content;
+	grid-template-areas:
+		'Hint'
+		'Input'
+		'Submit';
 }
 
-.grid-area {
-	grid-area: layout;
+.Fetch-Hint {
+	grid-area: Hint;
+}
+
+.Fetch-Input {
+	grid-area: Input;
+}
+
+.Fetch-Submit {
+	grid-area: Submit;
 }
 </style>

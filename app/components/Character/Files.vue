@@ -115,25 +115,6 @@ const circleStyle = computed(() => ({
 	left: `${mousePosition.value.x}px`,
 	top: `${mousePosition.value.y}px`,
 }));
-
-async function setContentHeight() {
-	await nextTick();
-	const scrollElement = document.getElementById('fileUpload');
-	if (scrollElement) {
-		const parentElement = scrollElement.parentElement;
-
-		if (parentElement) {
-			scrollElement.style.maxHeight = `${parentElement.offsetHeight - 190}px`;
-		}
-	}
-
-	return;
-}
-
-onMounted(async () => {
-	await setContentHeight();
-	window.addEventListener('resize', async () => await setContentHeight());
-});
 </script>
 
 <template>
@@ -164,7 +145,7 @@ onMounted(async () => {
 			</Transition>
 		</div>
 
-		<div v-if="uploadStore.files.length > 0" class="h-full w-full overflow-y-auto pr-2">
+		<div v-if="uploadStore.files.length > 0" class="h-full max-h-[629px] w-full overflow-y-auto pr-2">
 			<CharacterFilesItem
 				v-for="upload in uploadStore.files"
 				:key="upload.file.name"

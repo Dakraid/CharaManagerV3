@@ -1,3 +1,5 @@
+import type { V2 } from 'character-card-utils';
+
 export default defineEventHandler(async (event) => {
 	await authenticate(event);
 
@@ -15,7 +17,7 @@ export default defineEventHandler(async (event) => {
 	const [creatorName, projectName] = characterPath.split('/');
 
 	try {
-		const projectResponse = await fetch(`https://api.chub.ai/api/characters/${creatorName}/${projectName}`, {
+		const projectResponse = await fetch(`https://api.chub.ai/api/characters/${creatorName}/${projectName}?full=true`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
@@ -28,8 +30,32 @@ export default defineEventHandler(async (event) => {
 			throw new Error('Failed to fetch character: ' + projectResponse.statusText + ' | ' + responseText + '');
 		}
 
-		const characterProject = await projectResponse.json();
-		const characterUrl = characterProject.node?.max_res_url;
+		const metadata = await projectResponse.json();
+		const { definition, topics } = metadata.node;
+
+		const characterCard: V2 = {
+			data: {
+				name: definition.name,
+				description: definition.personality,
+				personality: definition.tavern_personality,
+				scenario: definition.scenario,
+				first_mes: definition.first_message,
+				mes_example: definition.example_dialogs,
+				creator_notes: definition.description,
+				system_prompt: definition.system_prompt,
+				post_history_instructions: definition.post_history_instructions,
+				alternate_greetings: definition.alternate_greetings,
+				tags: topics,
+				creator: creatorName,
+				character_version: '',
+				character_book: definition.embedded_lorebook,
+				extensions: definition.extensions,
+			},
+			spec: 'chara_card_v2',
+			spec_version: '2.0',
+		};
+
+		const characterUrl = metadata.node?.max_res_url;
 
 		if (!characterUrl) {
 			throw new Error('Download URL not found in character.');
@@ -42,17 +68,15 @@ export default defineEventHandler(async (event) => {
 			throw new Error('Failed to fetch character: ' + characterResponse.statusText + ' | ' + responseText + '');
 		}
 
-		const fileType = characterResponse.headers.get('content-type');
-		if (fileType !== 'image/png') {
-			throw new Error('Invalid file type received.');
-		}
-
-		const blob = await characterResponse.blob();
+		const imageBuffer = Buffer.from(await characterResponse.arrayBuffer());
+		const imagePng = cleanPNG(imageBuffer);
+		const png = embedTextInPng(imagePng, characterCard);
+		const blob = new Blob([png], { type: 'image/png' });
 
 		return {
 			fileContent: await blobToBase64(blob),
 			fileName: fileName,
-			fileType: fileType,
+			fileType: blob.type,
 			lastModified: new Date().getTime(),
 			origin: validatedBody.data.targetUri,
 			public: false,

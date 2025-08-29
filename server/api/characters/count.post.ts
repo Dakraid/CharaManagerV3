@@ -1,5 +1,6 @@
 // noinspection JSUnusedGlobalSymbols
 export default defineEventHandler(async (event) => {
 	const userId = await authenticateOptional(event);
-	return await useManagerService(userId).count();
+	const managerService = await useManagerService(userId);
+	return await managerService.count();
 });

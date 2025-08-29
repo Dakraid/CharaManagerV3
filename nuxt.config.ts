@@ -80,7 +80,8 @@ export default defineNuxtConfig({
 		ttl: 1000 * 60 * 60 * 24, // In milliseconds, default 24 Hours
 		redisURL: '', // optional, redis://<REDIS_USER>:<REDIS_PASSWORD>@<REDIS_HOST>:<REDIS_PORT>
 		redisTLS: true,
-		// VoyageAI Configuration
+		// Embedding Configuration
+		forceEmbeddings: false,
 		voyageApiKey: '', // NUXT_VOYAGE_API_KEY
 		voyageModel: 'voyage-3-large', // NUXT_VOYAGE_MODEL
 		// Session configuration for nuxt-auth-utils

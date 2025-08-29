@@ -14,15 +14,18 @@ const MIN_DELAY_MS = Math.ceil(60000 / MAX_REQUESTS_PER_MINUTE);
 async function generateEmbeddings(character: missingCharacter) {
 	try {
 		const db = useDrizzle();
-		let combinedText: string;
 
-		if (character.description) {
-			combinedText = [character.description, character.personality || '', character.scenario || ''].filter((text) => text.trim() !== '').join('\n');
-		} else {
-			combinedText = [character.content.data.description, character.content.data.personality || '', character.content.data.scenario || '']
-				.filter((text) => text.trim() !== '')
-				.join('\n');
-		}
+		const description = character.description || character.content.data.description;
+		const personality = character.personality || character.content.data.personality;
+		const scenario = character.scenario || character.content.data.scenario;
+		const combinedText = [
+			'# Character Name\n' + character.content.data.name,
+			'# Description\n' + description,
+			personality ? '\n# Personality\n' + personality : '',
+			scenario ? '\n# Scenario\n' + scenario : '',
+		]
+			.filter((text) => text.trim() !== '')
+			.join('\n');
 
 		if (!combinedText.trim()) {
 			throw createError({
@@ -49,18 +52,33 @@ export default defineTask({
 
 		try {
 			const db = useDrizzle();
+			const runtimeConfig = useRuntimeConfig();
 
-			const missingCharacters = await db
-				.select({
-					id: characters.character_id,
-					content: definitions.content,
-					description: definitions.description,
-					personality: definitions.personality,
-					scenario: definitions.scenario,
-				})
-				.from(characters)
-				.leftJoin(definitions, eq(characters.character_id, definitions.character_id))
-				.where(isNull(characters.embeddings));
+			let missingCharacters: missingCharacter[] = [];
+			if (runtimeConfig.forceEmbeddings) {
+				missingCharacters = await db
+					.select({
+						id: characters.character_id,
+						content: definitions.content,
+						description: definitions.description,
+						personality: definitions.personality,
+						scenario: definitions.scenario,
+					})
+					.from(characters)
+					.leftJoin(definitions, eq(characters.character_id, definitions.character_id));
+			} else {
+				missingCharacters = await db
+					.select({
+						id: characters.character_id,
+						content: definitions.content,
+						description: definitions.description,
+						personality: definitions.personality,
+						scenario: definitions.scenario,
+					})
+					.from(characters)
+					.leftJoin(definitions, eq(characters.character_id, definitions.character_id))
+					.where(isNull(characters.embeddings));
+			}
 
 			console.log('Found ', missingCharacters.length, ' missing character embeddings. Migrating them now...');
 

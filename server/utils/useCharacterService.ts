@@ -5,40 +5,18 @@ import type { drizzle } from 'drizzle-orm/node-postgres';
 import { createHash } from 'node:crypto';
 import sharp from 'sharp';
 
-const SERVICE_TTL_MS = 60 * 1000; // 10 minutes of idle time before disposal
-const activeCharacterServices = new Map<string, ServiceEntry>();
+const CHARACTER_TTL_MS = 60 * 1000;
 
-function keyFor(characterId: number, userId: string) {
-	return `${characterId}-${userId}`;
-}
+const characterPool = createServicePool<[characterId: number, userId: string], characterService, string>({
+	name: 'characterService',
+	ttlMs: CHARACTER_TTL_MS,
+	keyFromArgs: (characterId, userId) => `${characterId}-${userId}`,
+	factory: async (characterId, userId) => new characterService(characterId, userId),
+	onDispose: undefined,
+});
 
-function scheduleDispose(key: string) {
-	const entry = activeCharacterServices.get(key);
-	if (!entry) return;
-	if (entry.timer) clearTimeout(entry.timer);
-	entry.timer = setTimeout(() => {
-		// If you ever add explicit cleanup in characterService (e.g., close handles), call it here.
-		activeCharacterServices.delete(key);
-	}, SERVICE_TTL_MS);
-}
-
-export function useCharacterService(characterId: number, userId: string): characterService {
-	const key = keyFor(characterId, userId);
-	let entry = activeCharacterServices.get(key);
-
-	if (!entry) {
-		console.log(`Creating new character service for ${characterId} and ${userId}...`);
-		const service = new characterService(characterId, userId);
-		entry = { service, timer: setTimeout(() => {}, 0) as unknown as NodeJS.Timeout };
-		activeCharacterServices.set(key, entry);
-	}
-
-	// Reset idle timer on every access
-	scheduleDispose(key);
-
-	console.log(`Getting character service for ${characterId} and ${userId}`);
-	console.log(`Currently active character services: ${activeCharacterServices.size}`);
-	return entry.service;
+export async function useCharacterService(characterId: number, userId: string): Promise<characterService> {
+	return characterPool.useService(characterId, userId);
 }
 
 class characterService {
@@ -63,7 +41,7 @@ class characterService {
 		});
 
 		this.db.execute(sql<boolean>`SELECT public.has_write_access(${this.user_id}, ${this.character_id})`).then((result) => {
-			this.write = result.rows[0]['has_write_access'] == true;
+			this.write = result.rows[0]['has_write_access'] == true && this.user_id !== '00000000-0000-0000-0000-000000000000';
 		});
 	}
 
@@ -71,7 +49,7 @@ class characterService {
 		const hasRead = await this.db.execute(sql<boolean>`SELECT public.has_read_access(${this.user_id}, ${this.character_id})`);
 		const hasWrite = await this.db.execute(sql<boolean>`SELECT public.has_write_access(${this.user_id}, ${this.character_id})`);
 		this.read = hasRead.rows[0]['has_read_access'] == true;
-		this.write = hasWrite.rows[0]['has_write_access'] == true;
+		this.write = hasWrite.rows[0]['has_write_access'] == true && this.user_id !== '00000000-0000-0000-0000-000000000000';
 	}
 
 	async get(include_definition: boolean = false): Promise<{ character: Character; definition?: Definition }> {
@@ -161,10 +139,14 @@ class characterService {
 		}
 
 		const definition = select[0];
+		const description = definition.description || definition.content.data.description;
+		const personality = definition.personality || definition.content.data.personality;
+		const scenario = definition.scenario || definition.content.data.scenario;
 		const combinedText = [
-			definition.description || definition.content.data.description,
-			definition.personality || definition.content.data.personality || '',
-			definition.scenario || definition.content.data.scenario || '',
+			'# Character Name\n' + definition.content.data.name,
+			'# Description\n' + description,
+			personality ? '\n# Personality\n' + personality : '',
+			scenario ? '\n# Scenario\n' + scenario : '',
 		]
 			.filter((text) => text.trim() !== '')
 			.join('\n');
@@ -267,6 +249,7 @@ class characterService {
 			await this.updateEmbeddings();
 		} catch (error: any) {
 			// Ignore errors here, we don't want to block the user from uploading a character.
+			console.error('Error updating embeddings:', error);
 		}
 
 		return { statusCode: StatusCode.OK, message: 'Character updated successfully.' };

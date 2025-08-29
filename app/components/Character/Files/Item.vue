@@ -146,7 +146,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<div class="flex flex-col items-center rounded-md pt-4 first:pt-0">
+	<div class="flex flex-col items-center rounded-md pt-2 first:pt-0">
 		<div v-if="imageUrl" class="w-full rounded-md bg-accent">
 			<div
 				ref="containerRef"

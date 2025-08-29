@@ -3,40 +3,18 @@ import { desc, eq, or, sql } from 'drizzle-orm';
 import type { drizzle } from 'drizzle-orm/node-postgres';
 import { createHash } from 'node:crypto';
 
-const SERVICE_TTL_MS = 10 * 60 * 1000; // 10 minutes of idle time before disposal
-const activeManagerServices = new Map<string, ServiceEntry>();
+const MANAGER_TTL_MS = 10 * 60 * 1000;
 
-function keyFor(userId: string) {
-	return `${userId}`;
-}
+const managerPool = createServicePool<[userId?: string], managerService, string>({
+	name: 'managerService',
+	ttlMs: MANAGER_TTL_MS,
+	keyFromArgs: (userId) => String(userId ?? '00000000-0000-0000-0000-000000000000'),
+	factory: async (userId) => new managerService(String(userId ?? '00000000-0000-0000-0000-000000000000')),
+	onDispose: undefined,
+});
 
-function scheduleDispose(key: string) {
-	const entry = activeManagerServices.get(key);
-	if (!entry) return;
-	if (entry.timer) clearTimeout(entry.timer);
-	entry.timer = setTimeout(() => {
-		// If you ever add explicit cleanup in characterService (e.g., close handles), call it here.
-		activeManagerServices.delete(key);
-	}, SERVICE_TTL_MS);
-}
-
-export function useManagerService(userId?: string): managerService {
-	const key = keyFor(userId ?? 'public');
-	let entry = activeManagerServices.get(key);
-
-	if (!entry) {
-		console.log(`Creating new manager service for ${key}...`);
-		const service = new managerService(key);
-		entry = { service, timer: setTimeout(() => {}, 0) as unknown as NodeJS.Timeout };
-		activeManagerServices.set(key, entry);
-	}
-
-	// Reset idle timer on every access
-	scheduleDispose(key);
-
-	console.log(`Getting manager service for ${key}`);
-	console.log(`Currently active manager services: ${activeManagerServices.size}`);
-	return entry.service;
+export async function useManagerService(userId?: string): Promise<managerService> {
+	return managerPool.useService(userId);
 }
 
 class managerService {
@@ -49,13 +27,13 @@ class managerService {
 		this.db = useDrizzle();
 		this.user_id = userId;
 
-		if (userId === 'public') {
+		if (userId === '00000000-0000-0000-0000-000000000000') {
 			console.log('Public Manager Service Initialized');
 		}
 	}
 
 	async count() {
-		if (this.user_id !== 'public') {
+		if (this.user_id !== '00000000-0000-0000-0000-000000000000') {
 			return await this.db.$count(characters, or(eq(characters.public_visible, true), eq(characters.owner_id, this.user_id)));
 		}
 
@@ -75,7 +53,7 @@ class managerService {
 		}
 
 		let items: Character[];
-		if (this.user_id !== 'public') {
+		if (this.user_id !== '00000000-0000-0000-0000-000000000000') {
 			items = await this.db
 				.select()
 				.from(characters)
@@ -116,7 +94,7 @@ class managerService {
 	}
 
 	async put(upload: Upload): Promise<UploadResult> {
-		if (this.user_id === 'public') {
+		if (this.user_id === '00000000-0000-0000-0000-000000000000') {
 			throw createError({
 				statusCode: StatusCode.UNAUTHORIZED,
 				message: 'Public users are not allowed to upload characters.',
@@ -189,9 +167,11 @@ class managerService {
 		});
 
 		try {
-			await useCharacterService(characterId, this.user_id!).updateEmbeddings();
+			const characterService = await useCharacterService(characterId, this.user_id!);
+			await characterService.updateEmbeddings();
 		} catch (error: any) {
 			// Ignore errors here, we don't want to block the user from uploading a character.
+			console.error('Error updating embeddings:', error);
 		}
 
 		return result;

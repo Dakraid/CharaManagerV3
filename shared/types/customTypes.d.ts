@@ -1,9 +1,28 @@
 import type { z } from 'zod/v4';
 import type { V2 } from 'character-card-utils';
 
-export type ServiceEntry = {
-	service: characterService | managerService;
-	timer: NodeJS.Timeout;
+export type KeyOf<A extends any[]> = string | number | symbol;
+
+export type ServiceEntry<S> = {
+	service: S;
+	timer: NodeJS.Timeout | null;
+};
+
+export type CreateServicePoolOptions<A extends any[], S, K extends KeyOf<A>> = {
+	// How to compute the cache key from the arguments of useService(...args)
+	keyFromArgs: (...args: A) => K;
+
+	// How to create the service instance (sync or async)
+	factory: (...args: A) => S | Promise<S>;
+
+	// Dispose timeout in ms (reset on each access)
+	ttlMs: number;
+
+	// Optional cleanup for service before removal (e.g., close handles)
+	onDispose?: (service: S, key: K) => void | Promise<void>;
+
+	// Optional name for logs
+	name?: string;
 };
 
 export type Upload = z.infer<typeof uploadSchema>;

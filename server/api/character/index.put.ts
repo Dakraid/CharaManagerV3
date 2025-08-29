@@ -41,5 +41,6 @@ export default defineEventHandler(async (event) => {
 		});
 	}
 
-	return await useManagerService(userId).put(request.data);
+	const managerService = await useManagerService(userId);
+	return await managerService.put(request.data);
 });
