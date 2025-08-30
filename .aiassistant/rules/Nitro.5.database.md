@@ -26,23 +26,25 @@ The default database connection is **preconfigured** with [SQLite](https://db0.u
 In order to enable database layer you need to enable experimental feature flag.
 
 ::code-group
+
 ```ts [nitro.config.ts]
 export default defineNitroConfig({
-  experimental: {
-    database: true
-  }
-})
+	experimental: {
+		database: true,
+	},
+});
 ```
 
 ```ts [nuxt.config.ts]
 export default defineNuxtConfig({
-  nitro: {
-    experimental: {
-      database: true
-    }
-  }
-})
+	nitro: {
+		experimental: {
+			database: true,
+		},
+	},
+});
 ```
+
 ::
 
 ## Usage
@@ -51,22 +53,22 @@ export default defineNuxtConfig({
 
 ```ts [index.ts]
 export default defineEventHandler(async () => {
-  const db = useDatabase();
+	const db = useDatabase();
 
-  // Create users table
-  await db.sql`DROP TABLE IF EXISTS users`;
-  await db.sql`CREATE TABLE IF NOT EXISTS users ("id" TEXT PRIMARY KEY, "firstName" TEXT, "lastName" TEXT, "email" TEXT)`;
+	// Create users table
+	await db.sql`DROP TABLE IF EXISTS users`;
+	await db.sql`CREATE TABLE IF NOT EXISTS users ("id" TEXT PRIMARY KEY, "firstName" TEXT, "lastName" TEXT, "email" TEXT)`;
 
-  // Add a new user
-  const userId = String(Math.round(Math.random() * 10_000));
-  await db.sql`INSERT INTO users VALUES (${userId}, 'John', 'Doe', '')`;
+	// Add a new user
+	const userId = String(Math.round(Math.random() * 10_000));
+	await db.sql`INSERT INTO users VALUES (${userId}, 'John', 'Doe', '')`;
 
-  // Query for users
-  const { rows } = await db.sql`SELECT * FROM users WHERE id = ${userId}`;
+	// Query for users
+	const { rows } = await db.sql`SELECT * FROM users WHERE id = ${userId}`;
 
-  return {
-    rows,
-  };
+	return {
+		rows,
+	};
 });
 ```
 
@@ -77,41 +79,44 @@ export default defineEventHandler(async () => {
 You can configure database connections using `database` config:
 
 ::code-group
+
 ```ts [nitro.config.ts]
 export default defineNitroConfig({
-  database: {
-    default: {
-      connector: 'sqlite',
-      options: { name: 'db' }
-    },
-    users: {
-      connector: 'postgresql',
-      options: {
-        url: 'postgresql://username:password@hostname:port/database_name'
-      }
-    }
-  }
-})
+	database: {
+		default: {
+			connector: 'sqlite',
+			options: { name: 'db' },
+		},
+		users: {
+			connector: 'postgresql',
+			options: {
+				url: 'postgresql://username:password@hostname:port/database_name',
+			},
+		},
+	},
+});
 ```
+
 ```ts [nuxt.config.ts]
 export default defineNuxtConfig({
-  nitro: {
-    database: {
-      default: {
-        connector: 'sqlite',
-        options: { name: 'db' }
-      },
-      users: {
-        connector: 'postgresql',
-        options: {
-          url: 'postgresql://username:password@hostname:port/database_name'
-        }
-      }
-    }
-  }
-})
+	nitro: {
+		database: {
+			default: {
+				connector: 'sqlite',
+				options: { name: 'db' },
+			},
+			users: {
+				connector: 'postgresql',
+				options: {
+					url: 'postgresql://username:password@hostname:port/database_name',
+				},
+			},
+		},
+	},
+});
 ```
+
 ::
 
 > [!TIP]
-> You can use the `devDatabase`  config to overwrite the database configuration only for development mode.
+> You can use the `devDatabase` config to overwrite the database configuration only for development mode.

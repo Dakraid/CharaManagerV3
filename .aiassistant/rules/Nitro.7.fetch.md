@@ -13,42 +13,42 @@ In your handler, you just have to call the `$fetch` function to make a request. 
 
 ```ts [Router Handler]
 export default defineEventHandler(async (event) => {
-  const data = await $fetch('https://ungh.cc/orgs/unjs/repos')
+	const data = await $fetch('https://ungh.cc/orgs/unjs/repos');
 
-  return data
-})
+	return data;
+});
 ```
 
 You can pass a generic type to the `$fetch` function to get a better type inference.
 
 ```ts [Router Handler]
-import { Repo } from '~/types'
+import { Repo } from '~/types';
 
 export default defineEventHandler(async (event) => {
-  const data = await $fetch<Repo[]>('https://ungh.cc/orgs/unjs/repos')
+	const data = await $fetch<Repo[]>('https://ungh.cc/orgs/unjs/repos');
 
-  return data
-})
+	return data;
+});
 ```
 
 You can pass many options to the `$fetch` function like the method, headers, body, query, etc.
 
 ```ts [Router Handler]
-import { Repo } from '~/types'
+import { Repo } from '~/types';
 
 export default defineEventHandler(async (event) => {
-  const data = await $fetch<Repo[]>('https://api.github.com/markdown', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: {
-      text: 'Hello **world**!'
-    }
-  })
+	const data = await $fetch<Repo[]>('https://api.github.com/markdown', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: {
+			text: 'Hello **world**!',
+		},
+	});
 
-  return data
-})
+	return data;
+});
 ```
 
 See more about the usage of the `$fetch` function in the [ofetch](https://ofetch.unjs.io) documentation.
@@ -59,10 +59,10 @@ You can also use the `$fetch` function to make internal requests to other handle
 
 ```ts [Router Handler]
 export default defineEventHandler(async (event) => {
-  const data = await $fetch('/api/users')
+	const data = await $fetch('/api/users');
 
-  return data
-})
+	return data;
+});
 ```
 
 In reality, no fetch request is made and the handler is directly called, thanks to [unenv](https://unenv.unjs.io). This is useful to avoid making HTTP request overhead.

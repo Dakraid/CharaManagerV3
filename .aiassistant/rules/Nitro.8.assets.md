@@ -9,15 +9,14 @@ instructions: Use this for technical documentation on Nitro Assets.
 
 Nitro handles assets via the `server/public/` directory.
 
-
 All assets in `server/public/` directory will be automatically served. This means that you can access them directly from the browser without any special configuration.
 
 ```md
 server/
-  public/
-    image.png     <-- /image.png
-    video.mp4     <-- /video.mp4
-    robots.txt    <-- /robots.txt
+public/
+image.png <-- /image.png
+video.mp4 <-- /video.mp4
+robots.txt <-- /robots.txt
 package.json
 nitro.config.ts
 ```
@@ -28,24 +27,24 @@ When building your Nitro app, the `server/public/` directory will be copied to `
 
 ```json
 {
-  "/image.png": {
-    "type": "image/png",
-    "etag": "\"4a0c-6utWq0Kbk5OqDmksYCa9XV8irnM\"",
-    "mtime": "2023-03-04T21:39:45.086Z",
-    "size": 18956
-  },
-  "/robots.txt": {
-    "type": "text/plain; charset=utf-8",
-    "etag": "\"8-hMqyDrA8fJ0R904zgEPs3L55Jls\"",
-    "mtime": "2023-03-04T21:39:45.086Z",
-    "size": 8
-  },
-  "/video.mp4": {
-    "type": "video/mp4",
-    "etag": "\"9b943-4UwfQXKUjPCesGPr6J5j7GzNYGU\"",
-    "mtime": "2023-03-04T21:39:45.085Z",
-    "size": 637251
-  }
+	"/image.png": {
+		"type": "image/png",
+		"etag": "\"4a0c-6utWq0Kbk5OqDmksYCa9XV8irnM\"",
+		"mtime": "2023-03-04T21:39:45.086Z",
+		"size": 18956
+	},
+	"/robots.txt": {
+		"type": "text/plain; charset=utf-8",
+		"etag": "\"8-hMqyDrA8fJ0R904zgEPs3L55Jls\"",
+		"mtime": "2023-03-04T21:39:45.086Z",
+		"size": 8
+	},
+	"/video.mp4": {
+		"type": "video/mp4",
+		"etag": "\"9b943-4UwfQXKUjPCesGPr6J5j7GzNYGU\"",
+		"mtime": "2023-03-04T21:39:45.085Z",
+		"size": 637251
+	}
 }
 ```
 
@@ -61,9 +60,9 @@ For example, you could store a json file in `server/assets/data.json` and retrie
 
 ```js
 export default defineEventHandler(async () => {
-  const data = await useStorage('assets:server').getItem(`data.json`)
-  return data
-})
+	const data = await useStorage('assets:server').getItem(`data.json`);
+	return data;
+});
 ```
 
 ### Custom server assets
@@ -71,54 +70,68 @@ export default defineEventHandler(async () => {
 In order to add assets from a custom directory, you will need to define a path in your nitro config. This allows you to add assets from a directory outside of the `assets/` directory.
 
 ::code-group
+
 ```js [nitro.config.ts]
 export default defineNitroConfig({
-  serverAssets: [{
-    baseName: 'my_directory',
-    dir: './server/my_directory'
-  }]
-})
+	serverAssets: [
+		{
+			baseName: 'my_directory',
+			dir: './server/my_directory',
+		},
+	],
+});
 ```
+
 ```ts [nuxt.config.ts]
 export default defineNuxtConfig({
-  nitro: {
-    serverAssets: [{
-      baseName: 'my_directory',
-      dir: './server/my_directory'
-    }]
-  }
-})
+	nitro: {
+		serverAssets: [
+			{
+				baseName: 'my_directory',
+				dir: './server/my_directory',
+			},
+		],
+	},
+});
 ```
+
 ::
 
 You could want to add a directory with html templates for example.
 
 ::code-group
+
 ```js [nitro.config.ts]
 export default defineNitroConfig({
-  serverAssets: [{
-    baseName: 'templates',
-    dir: './server/templates'
-  }]
-})
+	serverAssets: [
+		{
+			baseName: 'templates',
+			dir: './server/templates',
+		},
+	],
+});
 ```
+
 ```ts [nuxt.config.ts]
 export default defineNuxtConfig({
-  nitro: {
-    serverAssets: [{
-      baseName: 'templates',
-      dir: './server/templates'
-    }]
-  }
-})
+	nitro: {
+		serverAssets: [
+			{
+				baseName: 'templates',
+				dir: './server/templates',
+			},
+		],
+	},
+});
 ```
+
 ::
 
 Then you can use the `assets:templates` base to retrieve your assets.
 
 ```ts [handlers/success.ts]
 export default defineEventHandler(async (event) => {
-  const html = await useStorage('assets:templates').getItem(`success.html`)
-  return html
-})
+	const html = await useStorage('assets:templates').getItem(`success.html`);
+	return html;
+});
 ```

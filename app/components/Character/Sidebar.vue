@@ -1,20 +1,27 @@
 <script setup lang="ts">
+import { toast } from 'vue-sonner';
 import { cn } from '~~/lib/utils';
 
 const appStore = useAppStore();
+
+const trigger = async () => {
+	toast('Hello, World!', {
+		duration: 50000,
+	});
+};
 </script>
 
 <template>
 	<div :class="cn('h-full overflow-hidden transition-all duration-300', appStore.showActions ? '' : 'Sidebar-Disable')">
 		<div class="Sidebar-Layout grid h-full gap-4 overflow-hidden rounded-xl border bg-background p-2">
-			<div class="Sidebar-Upload flex flex-col gap-2">
-				<h1 class="rounded-md border bg-accent p-1 text-center text-xl font-bold">File Upload</h1>
-				<CharacterFiles />
-			</div>
-			<Separator orientation="horizontal" class="Sidebar-Separator" />
-			<div class="Sidebar-Fetch flex min-h-[238px] flex-col gap-2">
+			<div class="Sidebar-Fetch flex flex-col gap-2">
 				<h1 class="rounded-md border bg-accent p-1 text-center text-xl font-bold">Fetch from URL</h1>
 				<CharacterFetch />
+			</div>
+			<Separator orientation="horizontal" class="Sidebar-Separator" @click="trigger" />
+			<div class="Sidebar-Upload flex min-h-0 flex-col gap-2">
+				<h1 class="rounded-md border bg-accent p-1 text-center text-xl font-bold">File Upload</h1>
+				<CharacterFiles />
 			</div>
 		</div>
 	</div>
@@ -23,11 +30,11 @@ const appStore = useAppStore();
 <style scoped>
 .Sidebar-Layout {
 	grid-template-columns: 1fr;
-	grid-template-rows: min-content min-content min-content;
+	grid-template-rows: min-content min-content 1fr;
 	grid-template-areas:
-		'Upload'
+		'Fetch'
 		'Separator'
-		'Fetch';
+		'Upload';
 }
 
 .Sidebar-Disable {

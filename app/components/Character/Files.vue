@@ -118,7 +118,7 @@ const circleStyle = computed(() => ({
 </script>
 
 <template>
-	<div id="fileUpload" class="relative flex w-full flex-1 flex-col justify-center gap-2 rounded-md">
+	<div id="fileUpload" class="relative flex min-h-0 w-full flex-1 flex-col justify-start gap-2 rounded-md">
 		<div class="grid w-full grid-cols-[1fr_min-content] justify-center gap-2">
 			<Button
 				variant="ghost"
@@ -145,7 +145,7 @@ const circleStyle = computed(() => ({
 			</Transition>
 		</div>
 
-		<div v-if="uploadStore.files.length > 0" class="h-full max-h-[629px] w-full overflow-y-auto pr-2">
+		<div v-if="uploadStore.files.length > 0" class="min-h-0 w-full flex-1 overflow-y-auto pr-2">
 			<CharacterFilesItem
 				v-for="upload in uploadStore.files"
 				:key="upload.file.name"

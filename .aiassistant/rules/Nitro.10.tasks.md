@@ -16,25 +16,26 @@ instructions: Use this for technical documentation on Nitro Tasks.
 In order to use the tasks API you need to enable experimental feature flag.
 
 ::code-group
+
 ```ts [nitro.config.ts]
 export default defineNitroConfig({
-  experimental: {
-    tasks: true
-  }
-})
+	experimental: {
+		tasks: true,
+	},
+});
 ```
 
 ```ts [nuxt.config.ts]
 export default defineNuxtConfig({
-  nitro: {
-    experimental: {
-      tasks: true
-    }
-  }
-})
+	nitro: {
+		experimental: {
+			tasks: true,
+		},
+	},
+});
 ```
-::
 
+::
 
 ## Define tasks
 
@@ -46,14 +47,14 @@ Nested directories are supported. The task name will be joined with `:`. (Exampl
 
 ```ts [server/tasks/db/migrate.ts]
 export default defineTask({
-  meta: {
-    name: "db:migrate",
-    description: "Run database migrations",
-  },
-  run({ payload, context }) {
-    console.log("Running DB migration task...");
-    return { result: "Success" };
-  },
+	meta: {
+		name: 'db:migrate',
+		description: 'Run database migrations',
+	},
+	run({ payload, context }) {
+		console.log('Running DB migration task...');
+		return { result: 'Success' };
+	},
 });
 ```
 
@@ -62,24 +63,25 @@ export default defineTask({
 You can define scheduled tasks using Nitro configuration to automatically run after each period of time.
 
 ::code-group
+
 ```ts [nitro.config.ts]
 export default defineNitroConfig({
-  scheduledTasks: {
-    // Run `cms:update` task every minute
-    '* * * * *': ['cms:update']
-  }
-})
+	scheduledTasks: {
+		// Run `cms:update` task every minute
+		'* * * * *': ['cms:update'],
+	},
+});
 ```
 
 ```ts [nuxt.config.ts]
 export default defineNuxtConfig({
-  nitro: {
-    scheduledTasks: {
-      // Run `cms:update` task every minute
-      '* * * * *': ['cms:update']
-    }
-  }
-})
+	nitro: {
+		scheduledTasks: {
+			// Run `cms:update` task every minute
+			'* * * * *': ['cms:update'],
+		},
+	},
+});
 ```
 
 ::
@@ -101,11 +103,11 @@ To manually run tasks, you can use `runTask(name, { payload? })` utility.
 
 ```ts [server/api/migrate.ts]
 export default eventHandler(async (event) => {
-  // IMPORTANT: Authenticate user and validate payload!
-  const payload = { ...getQuery(event) };
-  const { result } = await runTask("db:migrate", { payload });
+	// IMPORTANT: Authenticate user and validate payload!
+	const payload = { ...getQuery(event) };
+	const { result } = await runTask('db:migrate', { payload });
 
-  return { result };
+	return { result };
 });
 ```
 
@@ -122,22 +124,20 @@ This endpoint returns a list of available task names and their meta.
 ```json
 // [GET] /_nitro/tasks
 {
-  "tasks": {
-    "db:migrate": {
-      "description": "Run database migrations"
-    },
-     "cms:update": {
-      "description": "Update CMS content"
-    }
-  },
-  "scheduledTasks": [
-    {
-      "cron": "* * * * *",
-      "tasks": [
-        "cms:update"
-      ]
-    }
-  ]
+	"tasks": {
+		"db:migrate": {
+			"description": "Run database migrations"
+		},
+		"cms:update": {
+			"description": "Update CMS content"
+		}
+	},
+	"scheduledTasks": [
+		{
+			"cron": "* * * * *",
+			"tasks": ["cms:update"]
+		}
+	]
 }
 ```
 
@@ -146,25 +146,28 @@ This endpoint returns a list of available task names and their meta.
 This endpoint executes a task. You can provide a payload using both query parameters and body JSON payload. The payload sent in the JSON body payload must be under the `"payload"` property.
 
 ::code-group
+
 ```ts [server/tasks/echo/payload.ts]
 export default defineTask({
-  meta: {
-    name: "echo:payload",
-    description: "Returns the provided payload",
-  },
-  run({ payload, context }) {
-    console.log("Running echo task...");
-    return { result: payload };
-  },
+	meta: {
+		name: 'echo:payload',
+		description: 'Returns the provided payload',
+	},
+	run({ payload, context }) {
+		console.log('Running echo task...');
+		return { result: payload };
+	},
 });
 ```
+
 ```json [GET]
 // [GET] /_nitro/tasks/echo:payload?field=value&array=1&array=2
 {
-  "field": "value",
-  "array": ["1", "2"]
+	"field": "value",
+	"array": ["1", "2"]
 }
 ```
+
 ```json [POST]
 /**
  * [POST] /_nitro/tasks/echo:payload?field=value
@@ -178,13 +181,14 @@ export default defineTask({
  * }
  */
 {
-  "field": "value",
-  "answer": 42,
-  "nested": {
-    "value": true
-  }
+	"field": "value",
+	"answer": 42,
+	"nested": {
+		"value": true
+	}
 }
 ```
+
 ::
 
 > [!NOTE]

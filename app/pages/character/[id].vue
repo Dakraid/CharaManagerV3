@@ -67,8 +67,8 @@ onUnmounted(() => {
 			</Button>
 			<CharacterPageImage :image-blob-url="imageBlobUrl" :is-image-loaded="isImageLoaded" :censored="settingsStore.censorImages" />
 			<Button id="clear" type="submit" class="w-full bg-background" variant="outline">
-				<span class="sr-only">Back</span>
 				<Icon name="lucide:upload" size="1.5em" />
+				<span>Upload Image</span>
 			</Button>
 		</div>
 		<CharacterPageEditorNew :definition="character?.definition!" class="Character-Page-Editor" />

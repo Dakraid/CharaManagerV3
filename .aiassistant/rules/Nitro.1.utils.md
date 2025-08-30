@@ -19,26 +19,26 @@ Nitro enables all [h3 utils](https://h3.dev/utils) as auto imports so you can us
 ::read-more{title="H3 Docs" to="https://h3.dev/utils"}
 ::
 
-
 ### `utils` directory
 
 You can add your application specific utils inside `server/utils/` directory and they will be auto-imported when used.
 Every export in the `utils` directory and its subdirectories will become available globally in your application.
 
-
 **Example:** Create a `server/utils/sum.ts` file where a function `useSum` is exported:
 
 ```ts [server/utils/sum.ts]
-export function useSum(a: number, b: number) { return a + b }
+export function useSum(a: number, b: number) {
+	return a + b;
+}
 ```
 
 Use it in your `server/routes/index.ts` file without importing it:
 
 ```ts [server/routes/index.ts]
 export default defineEventHandler(() => {
-  const sum = useSum(1, 2) // auto-imported
-  return { sum }
-})
+	const sum = useSum(1, 2); // auto-imported
+	return { sum };
+});
 ```
 
 ## Nitro utils
@@ -76,7 +76,7 @@ You can explicitly import them from virtual `#imports` file.
 > Manually importing from `#imports` still has benefits of tree-shaking.
 
 ```js [server/plugins/test.ts]
-import { useStorage } from '#imports'
+import { useStorage } from '#imports';
 ```
 
 ## Async Context (Experimental)
@@ -90,48 +90,53 @@ This feature is currently supported for Node.js and Bun runtimes and also coming
 In order to enable async context feature, you have to enable `asyncContext` flag:
 
 ::code-group
+
 ```ts [nitro.config.ts]
 export default defineNitroConfig({
-  experimental: {
-    asyncContext: true
-  }
+	experimental: {
+		asyncContext: true,
+	},
 });
 ```
+
 ```ts [nuxt.config.ts]
 export default defineNuxtConfig({
-  nitro: {
-    experimental: {
-      asyncContext: true
-    }
-  }
-})
+	nitro: {
+		experimental: {
+			asyncContext: true,
+		},
+	},
+});
 ```
+
 ::
 
 After enabling this flag, you can use `useEvent()` (auto imported) in any utility or composable to access the request event without manually passing it along:
 
 ::code-group
+
 ```ts [with async context]
 // server/routes/index.ts
 export default defineEventHandler(async () => {
-  const user = await useAuth()
-})
+	const user = await useAuth();
+});
 
 // server/utils/auth.ts
 export function useAuth() {
-  return useSession(useEvent())
+	return useSession(useEvent());
 }
 ```
+
 ```ts [without async context]
 // server/routes/index.ts
 export default defineEventHandler(async (event) => {
-  const user = await useAuth(event)
-})
+	const user = await useAuth(event);
+});
 
 // server/utils/auth.ts
 export function useAuth(event) {
-  return useSession(event)
+	return useSession(event);
 }
 ```
-::
 
+::

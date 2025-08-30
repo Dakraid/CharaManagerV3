@@ -12,30 +12,32 @@ They receive `nitroApp` context, which can be used to hook into Nitro lifecycle 
 
 Plugins are auto-registered from `plugins/` directory and run synchronously (by order of file name) on the first Nitro initialization.
 
-
 **Example:**
 
 ```ts [server/plugins/test.ts]
 export default defineNitroPlugin((nitroApp) => {
-  console.log('Nitro plugin', nitroApp)
-})
+	console.log('Nitro plugin', nitroApp);
+});
 ```
 
 If you have plugins in another directory, you can use the `plugins` option:
 
 ::code-group
+
 ```ts [nitro.config.ts]
 export default defineNitroConfig({
-  plugins: ['my-plugins/hello.ts']
-})
+	plugins: ['my-plugins/hello.ts'],
+});
 ```
+
 ```ts [nuxt.config.ts]
 export default defineNuxtConfig({
-  nitro: {
-    plugins: ['my-plugins/hello.ts']
-  }
-})
+	nitro: {
+		plugins: ['my-plugins/hello.ts'],
+	},
+});
 ```
+
 ::
 
 ## Nitro runtime hooks
@@ -46,10 +48,10 @@ You can use Nitro [hooks](https://github.com/unjs/hookable) to extend the defaul
 
 ```ts
 export default defineNitroPlugin((nitro) => {
-  nitro.hooks.hook("close", async () => {
-    // Will run when nitro is being closed
-  });
-})
+	nitro.hooks.hook('close', async () => {
+		// Will run when nitro is being closed
+	});
+});
 ```
 
 ### Available hooks
@@ -71,10 +73,10 @@ You can use plugins to capture all application errors.
 
 ```ts
 export default defineNitroPlugin((nitro) => {
-  nitro.hooks.hook("error", async (error, { event }) => {
-    console.error(`${event.path} Application error:`, error)
-  });
-})
+	nitro.hooks.hook('error', async (error, { event }) => {
+		console.error(`${event.path} Application error:`, error);
+	});
+});
 ```
 
 ### Graceful shutdown
@@ -83,13 +85,13 @@ You can use plugins to register a hook that resolves when Nitro is closed.
 
 ```ts
 export default defineNitroPlugin((nitro) => {
-  nitro.hooks.hookOnce("close", async () => {
-    // Will run when nitro is closed
-    console.log("Closing nitro server...")
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    console.log("Task is done!");
-  });
-})
+	nitro.hooks.hookOnce('close', async () => {
+		// Will run when nitro is closed
+		console.log('Closing nitro server...');
+		await new Promise((resolve) => setTimeout(resolve, 500));
+		console.log('Task is done!');
+	});
+});
 ```
 
 ### Request and response lifecycle
@@ -98,17 +100,17 @@ You can use plugins to register a hook that can run on request lifecycle:
 
 ```ts
 export default defineNitroPlugin((nitroApp) => {
-  nitroApp.hooks.hook("request", (req) => {
-    console.log("on request", req.url);
-  });
+	nitroApp.hooks.hook('request', (req) => {
+		console.log('on request', req.url);
+	});
 
-  nitroApp.hooks.hook("beforeResponse", (event, { body }) => {
-    console.log("on response", event.path, { body });
-  });
+	nitroApp.hooks.hook('beforeResponse', (event, { body }) => {
+		console.log('on response', event.path, { body });
+	});
 
-  nitroApp.hooks.hook("afterResponse", (event, { body }) => {
-    console.log("on after response", event.path, { body });
-  });
+	nitroApp.hooks.hook('afterResponse', (event, { body }) => {
+		console.log('on after response', event.path, { body });
+	});
 });
 ```
 
@@ -123,10 +125,9 @@ In [Nuxt](https://nuxt.com/) this hook will be called for Server-side rendered p
 
 ```ts
 export default defineNitroPlugin((nitro) => {
-
-  nitro.hooks.hook('render:response', (response, { event }) => {
-    // Inspect or Modify the renderer response here
-    console.log(response)
-  })
-})
+	nitro.hooks.hook('render:response', (response, { event }) => {
+		// Inspect or Modify the renderer response here
+		console.log(response);
+	});
+});
 ```

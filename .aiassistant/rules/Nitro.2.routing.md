@@ -21,11 +21,11 @@ You can only define one handler per files and you can [append the HTTP method](#
 
 ```md
 server/
-  api/
-    test.ts      <-- /api/test
-  routes/
-    hello.get.ts     <-- GET /hello
-    hello.post.ts    <-- POST /hello
+api/
+test.ts <-- /api/test
+routes/
+hello.get.ts <-- GET /hello
+hello.post.ts <-- POST /hello
 nitro.config.ts
 ```
 
@@ -33,15 +33,15 @@ You can nest routes by creating subdirectories.
 
 ```md
 server/
-  routes/
-    communities/
-      index.get.ts
-      index.post.ts
-      [id]/
-        index.get.ts
-        index.post.ts
-    hello.get.ts
-    hello.post.ts
+routes/
+communities/
+index.get.ts
+index.post.ts
+[id]/
+index.get.ts
+index.post.ts
+hello.get.ts
+hello.post.ts
 ```
 
 ::tip
@@ -57,8 +57,8 @@ Then, export a function wrapped in `defineEventHandler` that will be executed wh
 
 ```ts [server/api/test.ts]
 export default defineEventHandler(() => {
-  return { hello: 'API' }
-})
+	return { hello: 'API' };
+});
 ```
 
 ### Route with params
@@ -67,12 +67,12 @@ export default defineEventHandler(() => {
 
 To define a route with params, use the `[<param>]` syntax where `<param>` is the name of the param. The param will be available in the `event.context.params` object or using the [`getRouterParam`](https://h3.dev/utils/request#getrouterparamevent-name-opts-decode) utility.
 
-```ts [server/routes/hello/[name\\].ts]
-export default defineEventHandler(event => {
-  const name = getRouterParam(event, 'name')
+```ts [server/routes/hello/[name\].ts]
+export default defineEventHandler((event) => {
+	const name = getRouterParam(event, 'name');
 
-  return `Hello ${name}!`
-})
+	return `Hello ${name}!`;
+});
 ```
 
 Call the route with the param `/hello/nitro`, you will get:
@@ -85,25 +85,25 @@ Hello nitro!
 
 You can define multiple params in a route using `[<param1>]/[<param2>]` syntax where each param is a folder. You **cannot** define multiple params in a single filename of folder.
 
-```ts [server/routes/hello/[name\\]/[age\\].ts]
-export default defineEventHandler(event => {
-  const name = getRouterParam(event, 'name')
-  const age = getRouterParam(event, 'age')
+```ts [server/routes/hello/[name\]/[age\].ts]
+export default defineEventHandler((event) => {
+	const name = getRouterParam(event, 'name');
+	const age = getRouterParam(event, 'age');
 
-  return `Hello ${name}! You are ${age} years old.`
-})
+	return `Hello ${name}! You are ${age} years old.`;
+});
 ```
 
 #### Catch-all params
 
 You can capture all the remaining parts of a URL using `[...<param>]` syntax. This will include the `/` in the param.
 
-```ts [server/routes/hello/[...name\\].ts]
-export default defineEventHandler(event => {
-  const name = getRouterParam(event, 'name')
+```ts [server/routes/hello/[...name\].ts]
+export default defineEventHandler((event) => {
+	const name = getRouterParam(event, 'name');
 
-  return `Hello ${name}!`
-})
+	return `Hello ${name}!`;
+});
 ```
 
 Call the route with the param `/hello/nitro/is/hot`, you will get:
@@ -117,27 +117,29 @@ Hello nitro/is/hot!
 You can append the HTTP method to the filename to force the route to be matched only for a specific HTTP request method, for example `hello.get.ts` will only match for `GET` requests. You can use any HTTP method you want.
 
 ::code-group
+
 ```js [GET]
 // server/routes/users/[id].get.ts
 export default defineEventHandler(async (event) => {
-  const id = getRouterParam(event, 'id')
+	const id = getRouterParam(event, 'id');
 
-  // Do something with id
+	// Do something with id
 
-  return `User profile!`
-})
+	return `User profile!`;
+});
 ```
 
 ```js [POST]
 // server/routes/users.post.ts
-export default defineEventHandler(async event => {
-  const body = await readBody(event)
+export default defineEventHandler(async (event) => {
+	const body = await readBody(event);
 
-  // Do something with body like saving it to a database
+	// Do something with body like saving it to a database
 
-  return { updated: true }
-})
+	return { updated: true };
+});
 ```
+
 ::
 
 ### Catch-all route
@@ -146,12 +148,12 @@ You can create a special route that will match all routes that are not matched b
 
 To create a catch-all route, create a file named `[...].ts` in the `server/routes/` or `server/api/` directory or in any subdirectory.
 
-```ts [server/routes/[...\\].ts]
-export default defineEventHandler(event => {
-  const url = getRequestURL(event)
+```ts [server/routes/[...\].ts]
+export default defineEventHandler((event) => {
+	const url = getRequestURL(event);
 
-  return `Hello ${url}!`
-})
+	return `Hello ${url}!`;
+});
 ```
 
 ### Environment specific handlers
@@ -160,7 +162,6 @@ You can specify for a route that will only be included in specific builds by add
 
 > [!TIP]
 > You can specify multiple environments or specify a preset name as environment using programmatic registration of routes via `handlers[]` config.
-
 
 ## Middleware
 
@@ -176,12 +177,12 @@ Middleware are auto-registered within the `server/middleware/` directory.
 
 ```md
 server/
-  routes/
-    hello.ts
-  middleware/
-    auth.ts
-    logger.ts
-    ...
+routes/
+hello.ts
+middleware/
+auth.ts
+logger.ts
+...
 nitro.config.ts
 ```
 
@@ -192,9 +193,9 @@ Returning from middleware behaves like returning from a request - the value will
 
 ```ts [server/middleware/auth.ts]
 export default defineEventHandler((event) => {
-  // Extends or modify the event
-  event.context.user = { name: 'Nitro' }
-})
+	// Extends or modify the event
+	event.context.user = { name: 'Nitro' };
+});
 ```
 
 Middleware in `server/middleware/` directory are automatically registered for all routes. If you want to register a middleware for a specific route, see [Object Syntax Event Handler](https://h3.dev/guide/basics/handler#object-syntax).
@@ -212,14 +213,14 @@ You can define route handler meta at build-time using `defineRouteMeta` macro in
 
 ```ts [server/api/test.ts]
 defineRouteMeta({
-  openAPI: {
-    tags: ["test"],
-    description: "Test route description",
-    parameters: [{ in: "query", name: "test", required: true }],
-  },
+	openAPI: {
+		tags: ['test'],
+		description: 'Test route description',
+		parameters: [{ in: 'query', name: 'test', required: true }],
+	},
 });
 
-export default defineEventHandler(() => "OK");
+export default defineEventHandler(() => 'OK');
 ```
 
 ::read-more{to="https://swagger.io/specification/v3/"}
@@ -232,21 +233,22 @@ Middleware are executed in directory listing order.
 
 ```md
 server/
-  middleware/
-    auth.ts <-- First
-    logger.ts <-- Second
-    ... <-- Third
+middleware/
+auth.ts <-- First
+logger.ts <-- Second
+... <-- Third
 ```
 
 Prefix middleware with a number to control their execution order.
 
 ```md
 server/
-  middleware/
-    1.logger.ts <-- First
-    2.auth.ts <-- Second
-    3.... <-- Third
+middleware/
+1.logger.ts <-- First
+2.auth.ts <-- Second
+3.... <-- Third
 ```
+
 ::note
 Remember that file names are sorted as strings, thus for example if you have 3 files `1.filename.ts`, `2.filename.ts` and `10.filename.ts`, the `10.filename.ts` will come after the `1.filename.ts`. To avoid this, prefix `1-9` with a `0` like `01`, if you have more than 10 middleware in the same directory.
 ::
@@ -261,11 +263,11 @@ For example, you can use the URL to apply a middleware to a specific route:
 
 ```ts [server/middleware/auth.ts]
 export default defineEventHandler((event) => {
-  // Will only execute for /auth route
-  if (getRequestURL(event).pathname.startsWith('/auth')) {
-    event.context.user = { name: 'Nitro' }
-  }
-})
+	// Will only execute for /auth route
+	if (getRequestURL(event).pathname.startsWith('/auth')) {
+		event.context.user = { name: 'Nitro' };
+	}
+});
 ```
 
 ## Error handling
@@ -291,36 +293,47 @@ When `cache` option is set, handlers matching pattern will be automatically wrap
 You can set route rules in `nitro.config.ts` using the `routeRules` option.
 
 ::code-group
+
 ```ts [nitro.config.ts]
 export default defineNitroConfig({
-  routeRules: {
-    '/blog/**': { swr: true },
-    '/blog/**': { swr: 600 },
-    '/blog/**': { static: true },
-    '/blog/**': { cache: { /* cache options*/ } },
-    '/assets/**': { headers: { 'cache-control': 's-maxage=0' } },
-    '/api/v1/**': { cors: true, headers: { 'access-control-allow-methods': 'GET' } },
-    '/old-page': { redirect: '/new-page' },
-    '/old-page/**': { redirect: '/new-page/**' },
-    '/proxy/example': { proxy: 'https://example.com' },
-    '/proxy/**': { proxy: '/api/**' },
-  }
-})
+	routeRules: {
+		'/blog/**': { swr: true },
+		'/blog/**': { swr: 600 },
+		'/blog/**': { static: true },
+		'/blog/**': {
+			cache: {
+				/* cache options*/
+			},
+		},
+		'/assets/**': { headers: { 'cache-control': 's-maxage=0' } },
+		'/api/v1/**': { cors: true, headers: { 'access-control-allow-methods': 'GET' } },
+		'/old-page': { redirect: '/new-page' },
+		'/old-page/**': { redirect: '/new-page/**' },
+		'/proxy/example': { proxy: 'https://example.com' },
+		'/proxy/**': { proxy: '/api/**' },
+	},
+});
 ```
+
 ```ts [nuxt.config.ts]
 export default defineNuxtConfig({
-  routeRules: {
-    '/blog/**': { swr: true },
-    '/blog/**': { swr: 600 },
-    '/blog/**': { static: true },
-    '/blog/**': { cache: { /* cache options*/ } },
-    '/assets/**': { headers: { 'cache-control': 's-maxage=0' } },
-    '/api/v1/**': { cors: true, headers: { 'access-control-allow-methods': 'GET' } },
-    '/old-page': { redirect: '/new-page' },
-    '/old-page/**': { redirect: '/new-page/**' },
-    '/proxy/example': { proxy: 'https://example.com' },
-    '/proxy/**': { proxy: '/api/**' },
-  }
-})
+	routeRules: {
+		'/blog/**': { swr: true },
+		'/blog/**': { swr: 600 },
+		'/blog/**': { static: true },
+		'/blog/**': {
+			cache: {
+				/* cache options*/
+			},
+		},
+		'/assets/**': { headers: { 'cache-control': 's-maxage=0' } },
+		'/api/v1/**': { cors: true, headers: { 'access-control-allow-methods': 'GET' } },
+		'/old-page': { redirect: '/new-page' },
+		'/old-page/**': { redirect: '/new-page/**' },
+		'/proxy/example': { proxy: 'https://example.com' },
+		'/proxy/**': { proxy: '/api/**' },
+	},
+});
 ```
+
 ::

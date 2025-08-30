@@ -21,23 +21,25 @@ Nitro natively supports runtime agnostic [WebSocket](https://developer.mozilla.o
 In order to enable websocket support you need to enable the experimental `websocket` feature flag.
 
 ::code-group
+
 ```ts [nitro.config.ts]
 export default defineNitroConfig({
-  experimental: {
-    websocket: true
-  }
-})
+	experimental: {
+		websocket: true,
+	},
+});
 ```
 
 ```ts [nuxt.config.ts]
 export default defineNuxtConfig({
-  nitro: {
-    experimental: {
-      websocket: true
-    }
-  }
-})
+	nitro: {
+		experimental: {
+			websocket: true,
+		},
+	},
+});
 ```
+
 ::
 
 ## Usage
@@ -51,26 +53,25 @@ Create a websocket handler in `server/routes/_ws.ts`.
 
 ```ts [server/routes/_ws.ts]
 export default defineWebSocketHandler({
-  open(peer) {
-    console.log("[ws] open", peer);
-  },
+	open(peer) {
+		console.log('[ws] open', peer);
+	},
 
-  message(peer, message) {
-    console.log("[ws] message", peer, message);
-    if (message.text().includes("ping")) {
-      peer.send("pong");
-    }
-  },
+	message(peer, message) {
+		console.log('[ws] message', peer, message);
+		if (message.text().includes('ping')) {
+			peer.send('pong');
+		}
+	},
 
-  close(peer, event) {
-    console.log("[ws] close", peer, event);
-  },
+	close(peer, event) {
+		console.log('[ws] close', peer, event);
+	},
 
-  error(peer, error) {
-    console.log("[ws] error", peer, error);
-  },
+	error(peer, error) {
+		console.log('[ws] error', peer, error);
+	},
 });
-
 ```
 
 <!-- /automd -->
@@ -84,11 +85,8 @@ Use a client to connect to server. Example: (`server/routes/websocket.ts`)
 
 ```ts [index.ts]
 export default defineEventHandler(() => {
-  return $fetch(
-    "https://raw.githubusercontent.com/h3js/crossws/main/examples/h3/public/index.html"
-  );
+	return $fetch('https://raw.githubusercontent.com/h3js/crossws/main/examples/h3/public/index.html');
 });
-
 ```
 
 <!-- /automd -->
@@ -108,29 +106,29 @@ Create an SSE handler in `server/routes/sse.ts`.
 
 ```ts [server/routes/sse.ts]
 export default defineEventHandler(async (event) => {
-  const eventStream = createEventStream(event)
+	const eventStream = createEventStream(event);
 
-  const interval = setInterval(async () => {
-    await eventStream.push(`Message @ ${new Date().toLocaleTimeString()}`)
-  }, 1000)
+	const interval = setInterval(async () => {
+		await eventStream.push(`Message @ ${new Date().toLocaleTimeString()}`);
+	}, 1000);
 
-  eventStream.onClosed(async () => {
-    clearInterval(interval)
-    await eventStream.close()
-  })
+	eventStream.onClosed(async () => {
+		clearInterval(interval);
+		await eventStream.close();
+	});
 
-  return eventStream.send()
-})
+	return eventStream.send();
+});
 ```
 
 Then connect to this SSE endpoint from the client
 
 ```ts
-const eventSource = new EventSource('http://localhost:3000/sse')
+const eventSource = new EventSource('http://localhost:3000/sse');
 
 eventSource.onmessage = (event) => {
-  console.log(event.data)
-}
+	console.log(event.data);
+};
 ```
 
 :read-more{to="https://h3.dev/guide/advanced/websocket#server-sent-events-sse" title="SSE guide in H3"}

@@ -116,7 +116,7 @@ const onSubmit = async () => {
 .Fetch-Layout {
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: min-content 1fr min-content;
+	grid-template-rows: min-content min-content min-content;
 	grid-template-areas:
 		'Hint'
 		'Input'
