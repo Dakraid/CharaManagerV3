@@ -39,7 +39,7 @@ const columnStyle = computed(() => {
 		<h1 class="grow text-center text-sm">Total: {{ character.total_token_count }}</h1>
 		<CharacterButtonVisibility v-if="character.owned" :visibility="character.public_visible" @click="updateVisibility" />
 		<h1 class="grow text-center text-sm">Perma: {{ character.perma_token_count }}</h1>
-		<CharacterButtonDownload :single-width="character.owned" :is-downloading="isDownloading" @click="downloadCharacter" />
+		<CharacterButtonDownload :single-width="character.owned ?? false" :is-downloading="isDownloading" @click="downloadCharacter" />
 		<CharacterButtonEdit v-if="character.owned" @click="openCharacter" />
 		<CharacterButtonDelete v-if="character.owned" @click="deleteCharacter" />
 	</div>

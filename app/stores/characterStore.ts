@@ -4,7 +4,7 @@ export const useCharacterStore = defineStore('character', {
 	state: () => {
 		return {
 			characterCount: 0,
-			characterList: [] as Character[] | null,
+			characterList: [] as Character[] | undefined,
 		};
 	},
 	getters: {},

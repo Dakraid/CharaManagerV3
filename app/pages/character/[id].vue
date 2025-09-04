@@ -47,6 +47,7 @@ onMounted(async () => {
 		}
 
 		await fetchImage();
+		appStore.isFetching = false;
 		appStore.showOverlay = false;
 	}
 });
@@ -59,19 +60,28 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<div v-if="character" class="Character-Page-Layout h-full w-full gap-4">
-		<div class="Character-Page-Image flex h-full w-full flex-col flex-nowrap items-center justify-center gap-2 overflow-y-auto rounded-md lg:max-w-[434px]">
-			<Button id="clear" type="submit" class="w-full bg-background" variant="outline" @click="goBack">
-				<span class="sr-only">Back</span>
-				<Icon name="lucide:undo-2" size="1.5em" />
-			</Button>
-			<CharacterPageImage :image-blob-url="imageBlobUrl" :is-image-loaded="isImageLoaded" :censored="settingsStore.censorImages" />
-			<Button id="clear" type="submit" class="w-full bg-background" variant="outline">
-				<Icon name="lucide:upload" size="1.5em" />
-				<span>Upload Image</span>
-			</Button>
+	<div class="h-full w-full">
+		<Transition name="fade" mode="out-in">
+			<div v-if="appStore.isFetching" class="Character-Page-Layout h-full w-full gap-4">
+				<div class="Character-Page-Image h-full w-full animate-pulse rounded-md bg-accent lg:min-w-[434px]"></div>
+				<div class="Character-Page-Editor h-full w-full animate-pulse rounded-md bg-accent"></div>
+			</div>
+		</Transition>
+		<div v-if="character" class="Character-Page-Layout h-full w-full gap-4">
+			<div
+				class="Character-Page-Image flex h-full w-full flex-col flex-nowrap items-center justify-center gap-2 overflow-y-auto rounded-md lg:max-w-[434px]">
+				<Button id="clear" type="submit" class="w-full bg-background" variant="outline" @click="goBack">
+					<span class="sr-only">Back</span>
+					<Icon name="lucide:undo-2" size="1.5em" />
+				</Button>
+				<CharacterPageImage :image-blob-url="imageBlobUrl" :is-image-loaded="isImageLoaded" :censored="settingsStore.censorImages" />
+				<Button id="clear" type="submit" class="w-full bg-background" variant="outline">
+					<Icon name="lucide:upload" size="1.5em" />
+					<span>Upload Image</span>
+				</Button>
+			</div>
+			<CharacterPageEditorNew :definition="character?.definition!" class="Character-Page-Editor" />
 		</div>
-		<CharacterPageEditorNew :definition="character?.definition!" class="Character-Page-Editor" />
 	</div>
 </template>
 

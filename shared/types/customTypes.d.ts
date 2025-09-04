@@ -5,7 +5,7 @@ export type KeyOf<A extends any[]> = string | number | symbol;
 
 export type ServiceEntry<S> = {
 	service: S;
-	timer: NodeJS.Timeout | null;
+	timer: NodeJS.Timeout | undefined;
 };
 
 export type CreateServicePoolOptions<A extends any[], S, K extends KeyOf<A>> = {
@@ -59,4 +59,12 @@ export type Definition = {
 	description: string | null;
 	personality: string | null;
 	scenario: string | null;
+}
+
+export type DefinitionParts = {
+	description: string;
+	first_mes?: string;
+	personality?: string;
+	scenario?: string;
+	alternate_greetings?: string[];
 }

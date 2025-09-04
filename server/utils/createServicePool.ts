@@ -45,7 +45,7 @@ export function createServicePool<A extends any[], S, K extends KeyOf<A>>(opts: 
 			// Optional: verbose log
 			// console.log(`Creating new ${name} for key=${String(key)}...`);
 			const service = await factory(...args);
-			active.set(key, { service, timer: null });
+			active.set(key, { service, timer: undefined });
 			scheduleDispose(key);
 			return service;
 		})();

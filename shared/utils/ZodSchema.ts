@@ -1,5 +1,4 @@
 // noinspection JSUnusedGlobalSymbols
-import * as Cards from 'character-card-utils';
 import * as z from 'zod/v4';
 
 // Server Responses
@@ -9,6 +8,25 @@ export const responseSchema = z.object({
 });
 
 export type responseType = z.infer<typeof responseSchema>;
+
+// Evaluations
+export const scoreSchema = z.object({
+	score: z.number().min(0).max(100),
+	reason: z.string(),
+});
+
+export const evaluationSchema = z.object({
+	grammarAndSpelling: scoreSchema,
+	appearance: scoreSchema,
+	personality: scoreSchema,
+	background: scoreSchema,
+	introduction: scoreSchema,
+	creativeElements: scoreSchema,
+	consistency: scoreSchema,
+	structure: scoreSchema,
+});
+
+export type evaluation = z.infer<typeof evaluationSchema>;
 
 // Character ID
 export const idSchema = z.preprocess((val) => {
@@ -22,12 +40,20 @@ export const characterIdSchema = z.object({
 	id: idSchema,
 });
 
+export const definitionLLMSchema = z.object({
+	description: z.string(),
+	first_mes: z.string().optional(),
+	personality: z.string().optional(),
+	scenario: z.string().optional(),
+	alternate_greetings: z.array(z.string()).optional(),
+});
+
 export const visibilityChangeSchema = characterIdSchema.extend({
 	public: z.boolean(),
 });
 
 export const definitionChangeSchema = characterIdSchema.extend({
-	content: Cards.v2.strict(),
+	content: z.any(),
 });
 
 export const uploadSchema = z.object({
@@ -42,6 +68,7 @@ export const listingSchema = z.object({
 	key: z.string(),
 });
 
+// Remote Card Fetching
 export const ChubUriSchema = z.object({
 	targetUri: z.union([
 		z

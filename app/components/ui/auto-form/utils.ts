@@ -33,7 +33,7 @@ export function getIndexIfArray(string: string) {
  * Get the lowest level Zod type.
  * This will unpack optionals, refinements, etc.
  */
-export function getBaseSchema<ChildType extends z.ZodAny | z.AnyZodObject = z.ZodAny>(schema: ChildType | z.ZodEffects<ChildType>): ChildType | null {
+export function getBaseSchema<ChildType extends z.ZodAny | z.AnyZodObject = z.ZodAny>(schema: ChildType | z.ZodEffects<ChildType>): ChildType | undefined {
 	if (!schema) return null;
 	if ('innerType' in schema._def) return getBaseSchema(schema._def.innerType as ChildType);
 

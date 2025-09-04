@@ -67,7 +67,7 @@ export default defineEventHandler(() => {
 
 To define a route with params, use the `[<param>]` syntax where `<param>` is the name of the param. The param will be available in the `event.context.params` object or using the [`getRouterParam`](https://h3.dev/utils/request#getrouterparamevent-name-opts-decode) utility.
 
-```ts [server/routes/hello/[name\].ts]
+```ts [server/routes/hello/[name].ts]
 export default defineEventHandler((event) => {
 	const name = getRouterParam(event, 'name');
 
@@ -85,7 +85,7 @@ Hello nitro!
 
 You can define multiple params in a route using `[<param1>]/[<param2>]` syntax where each param is a folder. You **cannot** define multiple params in a single filename of folder.
 
-```ts [server/routes/hello/[name\]/[age\].ts]
+```ts [server/routes/hello/[name]/[age].ts]
 export default defineEventHandler((event) => {
 	const name = getRouterParam(event, 'name');
 	const age = getRouterParam(event, 'age');
@@ -98,7 +98,7 @@ export default defineEventHandler((event) => {
 
 You can capture all the remaining parts of a URL using `[...<param>]` syntax. This will include the `/` in the param.
 
-```ts [server/routes/hello/[...name\].ts]
+```ts [server/routes/hello/[...name].ts]
 export default defineEventHandler((event) => {
 	const name = getRouterParam(event, 'name');
 
@@ -148,7 +148,7 @@ You can create a special route that will match all routes that are not matched b
 
 To create a catch-all route, create a file named `[...].ts` in the `server/routes/` or `server/api/` directory or in any subdirectory.
 
-```ts [server/routes/[...\].ts]
+```ts [server/routes/[...].ts]
 export default defineEventHandler((event) => {
 	const url = getRequestURL(event);
 

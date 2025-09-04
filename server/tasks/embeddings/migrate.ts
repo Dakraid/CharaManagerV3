@@ -3,9 +3,9 @@ import { eq, isNull } from 'drizzle-orm';
 type missingCharacter = {
 	id: number;
 	content: any;
-	description: string | null;
-	personality: string | null;
-	scenario: string | null;
+	description: string | undefined;
+	personality: string | undefined;
+	scenario: string | undefined;
 };
 
 const MAX_REQUESTS_PER_MINUTE = 1000;

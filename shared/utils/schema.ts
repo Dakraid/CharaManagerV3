@@ -70,7 +70,7 @@ export const evaluations = pgTable(
 		evaluation_date: timestamp({ withTimezone: true, mode: 'date' })
 			.default(sql`CURRENT_TIMESTAMP`)
 			.notNull(),
-		evaluation_version: integer().notNull(),
+		evaluation_version: text().notNull(),
 		evaluation_result: jsonb().notNull(),
 	},
 	(table) => [
@@ -82,11 +82,6 @@ export const evaluations = pgTable(
 		})
 			.onDelete('cascade')
 			.onUpdate('cascade'),
-		check(
-			'evaluations_evaluationversion_check',
-			sql`evaluation_version
-            > 0`
-		),
 	]
 );
 

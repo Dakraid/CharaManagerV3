@@ -38,7 +38,7 @@ const vertical = computed(() => squares[1]);
 
 const totalSquares = computed(() => horizontal.value * vertical.value);
 
-const hoveredSquare = ref<number | null>(null);
+const hoveredSquare = ref<number | undefined>();
 
 const gridWidth = computed(() => width * horizontal.value);
 const gridHeight = computed(() => height * vertical.value);

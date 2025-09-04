@@ -1,6 +1,4 @@
 import dayjs from 'dayjs';
-import { drizzle } from 'drizzle-orm/node-postgres';
-import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import fs from 'node:fs/promises';
 import { createStorage } from 'unstorage';
 import fsDriver from 'unstorage/drivers/fs';
@@ -22,7 +20,7 @@ export default defineNitroPlugin(async () => {
 
 	const lastRun = await manageStorage.getItem<number>('manage:tasks');
 
-	if (lastRun && dayjs(lastRun).add(1, 'hour') > dayjs()) {
+	if (lastRun && dayjs(lastRun).add(1, 'hour').unix() > dayjs().unix()) {
 		return;
 	}
 

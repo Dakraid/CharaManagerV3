@@ -210,27 +210,18 @@ html.light {
 	opacity: 0;
 }
 
-.list-enter-active,
-.list-leave-active {
-	transition: all 0.5s ease;
-}
-.list-enter-from,
-.list-leave-to {
-	opacity: 0;
-	transform: translateY(30px);
-}
-
 .fade-enter-active,
 .fade-leave-active {
-	transition: opacity 0.3s ease-in-out;
+	transition: transform 0.3s ease-in-out, opacity 0.6s ease-in-out;
 	position: absolute;
-	width: 100%;
-	height: 100%;
+    transform: scale(1);
+
 }
 
 .fade-enter-from,
 .fade-leave-to {
 	opacity: 0;
+    transform: scale(0);
 }
 
 /* Layouts */
@@ -339,8 +330,8 @@ html.light {
 .Character-Editor-Layout {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	grid-template-rows: min-content 1fr;
-	grid-template-areas: 'Title Selector' 'Content Content';
+	grid-template-rows: min-content min-content 1fr;
+	grid-template-areas: 'Title Selector' 'Controls Controls' 'Content Content';
 }
 
 .Character-Editor-Title {
@@ -349,6 +340,10 @@ html.light {
 
 .Character-Editor-Selector {
 	grid-area: Selector;
+}
+
+.Character-Editor-Controls {
+	grid-area: Controls;
 }
 
 .Character-Editor-Content {

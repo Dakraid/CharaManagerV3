@@ -1,25 +1,71 @@
 <script setup lang="ts">
 import dayjs from 'dayjs';
+import { toast } from 'vue-sonner';
+import { cn } from '~~/lib/utils';
 
 const definition = defineModel<Definition>('definition', { required: true });
 
 const selectedEditor = ref('general');
 const jsonDump = ref<string>('');
-const previousContent = ref<{
-	description: string;
-	first_mes: string;
-	personality: string;
-	scenario: string;
-	alternate_greetings: string[];
-}>({ description: '', first_mes: '', personality: '', scenario: '', alternate_greetings: [] });
 
-async function addGreeting() {
+const isLoading = ref<boolean>(false);
+const showPrev = ref<boolean>(false);
+const previousContent = ref<DefinitionParts>({ description: '', first_mes: '', personality: '', scenario: '', alternate_greetings: [] });
+
+const addGreeting = async () => {
 	definition.value.content.data.alternate_greetings.push('');
-}
+};
 
-async function deleteAlternativeMessage(index: number) {
+const deleteAlternativeMessage = async (index: number) => {
 	definition.value.content.data.alternate_greetings.splice(index, 1);
-}
+};
+
+const getCorrection = async () => {
+	showPrev.value = true;
+	isLoading.value = true;
+	previousContent.value = {
+		description: definition.value.content.data.description,
+		first_mes: definition.value.content.data.first_mes,
+		personality: definition.value.content.data.personality,
+		scenario: definition.value.content.data.scenario,
+		alternate_greetings: definition.value.content.data.alternate_greetings,
+	};
+	try {
+		const response = await $fetch<DefinitionParts>('/api/llm/correction', {
+			method: 'POST',
+			body: previousContent.value,
+		});
+		definition.value.content.data.description = response.description;
+		definition.value.content.data.first_mes = response.first_mes;
+		definition.value.content.data.personality = response.personality;
+		definition.value.content.data.scenario = response.scenario;
+		definition.value.content.data.alternate_greetings = response.alternate_greetings;
+	} catch (err: any) {
+		console.log(err);
+		previousContent.value = { description: '', first_mes: '', personality: '', scenario: '', alternate_greetings: [] };
+		showPrev.value = false;
+		isLoading.value = false;
+		return;
+	}
+	isLoading.value = false;
+};
+
+const saveChanges = async () => {
+	try {
+		const response = await $fetch<responseType>('/api/character', {
+			method: 'PATCH',
+			body: {
+				id: definition.value.character_id,
+				content: definition.value.content,
+			},
+		});
+
+		toast(response.message);
+	} catch (err: any) {
+		console.log(err);
+		return;
+	}
+};
 
 onMounted(async () => {
 	jsonDump.value = JSON.stringify(definition.value.content, null, 4);
@@ -35,7 +81,7 @@ onMounted(async () => {
 				{{ dayjs(definition.change_date).format('DD.MM.YYYY HH:mm:ss') }}
 			</Badge>
 		</div>
-		<div class="Character-Editor-Selector h-9 w-full rounded-md bg-background">
+		<div class="Character-Editor-Selector flex h-9 w-full flex-row rounded-md bg-background">
 			<Select v-model="selectedEditor" default-value="general">
 				<SelectTrigger style="height: 100%; width: 100%">
 					<SelectValue placeholder="Select an editor block" />
@@ -54,50 +100,117 @@ onMounted(async () => {
 			</Select>
 		</div>
 
+		<div class="Character-Editor-Controls flex h-9 w-full flex-row flex-nowrap justify-between gap-4">
+			<Button id="clear" type="submit" class="bg-background" variant="outline" @click="getCorrection">
+				<Icon name="lucide:brain-circuit" size="1.5em" />
+				<span>AI Editing</span>
+			</Button>
+
+			<Button id="clear" type="submit" class="bg-background" variant="default" @click="saveChanges">
+				<Icon name="lucide:send" size="1.5em" />
+				<span>Save Changes</span>
+			</Button>
+		</div>
+
 		<div class="Character-Editor-Content h-full w-full overflow-hidden rounded-md bg-background">
 			<div v-if="selectedEditor === 'general'" class="flex h-full flex-col flex-nowrap overflow-y-auto p-4">
-				<Label for="description" class="mb-2 text-xl">Description</Label>
-				<div class="mb-2 flex h-full grow flex-row gap-2">
-					<Textarea id="description" v-model="definition.content.data.description" spellcheck="true" class="h-full max-h-96" />
+				<div class="flex w-full justify-between">
+					<Label for="description" class="mb-2 text-xl">{{ showPrev ? 'Original' : '' }} Description</Label>
+					<Label for="description" class="mb-2 text-xl">{{ showPrev ? 'Edited' : '' }} Description</Label>
+				</div>
+				<div class="Controls-Layout mb-2 h-full grow gap-2">
 					<Textarea
-						v-if="previousContent.description.trim().length > 10"
+						v-if="showPrev"
 						id="description_old"
 						v-model="previousContent.description"
 						spellcheck="true"
-						class="h-full max-h-96" />
+						class="Controls-Col1 h-full max-h-96" />
+					<Textarea
+						id="description"
+						v-model="definition.content.data.description"
+						spellcheck="true"
+						:class="cn('Controls-Col2 h-full max-h-96', showPrev ? '' : 'Controls-Col3')" />
+					<Transition name="fade" mode="in-out">
+						<div v-if="isLoading" class="Controls-Col3 relative h-full max-h-96 w-full">
+							<Skeleton class="absolute inset-0 z-10 animate-none rounded-md backdrop-blur-2xl" />
+							<Skeleton class="absolute inset-0 z-0 rounded-md bg-accent-foreground/10" />
+						</div>
+					</Transition>
 				</div>
 
-				<Label for="first_message" class="mb-2 text-xl">First Message</Label>
-				<div class="mb-2 flex h-full grow flex-row gap-2">
-					<Textarea id="first_message" v-model="definition.content.data.first_mes" spellcheck="true" class="h-full max-h-96" />
+				<div class="flex w-full justify-between">
+					<Label for="first_message" class="mb-2 text-xl">{{ showPrev ? 'Original' : '' }} First Message</Label>
+					<Label for="first_message" class="mb-2 text-xl">{{ showPrev ? 'Edited' : '' }} First Message</Label>
+				</div>
+				<div class="Controls-Layout mb-2 h-full grow gap-2">
 					<Textarea
-						v-if="previousContent.first_mes.trim().length > 10"
+						v-if="showPrev"
 						id="first_message_old"
 						v-model="previousContent.first_mes"
 						contenteditable="false"
-						class="h-full max-h-96" />
+						class="Controls-Col1 h-full max-h-96" />
+					<Textarea
+						id="first_message"
+						v-model="definition.content.data.first_mes"
+						spellcheck="true"
+						class="h-full max-h-96"
+						:class="cn('Controls-Col2 h-full max-h-96', showPrev ? '' : 'Controls-Col3')" />
+					<Transition name="fade" mode="in-out">
+						<div v-if="isLoading" class="Controls-Col3 relative h-full max-h-96 w-full">
+							<Skeleton class="absolute inset-0 z-10 animate-none rounded-md backdrop-blur-2xl" />
+							<Skeleton class="absolute inset-0 z-0 rounded-md bg-accent-foreground/10" />
+						</div>
+					</Transition>
 				</div>
 
-				<Label for="personality" class="mb-2 text-xl">Personality</Label>
-				<div class="mb-2 flex h-full grow flex-row gap-2">
-					<Textarea id="personality" v-model="definition.content.data.personality" spellcheck="true" class="h-full max-h-96" />
+				<div class="flex w-full justify-between">
+					<Label for="personality" class="mb-2 text-xl">{{ showPrev ? 'Original' : '' }} Personality</Label>
+					<Label for="personality" class="mb-2 text-xl">{{ showPrev ? 'Edited' : '' }} Personality</Label>
+				</div>
+				<div class="Controls-Layout mb-2 h-full grow gap-2">
 					<Textarea
-						v-if="previousContent.personality.trim().length > 10"
+						v-if="showPrev"
 						id="personality_old"
 						v-model="previousContent.personality"
 						contenteditable="false"
-						class="h-full max-h-96" />
+						class="Controls-Col1 h-full max-h-96" />
+					<Textarea
+						id="personality"
+						v-model="definition.content.data.personality"
+						spellcheck="true"
+						class="h-full max-h-96"
+						:class="cn('Controls-Col2 h-full max-h-96', showPrev ? '' : 'Controls-Col3')" />
+					<Transition name="fade" mode="in-out">
+						<div v-if="isLoading" class="Controls-Col3 relative h-full max-h-96 w-full">
+							<Skeleton class="absolute inset-0 z-10 animate-none rounded-md backdrop-blur-2xl" />
+							<Skeleton class="absolute inset-0 z-0 rounded-md bg-accent-foreground/10" />
+						</div>
+					</Transition>
 				</div>
 
-				<Label for="scenario" class="mb-2 text-xl">Scenario</Label>
-				<div class="mb-2 flex h-full grow flex-row gap-2">
-					<Textarea id="scenario" v-model="definition.content.data.scenario" spellcheck="true" class="h-full max-h-96" />
+				<div class="flex w-full justify-between">
+					<Label for="scenario" class="mb-2 text-xl">{{ showPrev ? 'Original' : '' }} Scenario</Label>
+					<Label for="scenario" class="mb-2 text-xl">{{ showPrev ? 'Edited' : '' }} Scenario</Label>
+				</div>
+				<div class="Controls-Layout mb-2 h-full grow gap-2">
 					<Textarea
-						v-if="previousContent.scenario.trim().length > 10"
+						v-if="showPrev"
 						id="scenario_old"
 						v-model="previousContent.scenario"
 						contenteditable="false"
-						class="h-full max-h-96" />
+						class="Controls-Col1 h-full max-h-96" />
+					<Textarea
+						id="scenario"
+						v-model="definition.content.data.scenario"
+						spellcheck="true"
+						class="h-full max-h-96"
+						:class="cn('Controls-Col2 h-full max-h-96', showPrev ? '' : 'Controls-Col3')" />
+					<Transition name="fade" mode="in-out">
+						<div v-if="isLoading" class="Controls-Col3 relative h-full max-h-96 w-full">
+							<Skeleton class="absolute inset-0 z-10 animate-none rounded-md backdrop-blur-2xl" />
+							<Skeleton class="absolute inset-0 z-0 rounded-md bg-accent-foreground/10" />
+						</div>
+					</Transition>
 				</div>
 			</div>
 
@@ -174,4 +287,23 @@ onMounted(async () => {
 	</div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.Controls-Layout {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr;
+	grid-auto-flow: row;
+}
+
+.Controls-Col1 {
+	grid-area: 1 / 1 / 2 / 2;
+}
+
+.Controls-Col2 {
+	grid-area: 1 / 2 / 2 / 3;
+}
+
+.Controls-Col3 {
+	grid-area: 1 / 1 / 2 / 3;
+}
+</style>

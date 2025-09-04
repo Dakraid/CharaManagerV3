@@ -78,7 +78,7 @@ function b64EncodeUnicode(str: string) {
 export function cleanPNG(imageBytes: Uint8Array): Uint8Array {
 	const chunks = extractChunks(imageBytes);
 
-	let foundText: string | null = null;
+	let foundText: string | undefined;
 
 	for (const c of chunks) {
 		if (c.name !== 'tEXt') continue;
@@ -117,7 +117,7 @@ export function cleanPNG(imageBytes: Uint8Array): Uint8Array {
 export function extractTextAndStripPng(imageBytes: Uint8Array): { png: Uint8Array; definition: V2 } {
 	const chunks = extractChunks(imageBytes);
 
-	let foundText: string | null = null;
+	let foundText: string | undefined;
 
 	for (const c of chunks) {
 		if (c.name !== 'tEXt') continue;

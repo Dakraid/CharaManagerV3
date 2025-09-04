@@ -41,7 +41,7 @@ async function getCompleteImageIds(directoryPath: string): Promise<number[]> {
 	}
 }
 
-async function exportImage(character: { id: number; raw: string | null }) {
+async function exportImage(character: { id: number; raw: string | undefined }) {
 	try {
 		if (!character.raw) {
 			return;
