@@ -12,12 +12,10 @@ const characterStore = useCharacterStore();
 
 const downloading = ref(false);
 const imageLoaded = ref(false);
-const showEvaluation = ref(false);
+const isHovering = ref(false);
 
 const evaluation = ref<Evaluation | undefined>();
 const imageBlobUrl = ref<string>('');
-
-const replaceLettersWithHash = (str: string): string => str.replace(/\S/g, '#');
 
 const downloadCharacter = async () => {
 	downloading.value = true;
@@ -91,15 +89,19 @@ const refreshEval = async (force: boolean = false) => {
 };
 
 const mouseEnter = () => {
-	showEvaluation.value = true;
+	isHovering.value = true;
 };
 
 const mouseLeave = () => {
-	showEvaluation.value = false;
+	isHovering.value = false;
 };
 
+const showControls = computed(() => {
+	return isHovering.value || settingsStore.permaControls;
+});
+
 const containerStyle = computed(() => {
-	return { gridTemplateRows: `50px 40px 384px 90px` };
+	return { gridTemplateRows: '50px 40px 384px 90px' };
 });
 
 const backgroundStyles = computed(() => {
@@ -122,101 +124,16 @@ onUnmounted(() => {
 		<AlertDialog>
 			<ContextMenu>
 				<ContextMenuTrigger>
-					<GlowBorderHover :color="['#A07CFE', '#FE8FB5', '#FFBE7B']" :border-radius="16" class="h-min w-min" @mouseenter="refreshEval">
-						<div class="Card-Container morph w-[256px] overflow-hidden border" :style="containerStyle">
+					<GlowBorderHover :color="['#A07CFE', '#FE8FB5', '#FFBE7B']" :border-radius="16" class="h-min w-min" @mouseenter="mouseEnter" @mouseleave="mouseLeave">
+						<div class="Card-Container morph w-[256px] overflow-hidden border" :style="containerStyle" @mouseenter="refreshEval(false)">
 							<div
-								:class="
-									cn(
-										'Card-Background h-[564px] w-[256px] bg-cover bg-center bg-no-repeat blur-xl',
-										settingsStore.censorImages ? 'censor' : ''
-									)
-								"
+								:id="showControls ? 'showControls' : 'hideControls'"
+								:class="cn('Card-Background h-[564px] w-[256px] bg-cover bg-center bg-no-repeat blur-xl', settingsStore.censorImages ? 'censor' : '')"
 								:style="backgroundStyles"></div>
 
-							<div class="Card-Header-Title glass-background flex w-[256px] items-center justify-between gap-2 px-2">
-								<h1 class="w-full truncate text-start text-xl font-bold">
-									{{ settingsStore.censorNames ? replaceLettersWithHash(character.character_name) : character.character_name }}
-								</h1>
-								<TooltipProvider>
-									<Tooltip>
-										<TooltipTrigger as-child>
-											<Icon name="lucide:info" size="1.5rem" class="min-w-[25px]" />
-										</TooltipTrigger>
-										<TooltipContent side="bottom">
-											<div class="grid grid-cols-[min-content_1fr] grid-rows-3 gap-1">
-												<p>Identifier:</p>
-												<p class="col-start-2">{{ character.character_id }}</p>
-												<p>Uploaded:</p>
-												<p class="col-start-2">{{ new Date(character.upload_date).toLocaleString() }}</p>
-												<p>Filename:</p>
-												<p class="col-start-2">{{ `${character.character_id}.png` }}</p>
-											</div>
-										</TooltipContent>
-									</Tooltip>
-								</TooltipProvider>
-							</div>
+							<CharacterCardHeader :id="showControls ? 'showControls' : 'hideControls'" :character="character" :evaluation="evaluation" class="Card-Header" />
 
-							<div
-								class="Card-Header-Evaluation Evaluation-Layout glass-background flex items-center justify-center gap-1 px-2"
-								@mouseenter="mouseEnter"
-								@mouseleave="mouseLeave">
-								<CharacterCardEvaluation :score="character.evaluation_score" class="Evaluation-Bar" />
-								<Dialog>
-									<DialogTrigger v-if="evaluation" as-child>
-										<div
-											class="Evaluation-Button focus::bg-foreground/40 z-20 flex h-6 w-full items-center justify-center rounded-full transition-colors hover:bg-foreground/20">
-											<Icon
-												name="lucide:message-circle-question-mark"
-												size="1rem"
-												:class="cn('z-10 opacity-0 transition-all transition-discrete', showEvaluation ? 'opacity-100' : '')" />
-										</div>
-									</DialogTrigger>
-									<DialogContent
-										class="border border-foreground/20 bg-background/70 p-12 shadow-xl backdrop-blur-xl sm:max-w-[50%]"
-										overlay="bg-transparent">
-										<DialogHeader>
-											<DialogTitle>Evaluation Results</DialogTitle>
-											<DialogDescription>
-												Characters are evaluated by a LLM. Here you can see the individual scores and the reasoning behind them.
-											</DialogDescription>
-										</DialogHeader>
-										<CharacterCardEvaluation
-											:score="evaluation!.appearance.score"
-											subtext="Appearance"
-											:reason="evaluation!.appearance.reason" />
-										<CharacterCardEvaluation
-											:score="evaluation!.personality.score"
-											subtext="Personality"
-											:reason="evaluation!.personality.reason" />
-										<CharacterCardEvaluation
-											:score="evaluation!.background.score"
-											subtext="Background"
-											:reason="evaluation!.background.reason" />
-										<CharacterCardEvaluation
-											:score="evaluation!.consistency.score"
-											subtext="Consistency"
-											:reason="evaluation!.consistency.reason" />
-										<CharacterCardEvaluation
-											:score="evaluation!.creativeElements.score"
-											subtext="Creative Elements"
-											:reason="evaluation!.creativeElements.reason" />
-										<CharacterCardEvaluation
-											:score="evaluation!.grammarAndSpelling.score"
-											subtext="Grammar and Spelling"
-											:reason="evaluation!.grammarAndSpelling.reason" />
-										<CharacterCardEvaluation
-											:score="evaluation!.structure.score"
-											subtext="Structure"
-											:reason="evaluation!.structure.reason" />
-										<CharacterCardEvaluation
-											:score="evaluation!.introduction.score"
-											subtext="Introduction"
-											:reason="evaluation!.introduction.reason" />
-									</DialogContent>
-								</Dialog>
-							</div>
-
-							<div class="Card-Body">
+							<div :id="showControls ? 'showControls' : 'hideControls'" class="Card-Body">
 								<Skeleton v-if="!imageLoaded" class="h-full w-full" />
 								<img
 									:src="imageBlobUrl"
@@ -224,15 +141,13 @@ onUnmounted(() => {
 									crossorigin="use-credentials"
 									alt="Character Image"
 									:class="
-										cn(
-											'h-[384px] w-[256px] object-cover transition-all duration-300',
-											imageLoaded ? 'opacity-100' : 'opacity-0',
-											settingsStore.censorImages ? 'censor' : ''
-										)
+										cn('h-[384px] w-[256px] object-cover transition-all duration-300', imageLoaded ? 'opacity-100' : 'opacity-0', settingsStore.censorImages ? 'censor' : '')
 									" />
 							</div>
 
 							<CharacterCardFooter
+								:id="showControls ? 'showControls' : 'hideControls'"
+								class="Card-Footer"
 								:character="character"
 								:downloading="downloading"
 								@visibility="updateVisibility"
@@ -274,7 +189,7 @@ onUnmounted(() => {
 					</ContextMenuItem>
 					<ContextMenuItem v-if="character.owned" @click="refreshEval(true)">
 						<div class="flex w-full flex-nowrap items-center gap-2">
-							<Icon name="lucide:graduation-cap" size="1.25rem" />
+							<Icon name="lucide:refresh-cw" size="1.25rem" />
 							<span>Refresh Evaluation</span>
 						</div>
 					</ContextMenuItem>
@@ -283,9 +198,7 @@ onUnmounted(() => {
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-					<AlertDialogDescription>
-						This action cannot be undone. This will permanently delete the character and all its data from our servers.
-					</AlertDialogDescription>
+					<AlertDialogDescription> This action cannot be undone. This will permanently delete the character and all its data from our servers. </AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel>Cancel</AlertDialogCancel>
@@ -304,35 +217,68 @@ onUnmounted(() => {
 	border-radius: calc(var(--radius) + 4px);
 }
 
+.Card-Transition {
+	transition-property: all;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	transition-duration: 300ms;
+	transition-behavior: allow-discrete;
+}
+
 .Card-Background {
 	grid-area: 1 / 1 / 5 / 2;
+	transition-property: all;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	transition-duration: 300ms;
+	transition-behavior: allow-discrete;
+
+	&#hideControls {
+		filter: none;
+	}
 }
 
 .Card-Body {
 	grid-area: 3 / 1 / 4 / 2;
+	transition-property: all;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	transition-duration: 300ms;
+	transition-behavior: allow-discrete;
+	display: none;
+	transform: scale(1.46);
+
+	&#showControls {
+		display: block;
+		transform: scale(1);
+
+		@starting-style {
+			transform: scale(1.46);
+		}
+	}
 }
 
-.Card-Header-Title {
-	grid-area: 1 / 1 / 2 / 2;
-	height: 50px;
+.Card-Header {
+	grid-area: 1 / 1 / 3 / 2;
+	transition-property: all;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	transition-duration: 300ms;
+	transition-behavior: allow-discrete;
+	transform: translateY(0%);
+
+	&#hideControls {
+		display: none;
+		transform: translateY(-100%);
+	}
 }
 
-.Card-Header-Evaluation {
-	grid-area: 2 / 1 / 3 / 2;
-	height: 40px;
-}
+.Card-Footer {
+	transition-property: all;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	transition-duration: 300ms;
+	transition-behavior: allow-discrete;
+	transform: translateY(0%);
 
-.Evaluation-Layout {
-	display: grid;
-	grid-template-columns: 1fr 24px;
-	grid-template-rows: 1fr;
-}
-
-.Evaluation-Bar {
-	grid-area: 1 / 1 / 2 / 3;
-}
-
-.Evaluation-Button {
-	grid-area: 1 / 2 / 2 / 3;
+	&#hideControls {
+		display: none;
+		transform: translateY(100%);
+	}
 }
 </style>

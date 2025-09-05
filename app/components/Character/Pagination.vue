@@ -25,7 +25,7 @@ const updatePerPage = (payload: string | number) => {
 				:total="characterStore.characterCount"
 				:default-page="1"
 				:show-edges="true"
-				:sibling-count="0"
+				:sibling-count="1"
 				class="mx-0 w-min"
 				@update:page="updatePage">
 				<PaginationContent v-slot="{ items }">

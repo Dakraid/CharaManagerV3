@@ -131,11 +131,7 @@ const circleStyle = computed(() => ({
 				@mouseenter="handleMouseEnter"
 				@mouseleave="handleMouseLeave"
 				@mousemove="handleMouseMove">
-				<div
-					:class="
-						cn('overlay absolute z-0 h-96 w-96 rounded-full bg-neutral-600 opacity-0 blur-xl', shouldHighlight ? 'block h-48 w-48 opacity-40' : '')
-					"
-					:style="circleStyle"></div>
+				<div :class="cn('overlay absolute z-0 h-96 w-96 rounded-full bg-neutral-600 opacity-0 blur-xl', shouldHighlight ? 'block h-48 w-48 opacity-40' : '')" :style="circleStyle"></div>
 				<h1 class="z-10">Click to select or drop files here...</h1>
 			</Button>
 			<Transition name="fade" mode="out-in">
@@ -146,12 +142,7 @@ const circleStyle = computed(() => ({
 		</div>
 
 		<div v-if="uploadStore.files.length > 0" class="min-h-0 w-full flex-1 overflow-y-auto pr-2">
-			<CharacterFilesItem
-				v-for="upload in uploadStore.files"
-				:key="upload.file.name"
-				:upload="upload"
-				@uploaded="handleUploaded(upload)"
-				@remove="handleRemove(upload)" />
+			<CharacterFilesItem v-for="upload in uploadStore.files" :key="upload.file.name" :upload="upload" @uploaded="handleUploaded(upload)" @remove="handleRemove(upload)" />
 		</div>
 	</div>
 </template>

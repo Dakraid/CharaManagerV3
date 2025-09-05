@@ -124,11 +124,7 @@ function cleanupNonNestedPath(path: string) {
  */
 export function getFromPath<TValue = unknown>(object: NestedRecord | undefined, path: string): TValue | undefined;
 export function getFromPath<TValue = unknown, TFallback = TValue>(object: NestedRecord | undefined, path: string, fallback?: TFallback): TValue | TFallback;
-export function getFromPath<TValue = unknown, TFallback = TValue>(
-	object: NestedRecord | undefined,
-	path: string,
-	fallback?: TFallback
-): TValue | TFallback | undefined {
+export function getFromPath<TValue = unknown, TFallback = TValue>(object: NestedRecord | undefined, path: string, fallback?: TFallback): TValue | TFallback | undefined {
 	if (!object) return fallback;
 
 	if (isNotNestedPath(path)) return object[cleanupNonNestedPath(path)] as TValue | undefined;

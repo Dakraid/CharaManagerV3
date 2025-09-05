@@ -1,6 +1,6 @@
 const config = {
 	plugins: ['@trivago/prettier-plugin-sort-imports', 'prettier-plugin-tailwindcss'],
-	printWidth: 160,
+	printWidth: 200,
 	tabWidth: 4,
 	trailingComma: 'es5',
 	semi: true,

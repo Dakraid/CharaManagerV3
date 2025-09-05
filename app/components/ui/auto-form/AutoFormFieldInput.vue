@@ -20,11 +20,7 @@ const inputComponent = computed(() => (props.config?.component === 'textarea' ? 
 			</AutoFormLabel>
 			<FormControl>
 				<slot v-bind="slotProps">
-					<component
-						:is="inputComponent"
-						type="text"
-						v-bind="{ ...slotProps.componentField, ...config?.inputProps }"
-						:disabled="config?.inputProps?.disabled ?? disabled" />
+					<component :is="inputComponent" type="text" v-bind="{ ...slotProps.componentField, ...config?.inputProps }" :disabled="config?.inputProps?.disabled ?? disabled" />
 				</slot>
 			</FormControl>
 			<FormDescription v-if="config?.description">

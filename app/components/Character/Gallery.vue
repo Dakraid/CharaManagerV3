@@ -20,9 +20,7 @@ const refresh = async () => {
 		</div>
 	</div>
 
-	<div
-		v-else
-		class="Gallery-Content flex h-full w-full flex-wrap justify-evenly gap-4 overflow-x-hidden overflow-y-scroll rounded-md border border-r-0 bg-background px-4 py-6">
+	<div v-else class="Gallery-Content flex h-full w-full flex-wrap justify-evenly gap-4 overflow-x-hidden overflow-y-scroll rounded-md border border-r-0 bg-background px-4 py-6">
 		<LazyCharacterCard v-for="character in characterStore.characterList" :key="character.character_id" :character="character" />
 	</div>
 

@@ -198,12 +198,7 @@ onMounted(async () => {
 					<Label for="description" class="text-xl">Description</Label>
 					<div class="flex h-full w-full flex-row gap-2">
 						<Textarea id="description" v-model="definition.content.data.description" spellcheck="true" class="h-full w-full" />
-						<Textarea
-							v-if="previousContent.description.trim().length > 10"
-							id="description_old"
-							v-model="previousContent.description"
-							spellcheck="true"
-							class="h-full w-full" />
+						<Textarea v-if="previousContent.description.trim().length > 10" id="description_old" v-model="previousContent.description" spellcheck="true" class="h-full w-full" />
 					</div>
 				</div>
 
@@ -211,12 +206,7 @@ onMounted(async () => {
 					<Label for="first_message" class="text-xl">First Message</Label>
 					<div class="flex h-full w-full flex-row gap-2">
 						<Textarea id="first_message" v-model="definition.content.data.first_mes" spellcheck="true" class="h-full" />
-						<Textarea
-							v-if="previousContent.first_mes.trim().length > 10"
-							id="first_message_old"
-							v-model="previousContent.first_mes"
-							contenteditable="false"
-							class="h-full w-full" />
+						<Textarea v-if="previousContent.first_mes.trim().length > 10" id="first_message_old" v-model="previousContent.first_mes" contenteditable="false" class="h-full w-full" />
 					</div>
 				</div>
 
@@ -224,12 +214,7 @@ onMounted(async () => {
 					<Label for="personality" class="text-xl">Personality</Label>
 					<div class="flex h-full w-full flex-row gap-2">
 						<Textarea id="personality" v-model="definition.content.data.personality" spellcheck="true" class="h-full" />
-						<Textarea
-							v-if="previousContent.personality.trim().length > 10"
-							id="personality_old"
-							v-model="previousContent.personality"
-							contenteditable="false"
-							class="h-full w-full" />
+						<Textarea v-if="previousContent.personality.trim().length > 10" id="personality_old" v-model="previousContent.personality" contenteditable="false" class="h-full w-full" />
 					</div>
 				</div>
 
@@ -237,12 +222,7 @@ onMounted(async () => {
 					<Label for="scenario" class="text-xl">Scenario</Label>
 					<div class="flex h-full w-full flex-row gap-2">
 						<Textarea id="scenario" v-model="definition.content.data.scenario" spellcheck="true" class="h-full" />
-						<Textarea
-							v-if="previousContent.scenario.trim().length > 10"
-							id="scenario_old"
-							v-model="previousContent.scenario"
-							contenteditable="false"
-							class="h-full w-full" />
+						<Textarea v-if="previousContent.scenario.trim().length > 10" id="scenario_old" v-model="previousContent.scenario" contenteditable="false" class="h-full w-full" />
 					</div>
 				</div>
 			</div>

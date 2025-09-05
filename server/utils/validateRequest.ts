@@ -7,10 +7,7 @@ import type { H3Event } from 'h3';
  * @returns Parsed and validated data
  * @throws createError with BAD_REQUEST status if validation fails
  */
-export async function validateRequestBody<T>(
-	event: H3Event,
-	schema: { safeParse: (data: unknown) => { success: boolean; data?: T; error?: any } }
-): Promise<T> {
+export async function validateRequestBody<T>(event: H3Event, schema: { safeParse: (data: unknown) => { success: boolean; data?: T; error?: any } }): Promise<T> {
 	const result = await readValidatedBody(event, (body) => schema.safeParse(body));
 
 	if (!result.success) {
@@ -30,10 +27,7 @@ export async function validateRequestBody<T>(
  * @returns Parsed and validated data
  * @throws createError with BAD_REQUEST status if validation fails
  */
-export async function validateRequestQuery<T>(
-	event: H3Event,
-	schema: { safeParse: (data: unknown) => { success: boolean; data?: T; error?: any } }
-): Promise<T> {
+export async function validateRequestQuery<T>(event: H3Event, schema: { safeParse: (data: unknown) => { success: boolean; data?: T; error?: any } }): Promise<T> {
 	const result = await getValidatedQuery(event, (body) => schema.safeParse(body));
 
 	if (!result.success) {

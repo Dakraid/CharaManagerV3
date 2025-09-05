@@ -119,17 +119,8 @@ onMounted(async () => {
 					<Label for="description" class="mb-2 text-xl">{{ showPrev ? 'Edited' : '' }} Description</Label>
 				</div>
 				<div class="Controls-Layout mb-2 h-full grow gap-2">
-					<Textarea
-						v-if="showPrev"
-						id="description_old"
-						v-model="previousContent.description"
-						spellcheck="true"
-						class="Controls-Col1 h-full max-h-96" />
-					<Textarea
-						id="description"
-						v-model="definition.content.data.description"
-						spellcheck="true"
-						:class="cn('Controls-Col2 h-full max-h-96', showPrev ? '' : 'Controls-Col3')" />
+					<Textarea v-if="showPrev" id="description_old" v-model="previousContent.description" spellcheck="true" class="Controls-Col1 h-full max-h-96" />
+					<Textarea id="description" v-model="definition.content.data.description" spellcheck="true" :class="cn('Controls-Col2 h-full max-h-96', showPrev ? '' : 'Controls-Col3')" />
 					<Transition name="fade" mode="in-out">
 						<div v-if="isLoading" class="Controls-Col3 relative h-full max-h-96 w-full">
 							<Skeleton class="absolute inset-0 z-10 animate-none rounded-md backdrop-blur-2xl" />
@@ -143,12 +134,7 @@ onMounted(async () => {
 					<Label for="first_message" class="mb-2 text-xl">{{ showPrev ? 'Edited' : '' }} First Message</Label>
 				</div>
 				<div class="Controls-Layout mb-2 h-full grow gap-2">
-					<Textarea
-						v-if="showPrev"
-						id="first_message_old"
-						v-model="previousContent.first_mes"
-						contenteditable="false"
-						class="Controls-Col1 h-full max-h-96" />
+					<Textarea v-if="showPrev" id="first_message_old" v-model="previousContent.first_mes" contenteditable="false" class="Controls-Col1 h-full max-h-96" />
 					<Textarea
 						id="first_message"
 						v-model="definition.content.data.first_mes"
@@ -168,12 +154,7 @@ onMounted(async () => {
 					<Label for="personality" class="mb-2 text-xl">{{ showPrev ? 'Edited' : '' }} Personality</Label>
 				</div>
 				<div class="Controls-Layout mb-2 h-full grow gap-2">
-					<Textarea
-						v-if="showPrev"
-						id="personality_old"
-						v-model="previousContent.personality"
-						contenteditable="false"
-						class="Controls-Col1 h-full max-h-96" />
+					<Textarea v-if="showPrev" id="personality_old" v-model="previousContent.personality" contenteditable="false" class="Controls-Col1 h-full max-h-96" />
 					<Textarea
 						id="personality"
 						v-model="definition.content.data.personality"
@@ -193,12 +174,7 @@ onMounted(async () => {
 					<Label for="scenario" class="mb-2 text-xl">{{ showPrev ? 'Edited' : '' }} Scenario</Label>
 				</div>
 				<div class="Controls-Layout mb-2 h-full grow gap-2">
-					<Textarea
-						v-if="showPrev"
-						id="scenario_old"
-						v-model="previousContent.scenario"
-						contenteditable="false"
-						class="Controls-Col1 h-full max-h-96" />
+					<Textarea v-if="showPrev" id="scenario_old" v-model="previousContent.scenario" contenteditable="false" class="Controls-Col1 h-full max-h-96" />
 					<Textarea
 						id="scenario"
 						v-model="definition.content.data.scenario"
@@ -221,10 +197,7 @@ onMounted(async () => {
 					<Icon name="lucide:message-square-plus" size="1.5em" />
 				</Button>
 				<div class="flex h-full flex-col flex-nowrap overflow-y-auto">
-					<div
-						v-for="(item, index) in definition.content.data.alternate_greetings"
-						:key="item"
-						class="mr-2 mb-2 grid max-h-96 grid-cols-[1fr_48px] gap-2">
+					<div v-for="(item, index) in definition.content.data.alternate_greetings" :key="item" class="mr-2 mb-2 grid max-h-96 grid-cols-[1fr_48px] gap-2">
 						<Textarea v-model="definition.content.data.alternate_greetings[index]" class="h-full" spellcheck="true" />
 						<Button type="submit" variant="destructive" class="h-full p-0" @click="deleteAlternativeMessage(index)">
 							<span class="sr-only">Delete</span>

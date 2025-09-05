@@ -60,11 +60,7 @@ provide(FieldContextKey, fieldContext);
 						</AccordionTrigger>
 						<AccordionContent class="space-y-5 p-1">
 							<template v-for="(shape, key) in shapes" :key="key">
-								<AutoFormField
-									:config="config?.[key as keyof typeof config] as ConfigItem"
-									:field-name="`${fieldName}.${key.toString()}`"
-									:label="key.toString()"
-									:shape="shape" />
+								<AutoFormField :config="config?.[key as keyof typeof config] as ConfigItem" :field-name="`${fieldName}.${key.toString()}`" :label="key.toString()" :shape="shape" />
 							</template>
 						</AccordionContent>
 					</AccordionItem>

@@ -1,22 +1,6 @@
 import type { V2 } from 'character-card-utils';
 import { sql } from 'drizzle-orm';
-import {
-	boolean,
-	check,
-	customType,
-	foreignKey,
-	index,
-	integer,
-	jsonb,
-	pgTable,
-	primaryKey,
-	serial,
-	text,
-	timestamp,
-	unique,
-	uuid,
-	vector,
-} from 'drizzle-orm/pg-core';
+import { boolean, check, customType, foreignKey, index, integer, jsonb, pgTable, primaryKey, serial, text, timestamp, unique, uuid, vector } from 'drizzle-orm/pg-core';
 
 export const binary = customType<{
 	data: Buffer;

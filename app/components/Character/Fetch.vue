@@ -98,12 +98,7 @@ const onSubmit = async () => {
 		</Transition>
 
 		<div class="Fetch-Input flex w-full flex-col">
-			<Textarea
-				:model-value="textUrls"
-				placeholder="Paste URLs here..."
-				class="Fetch-Input max-h-[200px] w-full resize-none"
-				:disabled="isFetching"
-				@update:model-value="onEdit" />
+			<Textarea :model-value="textUrls" placeholder="Paste URLs here..." class="Fetch-Input max-h-[200px] w-full resize-none" :disabled="isFetching" @update:model-value="onEdit" />
 
 			<Label v-if="errorMessage !== ''" class="w-full text-xs text-red-500">{{ errorMessage }}</Label>
 		</div>

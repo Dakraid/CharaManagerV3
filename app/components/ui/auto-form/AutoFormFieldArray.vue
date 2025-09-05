@@ -65,11 +65,7 @@ provide(FieldContextKey, fieldContext);
 						<AccordionContent>
 							<template v-for="(field, index) of fields" :key="field.key">
 								<div class="mb-4 p-1">
-									<AutoFormField
-										:field-name="`${fieldName}[${index}]`"
-										:label="fieldName"
-										:shape="itemShape!"
-										:config="config as ConfigItem" />
+									<AutoFormField :field-name="`${fieldName}[${index}]`" :label="fieldName" :shape="itemShape!" :config="config as ConfigItem" />
 
 									<div class="!my-4 flex justify-end">
 										<Button type="button" size="icon" variant="secondary" @click="remove(index)">

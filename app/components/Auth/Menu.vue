@@ -144,9 +144,7 @@ async function showRegister(set: boolean) {
 
 					<Button type="submit" class="w-full">Register</Button>
 
-					<a
-						class="cursor-pointer pr-4 text-end text-sm font-normal text-muted-foreground underline-offset-4 hover:text-accent-foreground hover:underline"
-						@click="showRegister(false)"
+					<a class="cursor-pointer pr-4 text-end text-sm font-normal text-muted-foreground underline-offset-4 hover:text-accent-foreground hover:underline" @click="showRegister(false)"
 						>Sign In</a
 					>
 				</form>
@@ -180,9 +178,7 @@ async function showRegister(set: boolean) {
 					<Button type="submit" class="w-full">Login</Button>
 
 					<div v-if="registration && config.public.registrationEnabled" class="w-full">
-						<a
-							class="cursor-pointer pr-4 text-end text-sm font-normal text-muted-foreground underline-offset-4 hover:text-accent-foreground hover:underline"
-							@click="showRegister(true)"
+						<a class="cursor-pointer pr-4 text-end text-sm font-normal text-muted-foreground underline-offset-4 hover:text-accent-foreground hover:underline" @click="showRegister(true)"
 							>Sign Up</a
 						>
 					</div>

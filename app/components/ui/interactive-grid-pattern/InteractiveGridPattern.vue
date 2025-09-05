@@ -54,11 +54,7 @@ function getY(index: number) {
 const svgClass = computed(() => cn('absolute inset-0 h-full w-full border border-gray-400/30', className));
 
 function getRectClass(index: number) {
-	return cn(
-		'stroke-gray-400/30 transition-all duration-100 ease-in-out [&:not(:hover)]:duration-1000',
-		hoveredSquare.value === index ? 'fill-gray-300/30' : 'fill-transparent',
-		squaresClassName
-	);
+	return cn('stroke-gray-400/30 transition-all duration-100 ease-in-out [&:not(:hover)]:duration-1000', hoveredSquare.value === index ? 'fill-gray-300/30' : 'fill-transparent', squaresClassName);
 }
 
 function handleMouseEnter(index: number) {

@@ -24,9 +24,7 @@ const appStore = useAppStore();
 							}
 						" />
 					<div class="grid gap-2 leading-none">
-						<label
-							for="censorImages"
-							class="cursor-pointer text-center text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+						<label for="censorImages" class="cursor-pointer text-center text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
 							appStore.isFetching
 						</label>
 					</div>

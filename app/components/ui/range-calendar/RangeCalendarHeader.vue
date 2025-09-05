@@ -17,10 +17,7 @@ const forwardedProps = useForwardProps(delegatedProps);
 </script>
 
 <template>
-	<RangeCalendarHeader
-		data-slot="range-calendar-header"
-		:class="cn('relative flex w-full items-center justify-center pt-1', props.class)"
-		v-bind="forwardedProps">
+	<RangeCalendarHeader data-slot="range-calendar-header" :class="cn('relative flex w-full items-center justify-center pt-1', props.class)" v-bind="forwardedProps">
 		<slot />
 	</RangeCalendarHeader>
 </template>

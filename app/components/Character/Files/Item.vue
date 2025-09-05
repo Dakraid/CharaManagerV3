@@ -148,23 +148,14 @@ onUnmounted(() => {
 <template>
 	<div class="flex flex-col items-center rounded-md pt-2 first:pt-0">
 		<div v-if="imageUrl" class="w-full rounded-md bg-accent">
-			<div
-				ref="containerRef"
-				class="relative h-52 w-full overflow-hidden rounded-md"
-				@mouseenter="handleMouseEnter"
-				@mouseleave="handleMouseLeave"
-				@mousemove="handleMouseMove">
+			<div ref="containerRef" class="relative h-52 w-full overflow-hidden rounded-md" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" @mousemove="handleMouseMove">
 				<img ref="imageRef" :src="imageUrl" :alt="upload.file.name" :style="imageStyle" class="-z-10 transition-transform duration-300 ease-out" />
 				<Transition name="fade" mode="out-in">
 					<div v-if="isUploaded" class="absolute top-0 left-0 z-0 h-full w-full inset-shadow-2xl inset-shadow-green-500/50"></div>
 					<div v-else-if="isFailure" class="absolute top-0 left-0 z-0 h-full w-full inset-shadow-2xl inset-shadow-red-500/50"></div>
 					<div v-else class="absolute top-0 left-0 z-0 h-full w-full"></div>
 				</Transition>
-				<Button
-					size="icon"
-					:class="cn('absolute top-2 right-2 z-20 rounded-full', isUploaded ? 'bg-green-500' : '')"
-					:disabled="isProcessing || isUploaded"
-					@click="uploadFile">
+				<Button size="icon" :class="cn('absolute top-2 right-2 z-20 rounded-full', isUploaded ? 'bg-green-500' : '')" :disabled="isProcessing || isUploaded" @click="uploadFile">
 					<Transition name="fade" mode="out-in">
 						<Icon v-if="isProcessing" name="lucide:loader-circle" size="1.5rem" class="animate-spin" />
 						<Icon v-else-if="isUploaded" name="lucide:check" size="1.5rem" class="text-white" />

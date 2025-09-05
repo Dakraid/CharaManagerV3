@@ -13,10 +13,7 @@ defineProps<{
 	<TooltipProvider>
 		<Tooltip>
 			<TooltipTrigger as-child>
-				<Button
-					:class="cn('grow cursor-pointer bg-accent-foreground', singleWidth ? '' : 'col-span-2')"
-					:disabled="downloading"
-					@click="$emit('click')">
+				<Button :class="cn('grow cursor-pointer bg-accent-foreground', singleWidth ? '' : 'col-span-2')" :disabled="downloading" @click="$emit('click')">
 					<Icon name="lucide:download" size="1.5rem" />
 				</Button>
 			</TooltipTrigger>

@@ -21,17 +21,13 @@ function isCurrentRoute(target: string) {
 					</NavigationMenuLink>
 				</NavigationMenuItem>
 				<NavigationMenuItem>
-					<NavigationMenuLink
-						:class="cn('flex w-full flex-row items-center justify-center gap-2 transition-all', isCurrentRoute('/relations'))"
-						href="/">
+					<NavigationMenuLink :class="cn('flex w-full flex-row items-center justify-center gap-2 transition-all', isCurrentRoute('/relations'))" href="/">
 						<Icon name="lucide:network" size="1.5rem" />
 						<p>Relations</p>
 					</NavigationMenuLink>
 				</NavigationMenuItem>
 				<NavigationMenuItem>
-					<NavigationMenuLink
-						:class="cn('flex w-full flex-row items-center justify-center gap-2 transition-all', isCurrentRoute('/statistics'))"
-						href="/">
+					<NavigationMenuLink :class="cn('flex w-full flex-row items-center justify-center gap-2 transition-all', isCurrentRoute('/statistics'))" href="/">
 						<Icon name="lucide:chart-area" size="1.5rem" />
 						<p>Statistics</p>
 					</NavigationMenuLink>

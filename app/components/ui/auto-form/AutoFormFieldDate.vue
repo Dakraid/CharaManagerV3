@@ -29,15 +29,9 @@ const df = new DateFormatter('en-US', {
 					<div>
 						<Popover>
 							<PopoverTrigger as-child :disabled="maybeBooleanishToBoolean(config?.inputProps?.disabled) ?? disabled">
-								<Button
-									variant="outline"
-									:class="cn('w-full justify-start text-left font-normal', !slotProps.componentField.modelValue && 'text-muted-foreground')">
+								<Button variant="outline" :class="cn('w-full justify-start text-left font-normal', !slotProps.componentField.modelValue && 'text-muted-foreground')">
 									<CalendarIcon class="mr-2 h-4 w-4" />
-									{{
-										slotProps.componentField.modelValue
-											? df.format(slotProps.componentField.modelValue.toDate(getLocalTimeZone()))
-											: 'Pick a date'
-									}}
+									{{ slotProps.componentField.modelValue ? df.format(slotProps.componentField.modelValue.toDate(getLocalTimeZone())) : 'Pick a date' }}
 								</Button>
 							</PopoverTrigger>
 							<PopoverContent class="w-auto p-0">

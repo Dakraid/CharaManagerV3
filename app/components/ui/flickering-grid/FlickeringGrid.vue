@@ -88,12 +88,7 @@ function drawGrid(ctx: CanvasRenderingContext2D, width: number, height: number, 
 		for (let j = 0; j < rows; j++) {
 			const opacity = squares[i * rows + j];
 			ctx.fillStyle = `${computedColor.value}${opacity})`;
-			ctx.fillRect(
-				i * (squareSize.value + gridGap.value) * dpr,
-				j * (squareSize.value + gridGap.value) * dpr,
-				squareSize.value * dpr,
-				squareSize.value * dpr
-			);
+			ctx.fillRect(i * (squareSize.value + gridGap.value) * dpr, j * (squareSize.value + gridGap.value) * dpr, squareSize.value * dpr, squareSize.value * dpr);
 		}
 	}
 }
@@ -120,15 +115,7 @@ function animate(time: number) {
 	lastTime = time;
 
 	updateSquares(gridParams.value!.squares, deltaTime);
-	drawGrid(
-		context.value!,
-		canvasRef.value!.width,
-		canvasRef.value!.height,
-		gridParams.value!.cols,
-		gridParams.value!.rows,
-		gridParams.value!.squares,
-		gridParams.value!.dpr
-	);
+	drawGrid(context.value!, canvasRef.value!.width, canvasRef.value!.height, gridParams.value!.cols, gridParams.value!.rows, gridParams.value!.squares, gridParams.value!.dpr);
 	animationFrameId = requestAnimationFrame(animate);
 }
 

@@ -6,21 +6,13 @@
 				v-if="props.glow"
 				:style="glowStyles"
 				:class="
-					cn(
-						'pointer-events-none absolute inset-0 -z-10 size-full rounded-[inherit] opacity-50 blur-xl will-change-[background-position] motion-safe:animate-glow',
-						props.glowClass
-					)
+					cn('pointer-events-none absolute inset-0 -z-10 size-full rounded-[inherit] opacity-50 blur-xl will-change-[background-position] motion-safe:animate-glow', props.glowClass)
 				"></div>
 
 			<!-- Border -->
 			<div
 				:style="borderStyles"
-				:class="
-					cn(
-						'pointer-events-none absolute inset-0 size-full rounded-[inherit] will-change-[background-position] motion-safe:animate-glow',
-						props.borderClass
-					)
-				"></div>
+				:class="cn('pointer-events-none absolute inset-0 size-full rounded-[inherit] will-change-[background-position] motion-safe:animate-glow', props.borderClass)"></div>
 
 			<!-- Content slot with padding to show border -->
 			<div :style="{ padding: `${props.borderWidth}px`, borderRadius: `${props.borderRadius}px` }">

@@ -68,8 +68,7 @@ onUnmounted(() => {
 			</div>
 		</Transition>
 		<div v-if="character" class="Character-Page-Layout h-full w-full gap-4">
-			<div
-				class="Character-Page-Image flex h-full w-full flex-col flex-nowrap items-center justify-center gap-2 overflow-y-auto rounded-md lg:max-w-[434px]">
+			<div class="Character-Page-Image flex h-full w-full flex-col flex-nowrap items-center justify-center gap-2 overflow-y-auto rounded-md lg:max-w-[434px]">
 				<Button id="clear" type="submit" class="w-full bg-background" variant="outline" @click="goBack">
 					<span class="sr-only">Back</span>
 					<Icon name="lucide:undo-2" size="1.5em" />

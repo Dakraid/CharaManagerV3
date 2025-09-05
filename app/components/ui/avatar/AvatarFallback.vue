@@ -15,10 +15,7 @@ const delegatedProps = computed(() => {
 </script>
 
 <template>
-	<AvatarFallback
-		data-slot="avatar-fallback"
-		v-bind="delegatedProps"
-		:class="cn('flex size-full items-center justify-center rounded-full bg-muted', props.class)">
+	<AvatarFallback data-slot="avatar-fallback" v-bind="delegatedProps" :class="cn('flex size-full items-center justify-center rounded-full bg-muted', props.class)">
 		<slot />
 	</AvatarFallback>
 </template>
