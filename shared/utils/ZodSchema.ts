@@ -26,7 +26,7 @@ export const evaluationSchema = z.object({
 	structure: scoreSchema,
 });
 
-export type evaluation = z.infer<typeof evaluationSchema>;
+export type Evaluation = z.infer<typeof evaluationSchema>;
 
 // Character ID
 export const idSchema = z.preprocess((val) => {

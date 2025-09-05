@@ -4,6 +4,7 @@ import { and, desc, eq, sql } from 'drizzle-orm';
 import type { drizzle } from 'drizzle-orm/node-postgres';
 import { createHash } from 'node:crypto';
 import sharp from 'sharp';
+import type Evaluation from '~/components/Character/Card/Evaluation.vue';
 
 const CHARACTER_TTL_MS = 60 * 1000;
 
@@ -159,6 +160,46 @@ class characterService {
 		}
 
 		return combinedText;
+	}
+
+	async getEvaluation(): Promise<Evaluation | undefined> {
+		await this.refresh();
+		if (!this.read) {
+			throw createError({
+				statusCode: StatusCode.UNAUTHORIZED,
+				message: 'User does not have read access to this character.',
+			});
+		}
+
+		try {
+			const definition_id_select = await this.db
+				.select({
+					definition_id: definitions.id,
+				})
+				.from(definitions)
+				.where(eq(definitions.character_id, this.character_id))
+				.orderBy(desc(definitions.change_date))
+				.limit(1);
+			const definition_id = definition_id_select[0].definition_id;
+
+			const evaluation_select = await this.db
+				.select({ evaluation: evaluations.evaluation_result })
+				.from(evaluations)
+				.where(eq(evaluations.definition_id, definition_id))
+				.orderBy(desc(evaluations.evaluation_date))
+				.limit(1);
+
+			if (evaluation_select.length === 0) {
+				return undefined;
+			}
+
+			return evaluation_select[0].evaluation as Evaluation;
+		} catch (error: any) {
+			throw createError({
+				statusCode: StatusCode.INTERNAL_SERVER_ERROR,
+				message: error.message,
+			});
+		}
 	}
 
 	async download(): Promise<Blob> {

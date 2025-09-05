@@ -21,8 +21,8 @@ const styling = computed(() => {
 	<div class="w-full">
 		<div class="relative h-6 w-full overflow-hidden rounded-full bg-muted">
 			<div class="gradient-scale h-full transition-all duration-500 ease-out" :style="styling"></div>
-			<div class="text-background-shadow absolute inset-0 flex items-center justify-center text-xs font-medium text-foreground">
-				{{ subtext ?? '' }}{{ normalizedScore >= 1 ? normalizedScore.toFixed(0) + '%' : 'Not Evaluated' }}
+			<div class="text-background-shadow absolute inset-0 flex items-center justify-center text-sm text-foreground">
+				{{ subtext ?? '' }}{{ subtext ? ': ' : '' }}{{ normalizedScore >= 1 ? normalizedScore.toFixed(0) + '%' : 'Not Evaluated' }}
 			</div>
 		</div>
 

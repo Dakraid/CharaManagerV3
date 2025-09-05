@@ -41,6 +41,25 @@ export const useCharacterStore = defineStore('character', {
 				},
 			});
 		},
+		async refreshCharacter(id: number): Promise<void> {
+			try {
+				const response = await $fetch<{ character: Character; definition?: Definition }>('/api/character', {
+					method: 'GET',
+					query: {
+						id: id,
+					},
+				});
+				const index = this.characterList?.findIndex((char) => {
+					return char.character_id === id;
+				});
+
+				if (response.character && this.characterList && index) {
+					this.characterList[index] = response.character;
+				}
+			} catch (error) {
+				console.error('Failed to refresh character:', error);
+			}
+		},
 		async deleteCharacter(id: number): Promise<void> {
 			const result = await $fetch('/api/character', {
 				method: 'DELETE',

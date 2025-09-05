@@ -5,5 +5,5 @@ export default defineEventHandler(async (event) => {
 	const userId = await authenticate(event);
 	const request = await validateRequestBody(event, definitionChangeSchema);
 	const characterService = await useCharacterService(request.id, userId ?? '00000000-0000-0000-0000-000000000000');
-	return characterService.updateDefinition(request.content as V2);
+	return await characterService.updateDefinition(request.content as V2);
 });

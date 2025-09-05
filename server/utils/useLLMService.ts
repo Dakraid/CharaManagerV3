@@ -3,7 +3,6 @@ import type { drizzle } from 'drizzle-orm/node-postgres';
 import { jsonrepair } from 'jsonrepair';
 import { createHash } from 'node:crypto';
 import OpenAI from 'openai';
-import { zodResponseFormat } from 'openai/helpers/zod';
 
 const LLMService_TTL_MS = 10 * 60 * 1000;
 
@@ -43,7 +42,7 @@ class LLMService {
 		}
 	}
 
-	async parseEvaluationFromCodeBlock(data: string, useRepair = false): Promise<evaluation | undefined> {
+	async parseEvaluationFromCodeBlock(data: string, useRepair = false): Promise<Evaluation | undefined> {
 		try {
 			const codeBlockRegex = /```(?:json)?\s*\n([\s\S]*?)\n\s*```/;
 			const codeBlockMatch = data.match(codeBlockRegex);
@@ -65,7 +64,7 @@ class LLMService {
 		}
 	}
 
-	async parseEvaluationFromEntireContent(data: string, useRepair = false): Promise<evaluation | undefined> {
+	async parseEvaluationFromEntireContent(data: string, useRepair = false): Promise<Evaluation | undefined> {
 		try {
 			const rawData = JSON.parse(useRepair ? jsonrepair(data) : data);
 			return evaluationSchema.parse(rawData);

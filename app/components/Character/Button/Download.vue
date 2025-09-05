@@ -5,7 +5,7 @@ defineEmits(['click']);
 
 defineProps<{
 	singleWidth: boolean;
-	isDownloading: boolean;
+	downloading: boolean;
 }>();
 </script>
 
@@ -15,7 +15,7 @@ defineProps<{
 			<TooltipTrigger as-child>
 				<Button
 					:class="cn('grow cursor-pointer bg-accent-foreground', singleWidth ? '' : 'col-span-2')"
-					:disabled="isDownloading"
+					:disabled="downloading"
 					@click="$emit('click')">
 					<Icon name="lucide:download" size="1.5rem" />
 				</Button>
