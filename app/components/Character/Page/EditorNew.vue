@@ -261,6 +261,29 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.Character-Editor-Layout {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: min-content min-content 1fr;
+	grid-template-areas: 'Title Selector' 'Controls Controls' 'Content Content';
+}
+
+.Character-Editor-Title {
+	grid-area: Title;
+}
+
+.Character-Editor-Selector {
+	grid-area: Selector;
+}
+
+.Character-Editor-Controls {
+	grid-area: Controls;
+}
+
+.Character-Editor-Content {
+	grid-area: Content;
+}
+
 .Controls-Layout {
 	display: grid;
 	grid-template-columns: 1fr 1fr;

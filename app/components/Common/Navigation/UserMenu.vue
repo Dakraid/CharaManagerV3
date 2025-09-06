@@ -3,6 +3,12 @@ import { cn } from '~~/lib/utils';
 
 const colorMode = useColorMode();
 const settingsStore = useSettingsStore();
+const characterStore = useCharacterStore();
+
+const updatePerPage = async (payload: string | number) => {
+	settingsStore.perPage = Number(payload);
+	await characterStore.fetch(false);
+};
 </script>
 
 <template>
@@ -40,8 +46,16 @@ const settingsStore = useSettingsStore();
 			</DropdownMenuLabel>
 			<Separator class="mt-1" />
 			<DropdownMenuLabel class="flex w-full grow flex-col gap-2">
-				<h1 class="text-md text-center font-bold">Card Settings</h1>
-				<div class="items-top flex w-full max-w-sm gap-2">
+				<h1 class="text-md text-center font-bold">Gallery Settings</h1>
+				<NumberField id="perPage" :default-value="30" :model-value="settingsStore.perPage" :min="1" @update:model-value="updatePerPage">
+					<Label for="perPage" class="mx-auto">Items per Page</Label>
+					<NumberFieldContent>
+						<NumberFieldDecrement />
+						<NumberFieldInput />
+						<NumberFieldIncrement />
+					</NumberFieldContent>
+				</NumberField>
+				<div class="items-top flex h-9 w-full max-w-sm items-center justify-center gap-2 rounded-md border p-3">
 					<Checkbox
 						id="permaControls"
 						:model-value="settingsStore.permaControls"
@@ -53,7 +67,7 @@ const settingsStore = useSettingsStore();
 						" />
 					<div class="grid gap-2 leading-none">
 						<label for="permaControls" class="cursor-pointer text-center text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-							Permanently show controls?
+							Always show controls?
 						</label>
 					</div>
 				</div>
@@ -61,7 +75,7 @@ const settingsStore = useSettingsStore();
 			<Separator class="mt-1" />
 			<DropdownMenuLabel class="flex w-full grow flex-col gap-2">
 				<h1 class="text-md text-center font-bold">Censor</h1>
-				<div class="items-top flex w-full max-w-sm gap-2">
+				<div class="items-top flex h-9 w-full max-w-sm items-center justify-center gap-2 rounded-md border p-3">
 					<Checkbox
 						id="censorImages"
 						:model-value="settingsStore.censorImages"
@@ -77,7 +91,7 @@ const settingsStore = useSettingsStore();
 						</label>
 					</div>
 				</div>
-				<div class="items-top flex w-full max-w-sm gap-2">
+				<div class="items-top flex h-9 w-full max-w-sm items-center justify-center gap-2 rounded-md border p-3">
 					<Checkbox
 						id="censorNames"
 						:model-value="settingsStore.censorNames"

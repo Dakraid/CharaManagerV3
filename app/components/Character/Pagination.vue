@@ -9,56 +9,64 @@ const updatePage = (value: number) => {
 	appStore.currentPage = value;
 	emit('refresh');
 };
-
-const updatePerPage = (payload: string | number) => {
-	settingsStore.perPage = Number(payload);
-	emit('refresh');
-};
 </script>
 
 <template>
-	<div class="flex w-full max-w-7xl flex-row flex-nowrap items-center justify-between gap-2 justify-self-center">
-		<div class="flex w-full flex-row flex-nowrap items-center justify-center gap-2">
-			<Pagination
-				v-slot="{ page }"
-				:items-per-page="settingsStore.perPage"
-				:total="characterStore.characterCount"
-				:default-page="1"
-				:show-edges="true"
-				:sibling-count="1"
-				class="mx-0 w-min"
-				@update:page="updatePage">
-				<PaginationContent v-slot="{ items }">
-					<PaginationPrevious />
+	<div class="Pagination-Layout mx-auto w-full max-w-7xl justify-center gap-2">
+		<Pagination
+			v-slot="{ page }"
+			:items-per-page="settingsStore.perPage"
+			:total="characterStore.characterCount"
+			:default-page="1"
+			:show-edges="true"
+			:sibling-count="1"
+			class="Pagination-Pages"
+			@update:page="updatePage">
+			<PaginationContent v-slot="{ items }">
+				<PaginationPrevious />
 
-					<template v-for="(item, index) in items" :key="index">
-						<PaginationItem v-if="item.type === 'page'" :value="item.value" :is-active="item.value === page">
-							{{ item.value }}
-						</PaginationItem>
-					</template>
+				<template v-for="(item, index) in items" :key="index">
+					<PaginationItem v-if="item.type === 'page'" :value="item.value" :is-active="item.value === page">
+						{{ item.value }}
+					</PaginationItem>
+				</template>
 
-					<PaginationEllipsis :index="2" />
+				<PaginationEllipsis :index="2" />
 
-					<PaginationNext />
-				</PaginationContent>
-			</Pagination>
+				<PaginationNext />
+			</PaginationContent>
+		</Pagination>
 
-			<TooltipProvider>
-				<Tooltip>
-					<TooltipTrigger as-child>
-						<Input type="number" :model-value="settingsStore.perPage" class="w-[4rem]" @update:model-value="updatePerPage" />
-					</TooltipTrigger>
-					<TooltipContent side="bottom">
-						<p>Items per Page</p>
-					</TooltipContent>
-				</Tooltip>
-			</TooltipProvider>
-		</div>
-
-		<Button class="cursor-pointer md:hidden" variant="outline" @click="appStore.toggleActions()">
+		<Button class="Pagination-Button cursor-pointer md:hidden" variant="outline" @click="appStore.toggleActions()">
 			<Icon name="lucide:square-pen" size="1.5rem" />
 		</Button>
 	</div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.Pagination-Layout {
+	display: grid;
+	grid-template-columns: min-content 64px;
+	grid-template-rows: 36px;
+	grid-auto-flow: row;
+	grid-template-areas: 'Pagination-Pages Pagination-Button';
+
+	@media (width >= 48rem) {
+		grid-template-columns: 64px min-content 64px;
+		grid-template-rows: 36px;
+		grid-template-areas: '. Pagination-Pages Pagination-Button';
+	}
+}
+
+.Pagination-Pages {
+	grid-area: Pagination-Pages;
+}
+
+.Pagination-Hint {
+	grid-area: Pagination-Hint;
+}
+
+.Pagination-Button {
+	grid-area: Pagination-Button;
+}
+</style>

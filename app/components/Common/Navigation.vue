@@ -1,18 +1,23 @@
 <script setup lang="ts">
 import { cn } from '~~/lib/utils';
 
-const runtimeConfig = useRuntimeConfig();
 const route = useRoute();
 
 function isCurrentRoute(target: string) {
 	return route.path === target ? 'bg-primary-foreground border' : '';
 }
+
+const appStore = useAppStore();
+
+const toggleNavigation = async () => {
+	await appStore.toggleNavigation();
+};
 </script>
 
 <template>
-	<header class="navigation-layout mx-auto h-full w-full max-w-7xl gap-2 rounded-b-md border border-t-0 bg-background p-2 px-4 transition-all">
+	<header :id="appStore.showNavigation ? 'navigation-open' : ''" class="navigation-layout mx-auto h-full w-full max-w-7xl gap-2 rounded-b-md border border-t-0 bg-background p-2 px-4 transition-all">
 		<CommonNavigationLogo class="area-logo" />
-		<NavigationMenu class="area-menu w-full p-0 *:w-full">
+		<NavigationMenu :id="appStore.showNavigation ? 'navigation-open' : ''" class="area-menu my-auto w-full p-0 *:w-full">
 			<NavigationMenuList class="grid w-full grid-cols-3 gap-4">
 				<NavigationMenuItem>
 					<NavigationMenuLink :class="cn('flex w-full flex-row items-center justify-center gap-2 transition-all', isCurrentRoute('/'))" href="/">
@@ -35,8 +40,11 @@ function isCurrentRoute(target: string) {
 			</NavigationMenuList>
 		</NavigationMenu>
 		<div class="area-user flex flex-row items-center gap-2 justify-self-end">
-			<CommonNavigationDebugMenu v-if="runtimeConfig.public.debug" />
 			<CommonNavigationUserMenu />
+			<Button variant="outline" class="z-10 justify-self-end border md:hidden" @click="toggleNavigation">
+				<Icon name="lucide:menu" size="1.5rem" class="transition-all duration-1000" />
+				<span class="sr-only">Show navigation</span>
+			</Button>
 		</div>
 	</header>
 </template>
@@ -45,10 +53,15 @@ function isCurrentRoute(target: string) {
 .navigation-layout {
 	display: grid;
 	grid-template-columns: minmax(max-content, 1fr) minmax(max-content, 1fr);
-	grid-template-rows: minmax(max-content, 1fr) minmax(max-content, 1fr);
-	grid-template-areas:
-		'logo user'
-		'menu menu';
+	grid-template-rows: minmax(max-content, 1fr);
+	grid-template-areas: 'logo user';
+
+	&#navigation-open {
+		grid-template-rows: minmax(max-content, 1fr) minmax(max-content, 1fr);
+		grid-template-areas:
+			'logo user'
+			'menu menu';
+	}
 
 	@media (width >= 48rem) {
 		grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr);
@@ -63,6 +76,15 @@ function isCurrentRoute(target: string) {
 
 .area-menu {
 	grid-area: menu;
+	display: none;
+
+	&#navigation-open {
+		display: block;
+	}
+
+	@media (width >= 48rem) {
+		display: block;
+	}
 }
 
 .area-user {

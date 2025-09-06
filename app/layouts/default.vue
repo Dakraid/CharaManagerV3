@@ -13,4 +13,17 @@ const appStore = useAppStore();
 	<CommonFooter class="Viewport-Footer" />
 </template>
 
-<style scoped></style>
+<style scoped>
+.Viewport-Navigation {
+	grid-area: Navigation;
+}
+
+.Viewport-Content {
+	grid-area: Content;
+	overflow: hidden;
+}
+
+.Viewport-Footer {
+	grid-area: Footer;
+}
+</style>

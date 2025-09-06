@@ -236,47 +236,6 @@ html.light {
 }
 
 /* Layouts */
-.Viewport {
-	height: 100vh;
-	max-height: 100vh;
-	min-height: 100vh;
-	width: 100vw;
-	max-width: 100vw;
-	min-width: 100vw;
-	overflow: hidden;
-}
-
-.Viewport-Layout {
-	display: grid;
-	grid-template-columns: 1fr;
-	grid-template-rows: calc(var(--spacing) * 32) calc(var(--spacing) * 4) 1fr calc(var(--spacing) * 4) calc(var(--spacing) * 8);
-	gap: 0;
-	grid-auto-flow: row;
-	grid-template-areas:
-		'Navigation'
-		'.'
-		'Content'
-		'.'
-		'Footer';
-
-	@media (width >= 48rem) {
-		grid-template-rows: calc(var(--spacing) * 16) calc(var(--spacing) * 4) 1fr calc(var(--spacing) * 4) calc(var(--spacing) * 8);
-	}
-}
-
-.Viewport-Navigation {
-	grid-area: Navigation;
-}
-
-.Viewport-Content {
-	grid-area: Content;
-	overflow: hidden;
-}
-
-.Viewport-Footer {
-	grid-area: Footer;
-}
-
 .Gallery-Layout {
 	display: grid;
 	grid-template-columns: 1fr;
@@ -335,28 +294,5 @@ html.light {
 }
 
 .Character-Page-Editor {
-	grid-area: Content;
-}
-
-.Character-Editor-Layout {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	grid-template-rows: min-content min-content 1fr;
-	grid-template-areas: 'Title Selector' 'Controls Controls' 'Content Content';
-}
-
-.Character-Editor-Title {
-	grid-area: Title;
-}
-
-.Character-Editor-Selector {
-	grid-area: Selector;
-}
-
-.Character-Editor-Controls {
-	grid-area: Controls;
-}
-
-.Character-Editor-Content {
 	grid-area: Content;
 }

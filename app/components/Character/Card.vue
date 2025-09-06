@@ -230,9 +230,14 @@ onUnmounted(() => {
 	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 	transition-duration: 300ms;
 	transition-behavior: allow-discrete;
+	filter: blur(0);
 
-	&#hideControls {
-		filter: none;
+	&#showControls {
+		filter: blur(24px);
+
+		@starting-style {
+			filter: blur(0);
+		}
 	}
 }
 
@@ -243,7 +248,7 @@ onUnmounted(() => {
 	transition-duration: 300ms;
 	transition-behavior: allow-discrete;
 	display: none;
-	transform: scale(1.46);
+	transform: scale(1.47);
 
 	&#showControls {
 		display: block;
@@ -261,11 +266,19 @@ onUnmounted(() => {
 	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 	transition-duration: 300ms;
 	transition-behavior: allow-discrete;
-	transform: translateY(0%);
+	display: none;
+	opacity: 0;
+	transform: translateY(-100%);
 
-	&#hideControls {
-		display: none;
-		transform: translateY(-100%);
+	&#showControls {
+		display: block;
+		opacity: 1;
+		transform: translateY(0%);
+
+		@starting-style {
+			opacity: 0;
+			transform: translateY(-100%);
+		}
 	}
 }
 
@@ -274,11 +287,19 @@ onUnmounted(() => {
 	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 	transition-duration: 300ms;
 	transition-behavior: allow-discrete;
-	transform: translateY(0%);
+	display: none;
+	opacity: 0;
+	transform: translateY(100%);
 
-	&#hideControls {
-		display: none;
-		transform: translateY(100%);
+	&#showControls {
+		display: grid;
+		opacity: 1;
+		transform: translateY(0%);
+
+		@starting-style {
+			opacity: 0;
+			transform: translateY(100%);
+		}
 	}
 }
 </style>
