@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { toast } from 'vue-sonner';
 
-const route = useRoute();
-const router = useRouter();
-
-const appStore = useAppStore();
-const settingsStore = useSettingsStore();
-const clientService = useClientService();
-
 definePageMeta({
 	middleware: ['authenticated'],
 });
+
+const route = useRoute();
+const router = useRouter();
+const appStore = useAppStore();
+const settingsStore = useSettingsStore();
+const clientService = useClientService();
 
 const character = ref<{ character: Character; definition?: Definition }>();
 const isImageLoaded = ref(false);
@@ -38,18 +37,19 @@ const fetchImage = async () => {
 };
 
 onMounted(async () => {
-	if (route.params.id && !Array.isArray(route.params.id) && !isNaN(Number(route.params.id))) {
-		character.value = await clientService.getCharacter(Number(route.params.id));
-		if (!character.value.character || !character.value.definition) {
-			toast.error('Character not found');
-			await router.push('/');
-			return;
-		}
-
-		await fetchImage();
-		appStore.isFetching = false;
-		appStore.showOverlay = false;
+	const result = idSchema.safeParse(route.params.id);
+	if (!result.success) {
+		throw createError({
+			statusCode: StatusCode.NOT_FOUND,
+			statusMessage: 'Character not found or no access.',
+		});
 	}
+
+	character.value = await clientService.getCharacter(result.data);
+
+	await fetchImage();
+	appStore.isFetching = false;
+	appStore.showOverlay = false;
 });
 
 onUnmounted(() => {

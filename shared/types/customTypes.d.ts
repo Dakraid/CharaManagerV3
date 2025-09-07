@@ -62,6 +62,14 @@ export type Character = {
 	owned?: boolean;
 };
 
+export type missingCharacter = {
+	id: number;
+	content: any;
+	description: string | null;
+	personality: string | null;
+	scenario: string | null;
+};
+
 export type Definition = {
 	id: number;
 	character_id: number;

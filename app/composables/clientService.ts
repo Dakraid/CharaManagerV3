@@ -14,12 +14,13 @@ class ClientService {
 	settingsStore: PiniaStore<typeof useSettingsStore>;
 	characterStore: PiniaStore<typeof useCharacterStore>;
 	appStore: PiniaStore<typeof useAppStore>;
-	characterCache: Record<string, Character[]> = {};
+	cacheStore: PiniaStore<typeof useCacheStore>;
 
 	constructor() {
 		this.settingsStore = useSettingsStore();
 		this.characterStore = useCharacterStore();
 		this.appStore = useAppStore();
+		this.cacheStore = useCacheStore();
 	}
 
 	private isErrorResponse(value: unknown): value is responseType {
@@ -31,51 +32,62 @@ class ClientService {
 		return `${user.id ?? '00000000-0000-0000-0000-000000000000'}-${this.appStore.currentPage}-${this.settingsStore.perPage}-${this.characterStore.characterCount}`;
 	}
 
-	private fetchCharacters = debounce(async () => {
+	private fetchCharacters = debounce(async (page: number, preFetch: boolean = false) => {
 		try {
 			this.characterStore.characterCount = await $fetch<number>('/api/characters/count', {
 				method: 'POST',
 			});
 
-			const cached = this.characterCache[this.getKey()];
+			const cached = this.cacheStore.characterCache[this.getKey()];
 			if (cached) {
-				console.log('Using cached characters');
 				this.characterStore.characterList = cached;
 			} else {
-				this.characterStore.characterList = await $fetch<Character[]>('/api/characters/list', {
+				const characterList = await $fetch<Character[]>('/api/characters/list', {
 					method: 'POST',
 					body: {
 						perPage: this.settingsStore.perPage,
-						page: this.appStore.currentPage,
+						page: page,
 						key: this.getKey(),
 					},
 				});
-				this.characterCache[this.getKey()] = this.characterStore.characterList;
+
+				this.cacheStore.characterCache[this.getKey()] = characterList;
+
+				if (!preFetch) {
+					this.characterStore.characterList = characterList;
+				}
 			}
 		} catch (error: any) {
 			throw new Error(error);
 		}
-	}, 150);
+	}, 100);
 
-	async getCharacters() {
-		this.appStore.showOverlay = true;
-		await this.fetchCharacters();
+	async getCharacters(page?: number, preFetch?: boolean) {
+		this.appStore.showOverlay = !preFetch;
+		await this.fetchCharacters(page ?? this.appStore.currentPage, preFetch ?? false);
 		this.appStore.showOverlay = false;
 	}
 
 	async getCharacter(id: number): Promise<FullCharacter> {
-		const response = await $fetch<FullCharacter | responseType>('/api/character', {
-			method: 'GET',
-			query: {
-				id: id,
-			},
-		});
+		const cached = this.cacheStore.fullCharacterCache[id];
+		if (cached) {
+			return cached;
+		} else {
+			const response = await $fetch<FullCharacter | responseType>('/api/character', {
+				method: 'GET',
+				query: {
+					id: id,
+				},
+			});
 
-		if (this.isErrorResponse(response)) {
-			throw new Error(response.message);
+			if (this.isErrorResponse(response)) {
+				throw new Error(response.message);
+			}
+
+			this.cacheStore.fullCharacterCache[id] = response;
+
+			return response;
 		}
-
-		return response;
 	}
 
 	async refreshCharacter(id: number): Promise<void> {

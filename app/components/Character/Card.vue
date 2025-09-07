@@ -38,6 +38,10 @@ const editCharacter = async () => {
 	});
 };
 
+const prefetchCharacter = async () => {
+	await clientService.getCharacter(props.character.character_id);
+};
+
 const fetchImage = async () => {
 	try {
 		const response = await fetch(`/api/image/thumb/${props.character.character_id}`);
@@ -127,41 +131,39 @@ onUnmounted(() => {
 					<GlowBorderHover :color="['#A07CFE', '#FE8FB5', '#FFBE7B']" :border-radius="16" class="h-min w-min" @mouseenter="mouseEnter" @mouseleave="mouseLeave">
 						<div class="Card-Container morph w-[256px] overflow-hidden border" :style="containerStyle" @mouseenter="refreshEval(false)">
 							<div
-								:id="showControls ? 'showControls' : 'hideControls'"
 								:class="
 									cn(
-										'Card-Background h-[564px] w-[256px] bg-cover bg-center bg-no-repeat blur-xl',
-										settingsStore.censorImages ? 'censor' : '',
-										imageLoaded ? 'opacity-100' : 'opacity-0'
+										'Card-Background h-[564px] w-[256px] bg-cover bg-center bg-no-repeat opacity-0 blur-xl transition-all duration-300',
+										imageLoaded ? 'showImage' : '',
+										showControls ? 'showControls' : '',
+										settingsStore.censorImages ? 'censor' : ''
 									)
 								"
 								:style="backgroundStyles"></div>
 
 							<Skeleton v-if="!imageLoaded" class="Card-Background h-[564px] w-[256px]" />
 
-							<CharacterCardHeader :id="showControls ? 'showControls' : 'hideControls'" :character="character" :evaluation="evaluation" class="Card-Header" />
+							<CharacterCardHeader :character="character" :evaluation="evaluation" :class="cn('Card-Header', showControls ? 'showControls' : '')" />
 
-							<div :id="showControls ? 'showControls' : 'hideControls'" class="Card-Body">
+							<div :class="cn('Card-Body', showControls ? 'showControls' : '')">
 								<Skeleton v-if="!imageLoaded" class="h-full w-full" />
 								<img
 									:src="imageBlobUrl"
 									loading="lazy"
 									crossorigin="use-credentials"
 									alt="Character Image"
-									:class="
-										cn('h-[384px] w-[256px] object-cover transition-all duration-300', imageLoaded ? 'opacity-100' : 'opacity-0', settingsStore.censorImages ? 'censor' : '')
-									" />
+									:class="cn('h-[384px] w-[256px] object-cover', imageLoaded ? 'showImage' : '', settingsStore.censorImages ? 'censor' : '')" />
 							</div>
 
 							<CharacterCardFooter
-								:id="showControls ? 'showControls' : 'hideControls'"
-								class="Card-Footer"
+								:class="cn('Card-Footer', showControls ? 'showControls' : '')"
 								:character="character"
 								:downloading="downloading"
 								@visibility="updateVisibility"
 								@download="downloadCharacter"
 								@edit="editCharacter"
-								@delete="deleteCharacter" />
+								@delete="deleteCharacter"
+								@prefetch="prefetchCharacter" />
 						</div>
 					</GlowBorderHover>
 				</ContextMenuTrigger>
@@ -235,16 +237,38 @@ onUnmounted(() => {
 .Card-Background {
 	grid-area: 1 / 1 / 5 / 2;
 	transition-property: all;
-	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	transition-timing-function: linear;
 	transition-duration: 300ms;
 	transition-behavior: allow-discrete;
 	filter: blur(0);
+	opacity: 0;
 
-	&#showControls {
+	&.showControls {
 		filter: blur(24px);
+	}
+
+	&.showImage {
+		opacity: 1;
 
 		@starting-style {
-			filter: blur(0);
+			opacity: 0;
+		}
+	}
+}
+
+.Card-Image {
+	transition-property: all;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	transition-duration: 300ms;
+	transition-behavior: allow-discrete;
+	opacity: 0;
+
+	&.showImage,
+	&.showControls {
+		opacity: 1;
+
+		@starting-style {
+			opacity: 0;
 		}
 	}
 }
@@ -258,7 +282,7 @@ onUnmounted(() => {
 	display: none;
 	transform: scale(1.47);
 
-	&#showControls {
+	&.showControls {
 		display: block;
 		transform: scale(1);
 
@@ -278,7 +302,7 @@ onUnmounted(() => {
 	opacity: 0;
 	transform: translateY(-100%);
 
-	&#showControls {
+	&.showControls {
 		display: block;
 		opacity: 1;
 		transform: translateY(0%);
@@ -299,7 +323,7 @@ onUnmounted(() => {
 	opacity: 0;
 	transform: translateY(100%);
 
-	&#showControls {
+	&.showControls {
 		display: grid;
 		opacity: 1;
 		transform: translateY(0%);

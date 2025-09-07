@@ -1,13 +1,5 @@
 import { eq, isNull } from 'drizzle-orm';
 
-type missingCharacter = {
-	id: number;
-	content: any;
-	description: string | undefined;
-	personality: string | undefined;
-	scenario: string | undefined;
-};
-
 const MAX_REQUESTS_PER_MINUTE = 1000;
 const MIN_DELAY_MS = Math.ceil(60000 / MAX_REQUESTS_PER_MINUTE);
 

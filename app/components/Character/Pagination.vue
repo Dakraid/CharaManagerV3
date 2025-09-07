@@ -4,10 +4,15 @@ const emit = defineEmits(['refresh']);
 const appStore = useAppStore();
 const settingsStore = useSettingsStore();
 const characterStore = useCharacterStore();
+const clientService = useClientService();
 
 const updatePage = (value: number) => {
 	appStore.currentPage = value;
 	emit('refresh');
+};
+
+const preFetch = async (page: number) => {
+	await clientService.getCharacters(page, true);
 };
 </script>
 
@@ -27,11 +32,10 @@ const updatePage = (value: number) => {
 
 				<template v-for="(item, index) in items" :key="index">
 					<PaginationItem v-if="item.type === 'page'" :value="item.value" :is-active="item.value === page">
-						{{ item.value }}
+						<p @mouseover="preFetch(item.value)">{{ item.value }}</p>
 					</PaginationItem>
+					<PaginationEllipsis v-else :key="page.type" :index="index"> &#8230; </PaginationEllipsis>
 				</template>
-
-				<PaginationEllipsis :index="2" />
 
 				<PaginationNext />
 			</PaginationContent>

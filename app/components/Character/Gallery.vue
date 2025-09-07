@@ -12,6 +12,7 @@ const refresh = async () => {
 <template>
 	<CharacterPagination class="Gallery-Pagination" @refresh="refresh" />
 
+	<div class="Gallery-Content rounded-md border border-r-0 bg-background" />
 	<div v-if="!characterStore.characterList || characterStore.characterList.length === 0" class="Gallery-Content h-full overflow-hidden">
 		<div class="flex h-full w-full flex-col items-center justify-center gap-4">
 			<Icon name="lucide:file-question-mark" size="5rem" class="animate-bounce" />
@@ -22,7 +23,7 @@ const refresh = async () => {
 		</div>
 	</div>
 
-	<div v-else class="Gallery-Content flex h-full w-full flex-wrap justify-evenly gap-4 overflow-x-hidden overflow-y-scroll rounded-md border border-r-0 bg-background px-4 py-6">
+	<div class="Gallery-Content flex h-full w-full flex-wrap justify-evenly gap-4 overflow-x-hidden overflow-y-scroll px-4 py-6">
 		<LazyCharacterCard v-for="character in characterStore.characterList" :key="character.character_id" :character="character" />
 	</div>
 

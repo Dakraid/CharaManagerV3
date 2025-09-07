@@ -4,7 +4,7 @@ const props = defineProps<{
 	downloading: boolean;
 }>();
 
-defineEmits(['visibility', 'download', 'edit', 'delete']);
+defineEmits(['visibility', 'download', 'edit', 'delete', 'prefetch']);
 
 const columnStyle = computed(() => {
 	return { gridTemplateColumns: props.character.owned ? '1fr 1fr 1fr' : '1fr 1fr' };
@@ -17,7 +17,7 @@ const columnStyle = computed(() => {
 		<CharacterButtonVisibility v-if="character.owned" :visibility="character.public_visible" @click="$emit('visibility')" />
 		<h1 class="grow text-center text-sm">Perma: {{ character.perma_token_count }}</h1>
 		<CharacterButtonDownload :single-width="character.owned ?? false" :downloading="downloading" @click="$emit('download')" />
-		<CharacterButtonEdit v-if="character.owned" @click="$emit('edit')" />
+		<CharacterButtonEdit v-if="character.owned" @click="$emit('edit')" @mouseover="$emit('prefetch')" />
 		<CharacterButtonDelete v-if="character.owned" @click="$emit('delete')" />
 	</div>
 </template>
