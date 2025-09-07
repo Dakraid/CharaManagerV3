@@ -45,6 +45,7 @@
 		"nuxt-auth-utils": "^0.5.24",
 		"nuxt-security": "^2.4.0",
 		"openai": "^5.16.0",
+		"perfect-debounce": "^2.0.0",
 		"pg": "^8.16.3",
 		"pinia": "^3.0.3",
 		"pinia-plugin-persistedstate": "^4.5.0",

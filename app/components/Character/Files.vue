@@ -15,7 +15,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const uploadStore = useUploadStore();
-const characterStore = useCharacterStore();
+const clientService = useClientService();
 
 const isDragging = ref(false);
 const isHovering = ref(false);
@@ -97,7 +97,7 @@ const handleUploaded = async (upload: Upload) => {
 		await uploadStore.remove(upload);
 	}
 
-	await characterStore.fetch(false);
+	await clientService.getCharacters();
 };
 
 const handleRemove = async (upload: Upload) => {

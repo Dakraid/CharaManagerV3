@@ -4,7 +4,6 @@ import { and, desc, eq, sql } from 'drizzle-orm';
 import type { drizzle } from 'drizzle-orm/node-postgres';
 import { createHash } from 'node:crypto';
 import sharp from 'sharp';
-import type Evaluation from '~/components/Character/Card/Evaluation.vue';
 
 const CHARACTER_TTL_MS = 60 * 1000;
 
@@ -29,7 +28,6 @@ class characterService {
 	// Permissions
 	read: boolean = false;
 	write: boolean = false;
-	public: boolean = false;
 
 	constructor(characterId: number, userId: string) {
 		this.db = useDrizzle();
@@ -53,7 +51,7 @@ class characterService {
 		this.write = hasWrite.rows[0]['has_write_access'] == true && this.user_id !== '00000000-0000-0000-0000-000000000000';
 	}
 
-	async get(include_definition: boolean = false): Promise<{ character: Character; definition?: Definition }> {
+	async get(): Promise<FullCharacter | responseType> {
 		await this.refresh();
 		if (!this.read) {
 			throw createError({
@@ -62,37 +60,13 @@ class characterService {
 			});
 		}
 
-		if (include_definition) {
-			try {
-				const select = await this.db
-					.select()
-					.from(characters)
-					.innerJoin(definitions, eq(definitions.character_id, characters.character_id))
-					.where(and(eq(characters.character_id, this.character_id), eq(characters.owner_id, this.user_id)))
-					.orderBy(desc(definitions.change_date))
-					.limit(1);
-
-				if (select.length === 0) {
-					throw createError({
-						statusCode: StatusCode.NOT_FOUND,
-						message: 'Character not found.',
-					});
-				}
-
-				return { character: select[0].characters, definition: select[0].definitions };
-			} catch (error: any) {
-				throw createError({
-					statusCode: StatusCode.INTERNAL_SERVER_ERROR,
-					message: error.message,
-				});
-			}
-		}
-
 		try {
 			const select = await this.db
 				.select()
 				.from(characters)
+				.innerJoin(definitions, eq(definitions.character_id, characters.character_id))
 				.where(and(eq(characters.character_id, this.character_id), eq(characters.owner_id, this.user_id)))
+				.orderBy(desc(definitions.change_date))
 				.limit(1);
 
 			if (select.length === 0) {
@@ -102,7 +76,7 @@ class characterService {
 				});
 			}
 
-			return { character: select[0], definition: undefined };
+			return { character: select[0].characters, definition: select[0].definitions };
 		} catch (error: any) {
 			throw createError({
 				statusCode: StatusCode.INTERNAL_SERVER_ERROR,
@@ -111,7 +85,7 @@ class characterService {
 		}
 	}
 
-	async getDefinitionText(): Promise<string> {
+	async getDefinitionText(): Promise<string | responseType> {
 		await this.refresh();
 		if (!this.read) {
 			throw createError({
@@ -162,7 +136,7 @@ class characterService {
 		return combinedText;
 	}
 
-	async getEvaluation(): Promise<Evaluation | undefined> {
+	async getEvaluation(): Promise<Evaluation | responseType | undefined> {
 		await this.refresh();
 		if (!this.read) {
 			throw createError({
@@ -202,7 +176,7 @@ class characterService {
 		}
 	}
 
-	async download(): Promise<Blob> {
+	async download(): Promise<Blob | responseType> {
 		await this.refresh();
 		if (!this.read) {
 			throw createError({
@@ -359,6 +333,9 @@ class characterService {
 
 		try {
 			const text = await this.getDefinitionText();
+			if (typeof text !== 'string') {
+				throw new Error('Failed to get definition text.');
+			}
 			const embedding = await generateEmbedding(text);
 			await this.db.update(characters).set({ embeddings: embedding }).where(eq(characters.character_id, this.character_id));
 		} catch (error: any) {

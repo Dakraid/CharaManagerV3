@@ -1,9 +1,11 @@
 <script setup lang="ts">
-const characterStore = useCharacterStore();
 const { loggedIn } = useUserSession();
 
+const characterStore = useCharacterStore();
+const clientService = useClientService();
+
 const refresh = async () => {
-	await characterStore.fetch(false);
+	await clientService.getCharacters();
 };
 </script>
 

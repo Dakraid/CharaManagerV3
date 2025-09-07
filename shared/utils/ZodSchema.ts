@@ -1,14 +1,6 @@
 // noinspection JSUnusedGlobalSymbols
 import * as z from 'zod/v4';
 
-// Server Responses
-export const responseSchema = z.object({
-	statusCode: z.number(),
-	message: z.string(),
-});
-
-export type responseType = z.infer<typeof responseSchema>;
-
 // Evaluations
 export const scoreSchema = z.object({
 	score: z.number().min(0).max(100),

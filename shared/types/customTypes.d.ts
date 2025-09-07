@@ -1,6 +1,7 @@
 import type { z } from 'zod/v4';
 import type { V2 } from 'character-card-utils';
 
+// Server-specific Types
 export type KeyOf<A extends any[]> = string | number | symbol;
 
 export type ServiceEntry<S> = {
@@ -24,6 +25,18 @@ export type CreateServicePoolOptions<A extends any[], S, K extends KeyOf<A>> = {
 	// Optional name for logs
 	name?: string;
 };
+
+// Client-specific Types
+export type PiniaStore<T extends (...args: any) => any> = Omit<
+	ReturnType<T>,
+	keyof ReturnType<typeof defineStore>
+>;
+
+// Application-wide Types
+export type responseType = {
+	statusCode: number;
+	message: string;
+}
 
 export type Upload = z.infer<typeof uploadSchema>;
 
@@ -59,6 +72,11 @@ export type Definition = {
 	description: string | null;
 	personality: string | null;
 	scenario: string | null;
+}
+
+export type FullCharacter = {
+	character: Character;
+	definition: Definition;
 }
 
 export type DefinitionParts = {

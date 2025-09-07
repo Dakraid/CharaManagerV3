@@ -8,7 +8,7 @@ const props = defineProps<{
 
 const appStore = useAppStore();
 const settingsStore = useSettingsStore();
-const characterStore = useCharacterStore();
+const clientService = useClientService();
 
 const downloading = ref(false);
 const imageLoaded = ref(false);
@@ -19,16 +19,16 @@ const imageBlobUrl = ref<string>('');
 
 const downloadCharacter = async () => {
 	downloading.value = true;
-	await characterStore.downloadCharacter(props.character.character_id);
+	await clientService.downloadCharacter(props.character.character_id);
 	downloading.value = false;
 };
 
 const updateVisibility = async () => {
-	await characterStore.updateVisibility(props.character.character_id, !props.character.public_visible);
+	await clientService.updateVisibility(props.character.character_id, !props.character.public_visible);
 };
 
 const deleteCharacter = async () => {
-	await characterStore.deleteCharacter(props.character.character_id);
+	await clientService.deleteCharacter(props.character.character_id);
 };
 
 const editCharacter = async () => {
@@ -62,7 +62,7 @@ const runEvaluation = async () => {
 			id: props.character.character_id,
 		},
 	});
-	await characterStore.fetch(false);
+	await clientService.getCharacters();
 	evaluation.value = undefined;
 	await refreshEval();
 	toast('Finished running evaluation.');
@@ -81,7 +81,7 @@ const refreshEval = async (force: boolean = false) => {
 			},
 		});
 		if (evaluation.value) {
-			await characterStore.fetch(false);
+			await clientService.getCharacters();
 		}
 	} catch (error) {
 		console.error('Failed to load evaluation:', error);
@@ -128,8 +128,16 @@ onUnmounted(() => {
 						<div class="Card-Container morph w-[256px] overflow-hidden border" :style="containerStyle" @mouseenter="refreshEval(false)">
 							<div
 								:id="showControls ? 'showControls' : 'hideControls'"
-								:class="cn('Card-Background h-[564px] w-[256px] bg-cover bg-center bg-no-repeat blur-xl', settingsStore.censorImages ? 'censor' : '')"
+								:class="
+									cn(
+										'Card-Background h-[564px] w-[256px] bg-cover bg-center bg-no-repeat blur-xl',
+										settingsStore.censorImages ? 'censor' : '',
+										imageLoaded ? 'opacity-100' : 'opacity-0'
+									)
+								"
 								:style="backgroundStyles"></div>
+
+							<Skeleton v-if="!imageLoaded" class="Card-Background h-[564px] w-[256px]" />
 
 							<CharacterCardHeader :id="showControls ? 'showControls' : 'hideControls'" :character="character" :evaluation="evaluation" class="Card-Header" />
 

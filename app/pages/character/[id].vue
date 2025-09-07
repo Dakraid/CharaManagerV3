@@ -6,7 +6,7 @@ const router = useRouter();
 
 const appStore = useAppStore();
 const settingsStore = useSettingsStore();
-const characterStore = useCharacterStore();
+const clientService = useClientService();
 
 definePageMeta({
 	middleware: ['authenticated'],
@@ -39,7 +39,7 @@ const fetchImage = async () => {
 
 onMounted(async () => {
 	if (route.params.id && !Array.isArray(route.params.id) && !isNaN(Number(route.params.id))) {
-		character.value = await characterStore.getCharacterWithDefinition(Number(route.params.id));
+		character.value = await clientService.getCharacter(Number(route.params.id));
 		if (!character.value.character || !character.value.definition) {
 			toast.error('Character not found');
 			await router.push('/');

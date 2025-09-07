@@ -2,16 +2,11 @@
 import { cn } from '~~/lib/utils';
 
 const route = useRoute();
+const appStore = useAppStore();
 
 function isCurrentRoute(target: string) {
 	return route.path === target ? 'bg-primary-foreground border' : '';
 }
-
-const appStore = useAppStore();
-
-const toggleNavigation = async () => {
-	await appStore.toggleNavigation();
-};
 </script>
 
 <template>
@@ -41,7 +36,7 @@ const toggleNavigation = async () => {
 		</NavigationMenu>
 		<div class="area-user flex flex-row items-center gap-2 justify-self-end">
 			<CommonNavigationUserMenu />
-			<Button variant="outline" class="z-10 justify-self-end border md:hidden" @click="toggleNavigation">
+			<Button variant="outline" class="z-10 justify-self-end border md:hidden" @click="appStore.toggleNavigation">
 				<Icon name="lucide:menu" size="1.5rem" class="transition-all duration-1000" />
 				<span class="sr-only">Show navigation</span>
 			</Button>

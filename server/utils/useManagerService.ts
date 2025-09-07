@@ -42,7 +42,7 @@ class managerService {
 
 	async get(perPage: number, page: number): Promise<Character[]> {
 		const count = await this.count();
-		const cacheKey = `${count}-${perPage}-${page}-${this.user_id}`;
+		const cacheKey = `${this.user_id ?? '00000000-0000-0000-0000-000000000000'}-${page}-${perPage}-${count}`;
 		try {
 			const cached = await useCache().getItem(cacheKey);
 			if (cached) {
