@@ -60,7 +60,11 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@master
+              uses: actions/checkout@v4
+
+            - name: Get Short Commit Hash
+              id: commit_hash
+              run: echo "short_hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
             - name: Secret Scanning
               uses: trufflesecurity/trufflehog@main
@@ -87,5 +91,5 @@ jobs:
 
             - uses: actions/upload-artifact@v4
               with:
-                  name: Build-Linux
+                  name: Build_Linux_${{ steps.commit_hash.outputs.short_hash }}
                   path: .output
