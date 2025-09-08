@@ -37,6 +37,7 @@
 		"embla-carousel-autoplay": "^8.6.0",
 		"embla-carousel-vue": "^8.6.0",
 		"eslint": "^9.35.0",
+		"esbuild": "^0.25.9",
 		"gpt-tokenizer": "^3.0.1",
 		"jsonrepair": "^3.13.0",
 		"lucide-vue-next": "^0.542.0",
@@ -88,6 +89,7 @@
 		"tsx": "^4.20.5"
 	},
 	"overrides": {
-		"zod": "^4.1.5"
+		"zod": "^4.1.5",
+		"esbuild": "^0.25.9"
 	}
 }
