@@ -10,10 +10,12 @@ function isCurrentRoute(target: string) {
 </script>
 
 <template>
-	<header :id="appStore.showNavigation ? 'navigation-open' : ''" class="navigation-layout mx-auto h-full w-full max-w-7xl gap-2 rounded-b-md border border-t-0 bg-background p-2 px-4 transition-all">
+	<header
+		:id="appStore.showNavigation ? 'navigation-open' : ''"
+		class="navigation-layout z-50 mx-auto h-full w-full max-w-7xl gap-2 rounded-b-md border border-t-0 bg-background p-2 px-4 transition-all">
 		<CommonNavigationLogo class="area-logo" />
 		<NavigationMenu :id="appStore.showNavigation ? 'navigation-open' : ''" class="area-menu my-auto w-full p-0 *:w-full">
-			<NavigationMenuList class="grid w-full grid-cols-3 gap-4">
+			<NavigationMenuList class="grid w-full grid-cols-4 gap-2">
 				<NavigationMenuItem>
 					<NavigationMenuLink :class="cn('flex w-full flex-row items-center justify-center gap-2 transition-all', isCurrentRoute('/'))" href="/">
 						<Icon name="lucide:home" size="1.5rem" />
@@ -31,6 +33,20 @@ function isCurrentRoute(target: string) {
 						<Icon name="lucide:chart-area" size="1.5rem" />
 						<p>Statistics</p>
 					</NavigationMenuLink>
+				</NavigationMenuItem>
+				<NavigationMenuItem>
+					<NavigationMenuTrigger>
+						<div class="flex w-full flex-row items-center justify-center gap-2">
+							<Icon name="lucide:pencil-ruler" size="1.5rem" />
+							<p>Utilities</p>
+						</div>
+					</NavigationMenuTrigger>
+					<NavigationMenuContent>
+						<NavigationMenuLink :class="cn('flex w-full min-w-48 flex-row items-center justify-center gap-2 transition-all', isCurrentRoute('/preset-compare'))" href="/preset-compare">
+							<Icon name="lucide:chart-area" size="1.5rem" />
+							<p>CC Preset Compare</p>
+						</NavigationMenuLink>
+					</NavigationMenuContent>
 				</NavigationMenuItem>
 			</NavigationMenuList>
 		</NavigationMenu>
@@ -59,7 +75,7 @@ function isCurrentRoute(target: string) {
 	}
 
 	@media (width >= 48rem) {
-		grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr);
+		grid-template-columns: minmax(max-content, 1fr) 2fr minmax(max-content, 1fr);
 		grid-template-rows: minmax(max-content, 1fr);
 		grid-template-areas: 'logo menu user';
 	}

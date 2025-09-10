@@ -92,4 +92,4 @@ jobs:
             - uses: actions/upload-artifact@v4
               with:
                   name: Build_Linux_${{ steps.commit_hash.outputs.short_hash }}
-                  path: .output
+                  path: ${{ github.workspace }}/.output

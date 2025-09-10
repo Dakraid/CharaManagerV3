@@ -21,7 +21,19 @@ export default defineNuxtConfig({
 	},
 	devtools: { enabled: true },
 	sourcemap: true,
-	modules: ['@nuxt/eslint', '@nuxt/icon', '@nuxt/scripts', 'shadcn-nuxt', '@nuxtjs/color-mode', '@nuxtjs/robots', 'dayjs-nuxt', '@pinia/nuxt', 'pinia-plugin-persistedstate/nuxt', 'nuxt-auth-utils'],
+	modules: [
+		'@nuxt/eslint',
+		'@nuxt/icon',
+		'@nuxt/scripts',
+		'shadcn-nuxt',
+		'@nuxtjs/color-mode',
+		'@nuxtjs/robots',
+		'dayjs-nuxt',
+		'@pinia/nuxt',
+		'pinia-plugin-persistedstate/nuxt',
+		'nuxt-auth-utils',
+		'@vueuse/nuxt',
+	],
 	css: ['./app/assets/css/tailwind.css'],
 	vite: {
 		plugins: [tailwindcss()],
@@ -135,38 +147,38 @@ Scoring Guidelines:
 Output your results as valid JSON. An example of the output format is (the content is not real):
 \`\`\`json
 {
-	"grammarAndSpelling": {
-		"score": 95,
-		"reason": "The text is well-written with minimal grammatical errors."
-	},
-	"appearance": {
-		"score": 90,
-		"reason": "The description of Zephyros' appearance is vivid and consistent."
-	},
-	"personality": {
-		"score": 98,
-			"reason": "Zephyros' personality is well-developed and engaging."
-	},
-	"background": {
-		"score": 95,
-			"reason": "The background information is detailed and adds depth to the character."
-	},
-	"introduction": {
-		"score": 95,
-			"reason": "The introduction is engaging and effectively sets the scene."
-	},
-	"creativeElements": {
-		"score": 85,
-			"reason": "The creative elements are unique and add to the character's appeal."
-	},
-	"consistency": {
-		"score": 90,
-			"reason": "The character description is consistent throughout."
-	},
-	"structure": {
-		"score": 80,
-		"reason": "The structure is well-organized and easy to follow."
-	}
+				"grammarAndSpelling": {
+								"score": 95,
+								"reason": "The text is well-written with minimal grammatical errors."
+				},
+				"appearance": {
+								"score": 90,
+								"reason": "The description of Zephyros' appearance is vivid and consistent."
+				},
+				"personality": {
+								"score": 98,
+												"reason": "Zephyros' personality is well-developed and engaging."
+				},
+				"background": {
+								"score": 95,
+												"reason": "The background information is detailed and adds depth to the character."
+				},
+				"introduction": {
+								"score": 95,
+												"reason": "The introduction is engaging and effectively sets the scene."
+				},
+				"creativeElements": {
+								"score": 85,
+												"reason": "The creative elements are unique and add to the character's appeal."
+				},
+				"consistency": {
+								"score": 90,
+												"reason": "The character description is consistent throughout."
+				},
+				"structure": {
+								"score": 80,
+								"reason": "The structure is well-organized and easy to follow."
+				}
 }
 \`\`\``,
 		},
