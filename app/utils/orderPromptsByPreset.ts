@@ -9,22 +9,37 @@ export function orderPromptsByPreset(preset: ChatCompletionPreset, setOrder?: Or
 
 	const promptOrder = getLargestPromptOrder(preset.prompt_order);
 
-	if (!promptOrder) {
+	if (!promptOrder && !setOrder) {
 		console.error('No prompt order found in preset.');
-		return;
+		return [];
 	}
 
-	const order = setOrder ?? promptOrder.order;
-	for (const item of order) {
-		if (added.has(item.identifier)) continue;
+	let placeholderIndex = 0;
+	const makePlaceholder = (): Prompt => ({
+		identifier: `__empty__${placeholderIndex++}`,
+		name: '(empty)',
+		enabled: false,
+		marker: true,
+		system_prompt: false,
+	});
 
-		const prompt = promptMap.get(item.identifier);
-		if (!prompt) continue;
+	const order = setOrder ?? promptOrder!.order;
+	for (const item of order) {
+		// Only dedupe real identifiers; allow multiple empty/placeholder slots
+		if (item.identifier && added.has(item.identifier)) continue;
+
+		const prompt = item.identifier ? promptMap.get(item.identifier) : undefined;
+		if (!prompt) {
+			// Insert a placeholder to preserve alignment for unmatched or empty order entries
+			result.push(makePlaceholder());
+			continue;
+		}
 
 		result.push(prompt);
 		added.add(item.identifier);
 	}
 
+	// Append any remaining prompts that were not listed in the order (stable)
 	for (const p of preset.prompts) {
 		if (added.has(p.identifier)) continue;
 		result.push(p);

@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const props = defineProps<{ prompt: Prompt }>();
+import { cn } from '~~/lib/utils';
+
+const props = defineProps<{ prompt: Prompt; syncEnabled?: boolean }>();
 
 const roleLabel = computed(() => props.prompt.role ?? (props.prompt.system_prompt ? 'system' : 'assistant'));
 const roleBadgeClasses = computed(() => {
@@ -29,7 +31,7 @@ const getInjectionPositionName = (position: number) => {
 </script>
 
 <template>
-	<Card class="w-full gap-2 py-4">
+	<Card :class="cn('w-full gap-2 py-4', syncEnabled ? 'h-96 max-h-96 min-h-96' : '')">
 		<CardHeader>
 			<div class="flex items-start gap-2">
 				<div class="min-w-0 flex-1">

@@ -135,6 +135,12 @@ const runCompare = async () => {
 		}
 	}
 
+	// Reorder prompts based on aligned orders and insert placeholders for alignment
+	const orderedLeft = orderPromptsByPreset(alignedLeftBundle.value.presetParsed, alignedOrders.left);
+	const orderedRight = orderPromptsByPreset(alignedRightBundle.value.presetParsed, alignedOrders.right);
+	if (orderedLeft) alignedLeftBundle.value.presetParsed.prompts = orderedLeft;
+	if (orderedRight) alignedRightBundle.value.presetParsed.prompts = orderedRight;
+
 	activeCompare.value = true;
 };
 
@@ -226,7 +232,11 @@ const updateRightScrollState = () => {
 				<h1 class="text-right text-lg text-nowrap text-muted-foreground">Order ID: {{ leftPromptOrder?.character_id ?? 'None' }}</h1>
 			</div>
 			<div v-if="leftBundle" ref="leftScrollEl" class="flex flex-col gap-4 overflow-y-auto rounded-md border border-r-0 bg-background p-4" @scroll="updateLeftScrollState">
-				<PresetBlock v-for="prompt in activeCompare ? alignedLeftBundle?.presetParsed.prompts : origLeftBundle?.presetParsed.prompts" :key="'l_' + prompt.identifier" :prompt="prompt" />
+				<PresetBlock
+					v-for="(prompt, i) in activeCompare ? alignedLeftBundle?.presetParsed.prompts : origLeftBundle?.presetParsed.prompts"
+					:key="'l_' + i + '_' + (prompt.identifier ?? '')"
+					:prompt="prompt"
+					:sync-enabled="syncEnabled" />
 			</div>
 		</div>
 
@@ -242,7 +252,11 @@ const updateRightScrollState = () => {
 				<h1 class="text-right text-lg text-nowrap text-muted-foreground">Order ID: {{ rightPromptOrder?.character_id ?? 'None' }}</h1>
 			</div>
 			<div v-if="rightBundle" ref="rightScrollEl" class="flex flex-col gap-4 overflow-y-auto rounded-md border border-r-0 bg-background p-4" @scroll="updateRightScrollState">
-				<PresetBlock v-for="prompt in activeCompare ? alignedRightBundle?.presetParsed.prompts : origRightBundle?.presetParsed.prompts" :key="'r_' + prompt.identifier" :prompt="prompt" />
+				<PresetBlock
+					v-for="(prompt, i) in activeCompare ? alignedRightBundle?.presetParsed.prompts : origRightBundle?.presetParsed.prompts"
+					:key="'r_' + i + '_' + (prompt.identifier ?? '')"
+					:prompt="prompt"
+					:sync-enabled="syncEnabled" />
 			</div>
 		</div>
 	</div>
