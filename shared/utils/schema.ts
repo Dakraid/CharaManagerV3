@@ -115,6 +115,10 @@ export const characters = pgTable(
 		total_token_count: integer().default(0).notNull(),
 		perma_token_count: integer().default(0).notNull(),
 		evaluation_score: integer().default(0).notNull(),
+		character_tags: text()
+			.array()
+			.default(sql`ARRAY[]::text[]`)
+			.notNull(),
 		embeddings: vector({ dimensions: 1024 }),
 	},
 	(table) => [
@@ -188,3 +192,8 @@ export const relationships = pgTable(
 		),
 	]
 );
+
+export const tags = pgTable('tags', {
+	id: uuid().defaultRandom().primaryKey().notNull(),
+	tag: text().notNull(),
+});

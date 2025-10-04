@@ -42,9 +42,15 @@ function isCurrentRoute(target: string) {
 						</div>
 					</NavigationMenuTrigger>
 					<NavigationMenuContent>
+						<NavigationMenuLink
+							:class="cn('mb-1 flex w-full min-w-48 flex-row items-center justify-center gap-2 transition-all', isCurrentRoute('/tag-management'))"
+							href="/tag-management">
+							<Icon name="lucide:tag" size="1.45rem" />
+							<p class="grow">Tag Management</p>
+						</NavigationMenuLink>
 						<NavigationMenuLink :class="cn('flex w-full min-w-48 flex-row items-center justify-center gap-2 transition-all', isCurrentRoute('/preset-compare'))" href="/preset-compare">
-							<Icon name="lucide:chart-area" size="1.5rem" />
-							<p>CC Preset Compare</p>
+							<Icon name="lucide:file-diff" size="1.5rem" />
+							<p class="grow">Preset Compare</p>
 						</NavigationMenuLink>
 					</NavigationMenuContent>
 				</NavigationMenuItem>

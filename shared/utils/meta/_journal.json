@@ -1,41 +1,20 @@
 {
-	"version": "7",
-	"dialect": "postgresql",
-	"entries": [
-		{
-			"idx": 0,
-			"version": "7",
-			"when": 1750985476520,
-			"tag": "0000_lowly_diamondback",
-			"breakpoints": true
-		},
-		{
-			"idx": 1,
-			"version": "7",
-			"when": 1751058868355,
-			"tag": "0001_mute_havok",
-			"breakpoints": true
-		},
-		{
-			"idx": 2,
-			"version": "7",
-			"when": 1751062819008,
-			"tag": "0002_known_wolverine",
-			"breakpoints": true
-		},
-		{
-			"idx": 3,
-			"version": "7",
-			"when": 1752856232079,
-			"tag": "0003_square_joystick",
-			"breakpoints": true
-		},
-		{
-			"idx": 4,
-			"version": "7",
-			"when": 1756998739046,
-			"tag": "0004_foamy_gauntlet",
-			"breakpoints": true
-		}
-	]
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1750985476520,
+      "tag": "0000_lowly_diamondback",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1751058868355,
+      "tag": "0001_mute_havok",
+      "breakpoints": true
+    }
+  ]
 }

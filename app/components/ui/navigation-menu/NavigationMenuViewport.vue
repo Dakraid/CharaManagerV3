@@ -23,7 +23,7 @@ const forwardedProps = useForwardProps(delegatedProps);
 			v-bind="forwardedProps"
 			:class="
 				cn(
-					'origin-top-center relative mt-1.5 h-[var(--reka-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border bg-popover text-popover-foreground shadow data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:zoom-in-90 md:w-[var(--reka-navigation-menu-viewport-width)]',
+					'origin-top-center relative mt-1.5 h-[var(--reka-navigation-menu-viewport-height)] w-full translate-x-[110%] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:zoom-in-90 md:w-[var(--reka-navigation-menu-viewport-width)]',
 					props.class
 				)
 			" />

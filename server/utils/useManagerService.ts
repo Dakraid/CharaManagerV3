@@ -40,6 +40,10 @@ class managerService {
 		return await this.db.$count(characters, eq(characters.public_visible, true));
 	}
 
+	async character_tags(): Promise<string[]> {
+		return await this.db.select({ tags: characters.character_tags }).from(characters);
+	}
+
 	async get(perPage: number, page: number): Promise<Character[]> {
 		const count = await this.count();
 		const cacheKey = `${this.user_id ?? '00000000-0000-0000-0000-000000000000'}-${page}-${perPage}-${count}`;

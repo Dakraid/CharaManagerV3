@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { toast } from 'vue-sonner';
-
 definePageMeta({
 	middleware: ['authenticated'],
 });
