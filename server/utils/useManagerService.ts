@@ -41,7 +41,8 @@ class managerService {
 	}
 
 	async character_tags(): Promise<string[]> {
-		return await this.db.select({ tags: characters.character_tags }).from(characters);
+		const results = await this.db.select({ tags: characters.character_tags }).from(characters);
+		return results.flatMap((result) => result.tags);
 	}
 
 	async get(perPage: number, page: number): Promise<Character[]> {

@@ -21,6 +21,9 @@ const isDragging = ref(false);
 const isHovering = ref(false);
 const mousePosition = ref({ x: 0, y: 0 });
 
+const itemRefs = ref<any[]>([]);
+const isBulkUploading = ref(false);
+
 const openFileSelector = async () => {
 	const input = document.createElement('input');
 	input.type = 'file';
@@ -100,6 +103,23 @@ const handleUploaded = async (upload: Upload) => {
 	await clientService.getCharacters();
 };
 
+const uploadAll = async () => {
+	if (isBulkUploading.value) return;
+	isBulkUploading.value = true;
+	try {
+		const refs = [...itemRefs.value].filter(Boolean);
+
+		for (const item of refs) {
+			if (item.isUploaded) continue;
+			await item.uploadFile();
+		}
+
+		await clientService.getCharacters();
+	} finally {
+		isBulkUploading.value = false;
+	}
+};
+
 const handleRemove = async (upload: Upload) => {
 	await uploadStore.remove(upload);
 };
@@ -119,7 +139,7 @@ const circleStyle = computed(() => ({
 
 <template>
 	<div id="fileUpload" class="relative flex min-h-0 w-full flex-1 flex-col justify-start gap-2 rounded-md">
-		<div class="grid w-full grid-cols-[1fr_min-content] justify-center gap-2">
+		<div class="grid w-full grid-cols-[1fr_min-content_min-content] justify-center gap-2">
 			<Button
 				variant="ghost"
 				class="relative min-h-12 w-full overflow-clip border"
@@ -134,6 +154,13 @@ const circleStyle = computed(() => ({
 				<div :class="cn('overlay absolute z-0 h-96 w-96 rounded-full bg-neutral-600 opacity-0 blur-xl', shouldHighlight ? 'block h-48 w-48 opacity-40' : '')" :style="circleStyle"></div>
 				<h1 class="z-10">Click to select or drop files here...</h1>
 			</Button>
+
+			<Transition name="fade" mode="out-in">
+				<Button v-if="uploadStore.files.length > 0" :disabled="isBulkUploading" size="icon" class="h-12 w-12" :title="isBulkUploading ? 'Uploading…' : 'Upload all'" @click="uploadAll">
+					<Icon :name="isBulkUploading ? 'lucide:loader-circle' : 'lucide:upload'" size="1.25rem" :class="isBulkUploading ? 'animate-spin' : ''" />
+				</Button>
+			</Transition>
+
 			<Transition name="fade" mode="out-in">
 				<Button v-if="uploadStore.files.length > 0" variant="destructive" size="icon" class="h-12 w-12" @click="handleClear">
 					<Icon name="lucide:trash" size="1.25rem" />
@@ -142,7 +169,13 @@ const circleStyle = computed(() => ({
 		</div>
 
 		<div v-if="uploadStore.files.length > 0" class="min-h-0 w-full flex-1 overflow-y-auto pr-2">
-			<CharacterFilesItem v-for="upload in uploadStore.files" :key="upload.file.name" :upload="upload" @uploaded="handleUploaded(upload)" @remove="handleRemove(upload)" />
+			<CharacterFilesItem
+				v-for="(upload, i) in uploadStore.files"
+				:key="upload.file.name"
+				:ref="(el) => (itemRefs[i] = el)"
+				:upload="upload"
+				@uploaded="handleUploaded(upload)"
+				@remove="handleRemove(upload)" />
 		</div>
 	</div>
 </template>

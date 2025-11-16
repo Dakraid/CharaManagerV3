@@ -37,6 +37,8 @@ const handleMouseMove = (event: MouseEvent) => {
 };
 
 const uploadFile = async () => {
+	if (isProcessing.value || isUploaded.value) return;
+
 	isProcessing.value = true;
 
 	const formData = new FormData();
@@ -142,6 +144,13 @@ onUnmounted(() => {
 	if (imageUrl.value) {
 		URL.revokeObjectURL(imageUrl.value);
 	}
+});
+
+defineExpose({
+	uploadFile,
+	get isUploaded() {
+		return isUploaded.value;
+	},
 });
 </script>
 
