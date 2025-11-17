@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { debounce } from 'perfect-debounce';
 import { toast } from 'vue-sonner';
 import { cn } from '~~/lib/utils';
 
@@ -95,12 +96,20 @@ const handleMouseMove = (event: MouseEvent) => {
 	};
 };
 
+const refreshDebounced = debounce(
+	async () => {
+		await clientService.getCharacters();
+	},
+	5 * 1000,
+	{ leading: true }
+);
+
 const handleUploaded = async (upload: Upload) => {
 	if (props.autoRemove) {
 		await uploadStore.remove(upload);
 	}
 
-	await clientService.getCharacters();
+	await refreshDebounced();
 };
 
 const uploadAll = async () => {
@@ -108,16 +117,11 @@ const uploadAll = async () => {
 	isBulkUploading.value = true;
 	try {
 		const refs = [...itemRefs.value].filter(Boolean);
-
-		for (const item of refs) {
-			if (item.isUploaded) continue;
-			await item.uploadFile();
-		}
-
-		await clientService.getCharacters();
+		await Promise.all(refs.filter((r) => !r.isUploaded).map((r) => r.uploadFile()));
 	} finally {
 		isBulkUploading.value = false;
 	}
+	await refreshDebounced();
 };
 
 const handleRemove = async (upload: Upload) => {
