@@ -281,6 +281,33 @@ html.light {
 	}
 }
 
+.Lorebook-Layout {
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: 36px calc(var(--spacing) * 4) 1fr;
+	grid-template-areas:
+		'Controls'
+		'.'
+		'Content';
+
+	@media (width >= 48rem) {
+		grid-template-columns: 1fr calc(var(--spacing) * 4) 420px;
+		grid-template-rows: 36px calc(var(--spacing) * 4) 1fr;
+		grid-template-areas:
+			'Controls Controls Controls'
+			'. . .'
+			'Content Content Content';
+	}
+}
+
+.Lorebook-Controls {
+	grid-area: Controls;
+}
+
+.Lorebook-Content {
+	grid-area: Content;
+}
+
 .Character-Page-Layout {
 	display: grid;
 	padding: 0 calc(var(--spacing) * 4) calc(var(--spacing) * 4) calc(var(--spacing) * 4);

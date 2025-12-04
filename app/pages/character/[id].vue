@@ -9,7 +9,8 @@ const appStore = useAppStore();
 const settingsStore = useSettingsStore();
 const clientService = useClientService();
 
-const character = ref<{ character: Character; definition?: Definition }>();
+const character = ref<FullCharacter>();
+
 const isImageLoaded = ref(false);
 const imageBlobUrl = ref<string>('');
 
@@ -77,7 +78,7 @@ onUnmounted(() => {
 					<span>Upload Image</span>
 				</Button>
 			</div>
-			<CharacterPageEditorNew :definition="character?.definition!" class="Character-Page-Editor" />
+			<CharacterPageEditorNew :definition="character?.definition!" :lorebooks="character?.lorebooks || []" :character-id="character?.character.character_id!" class="Character-Page-Editor" />
 		</div>
 	</div>
 </template>

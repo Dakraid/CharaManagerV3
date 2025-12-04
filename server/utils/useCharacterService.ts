@@ -5,6 +5,8 @@ import type { drizzle } from 'drizzle-orm/node-postgres';
 import { createHash } from 'node:crypto';
 import sharp from 'sharp';
 
+import { useLorebookService } from './useLorebookService';
+
 const CHARACTER_TTL_MS = 60 * 1000;
 
 const characterPool = createServicePool<[characterId: number, userId: string], characterService, string>({
@@ -76,7 +78,10 @@ class characterService {
 				});
 			}
 
-			return { character: select[0].characters, definition: select[0].definitions };
+			const lorebookService = await useLorebookService(this.user_id);
+			const lorebooks = await lorebookService.getForCharacter(this.character_id);
+
+			return { character: select[0].characters, definition: select[0].definitions, lorebooks };
 		} catch (error: any) {
 			throw createError({
 				statusCode: StatusCode.INTERNAL_SERVER_ERROR,
@@ -212,8 +217,49 @@ class characterService {
 		}
 
 		const imagePng = await sharp(image).png().toBuffer();
+
+		// Re-inject lorebooks
+		const lorebookService = await useLorebookService(this.user_id);
+		const lorebooks = await lorebookService.getForCharacter(this.character_id);
+
+		if (lorebooks.length > 0) {
+			// V2 spec allows only one character_book? Or should we merge?
+			// The spec says "The character book is represented as an object in the character_book field".
+			// If we have multiple, we might need to merge them or pick one.
+			// For now, let's pick the first one or merge entries if possible.
+			// But V2 `character_book` is a single object.
+			// Let's take the first one for now, or merge entries into a new book.
+
+			// Merging strategy: Create a combined book
+			const combinedBook: CharacterBook = {
+				name: 'Combined Lore',
+				description: 'Combined from multiple lorebooks',
+				extensions: {},
+				entries: [],
+			};
+
+			// If only one, just use it
+			if (lorebooks.length === 1) {
+				definition.data.character_book = {
+					name: lorebooks[0].name || undefined,
+					description: lorebooks[0].description || undefined,
+					scan_depth: lorebooks[0].scan_depth || undefined,
+					token_budget: lorebooks[0].token_budget || undefined,
+					recursive_scanning: lorebooks[0].recursive_scanning || undefined,
+					extensions: lorebooks[0].extensions || {},
+					entries: lorebooks[0].entries,
+				};
+			} else {
+				// Merge entries
+				for (const book of lorebooks) {
+					combinedBook.entries.push(...book.entries);
+				}
+				definition.data.character_book = combinedBook;
+			}
+		}
+
 		const png = embedTextInPng(imagePng, definition);
-		return new Blob([png]);
+		return new Blob([png as unknown as BlobPart]);
 	}
 
 	async delete(): Promise<responseType> {
@@ -248,6 +294,31 @@ class characterService {
 		}
 
 		try {
+			// Extract Lorebook
+			if (definition.data.character_book) {
+				const bookData = definition.data.character_book;
+				// Remove from definition to store separately
+				delete definition.data.character_book;
+
+				const lorebookService = await useLorebookService(this.user_id);
+
+				// Create new lorebook
+				const newBook = await lorebookService.create({
+					name: bookData.name,
+					description: bookData.description,
+					scan_depth: bookData.scan_depth,
+					token_budget: bookData.token_budget,
+					recursive_scanning: bookData.recursive_scanning,
+					extensions: bookData.extensions || {},
+					entries: bookData.entries || [],
+				});
+
+				// Assign to character
+				// Note: We need to do this AFTER inserting the character/definition if it was a new character,
+				// but here we are in updateDefinition, so character exists.
+				await lorebookService.assignToCharacter(newBook.id, this.character_id);
+			}
+
 			await this.db.update(characters).set({ character_name: definition.data.name }).where(eq(characters.character_id, this.character_id));
 			await this.db.insert(definitions).values({
 				character_id: this.character_id,

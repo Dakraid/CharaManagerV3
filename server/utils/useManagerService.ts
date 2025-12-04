@@ -124,6 +124,30 @@ class managerService {
 
 				const { total, perma } = countTokens(definition);
 
+				// Extract Lorebook
+				let lorebookId: number | null = null;
+				if (definition.data.character_book) {
+					const bookData = definition.data.character_book;
+					// Remove from definition to store separately
+					delete definition.data.character_book;
+
+					const [newBook] = await tx
+						.insert(lorebooks)
+						.values({
+							user_id: this.user_id!,
+							name: bookData.name,
+							description: bookData.description,
+							scan_depth: bookData.scan_depth,
+							token_budget: bookData.token_budget,
+							recursive_scanning: bookData.recursive_scanning,
+							extensions: bookData.extensions || {},
+							entries: bookData.entries || [],
+						})
+						.returning();
+
+					lorebookId = newBook.id;
+				}
+
 				const [character] = await tx
 					.insert(characters)
 					.values({
@@ -154,6 +178,13 @@ class managerService {
 				});
 
 				await saveImageById(characterId, png);
+
+				if (lorebookId) {
+					await tx.insert(character_lorebooks).values({
+						character_id: characterId,
+						lorebook_id: lorebookId,
+					});
+				}
 
 				return { file_name: upload.file.name, success: true };
 			} catch (error: any) {

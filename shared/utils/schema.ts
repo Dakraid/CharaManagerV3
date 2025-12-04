@@ -197,3 +197,59 @@ export const tags = pgTable('tags', {
 	id: uuid().defaultRandom().primaryKey().notNull(),
 	tag: text().notNull(),
 });
+
+export const lorebooks = pgTable(
+	'lorebooks',
+	{
+		id: serial().primaryKey().notNull(),
+		user_id: uuid().notNull(),
+		name: text(),
+		description: text(),
+		scan_depth: integer(),
+		token_budget: integer(),
+		recursive_scanning: boolean().default(false),
+		extensions: jsonb().default({}),
+		entries: jsonb().notNull(),
+		create_date: timestamp({ withTimezone: true, mode: 'date' })
+			.default(sql`CURRENT_TIMESTAMP`)
+			.notNull(),
+		update_date: timestamp({ withTimezone: true, mode: 'date' })
+			.default(sql`CURRENT_TIMESTAMP`)
+			.notNull(),
+	},
+	(table) => [
+		index('idx_lorebooks_user').using('btree', table.user_id.asc().nullsLast().op('uuid_ops')),
+		foreignKey({
+			columns: [table.user_id],
+			foreignColumns: [users.id],
+			name: 'lorebooks_userid_fkey',
+		})
+			.onDelete('cascade')
+			.onUpdate('cascade'),
+	]
+);
+
+export const character_lorebooks = pgTable(
+	'character_lorebooks',
+	{
+		character_id: integer().notNull(),
+		lorebook_id: integer().notNull(),
+	},
+	(table) => [
+		primaryKey({ columns: [table.character_id, table.lorebook_id], name: 'character_lorebooks_pkey' }),
+		foreignKey({
+			columns: [table.character_id],
+			foreignColumns: [characters.character_id],
+			name: 'character_lorebooks_characterid_fkey',
+		})
+			.onDelete('cascade')
+			.onUpdate('cascade'),
+		foreignKey({
+			columns: [table.lorebook_id],
+			foreignColumns: [lorebooks.id],
+			name: 'character_lorebooks_lorebookid_fkey',
+		})
+			.onDelete('cascade')
+			.onUpdate('cascade'),
+	]
+);

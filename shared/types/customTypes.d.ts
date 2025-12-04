@@ -85,7 +85,9 @@ export type Definition = {
 export type FullCharacter = {
 	character: Character;
 	definition: Definition;
+	lorebooks?: Lorebook[];
 }
+
 
 export type DefinitionParts = {
 	description: string;
@@ -94,3 +96,44 @@ export type DefinitionParts = {
 	scenario?: string;
 	alternate_greetings?: string[];
 }
+
+export interface Entry {
+	keys: string[];
+	content: string;
+	extensions: { [key: string]: any };
+	enabled: boolean;
+	insertion_order: number;
+	case_sensitive?: boolean;
+	name?: string;
+	priority?: number;
+	id?: number;
+	comment?: string;
+	selective?: boolean;
+	secondary_keys?: string[];
+	constant?: boolean;
+	position?: 'before_char' | 'after_char';
+}
+
+export interface CharacterBook {
+	name?: string;
+	description?: string;
+	scan_depth?: number;
+	token_budget?: number;
+	recursive_scanning?: boolean;
+	extensions: { [key: string]: any };
+	entries: Entry[];
+}
+
+export type Lorebook = {
+	id: number;
+	user_id: string;
+	name: string | null;
+	description: string | null;
+	scan_depth: number | null;
+	token_budget: number | null;
+	recursive_scanning: boolean | null;
+	extensions: any | null;
+	entries: Entry[];
+	create_date: Date;
+	update_date: Date;
+};

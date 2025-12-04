@@ -5,15 +5,8 @@
 		{
 			"idx": 0,
 			"version": "7",
-			"when": 1750985476520,
-			"tag": "0000_lowly_diamondback",
-			"breakpoints": true
-		},
-		{
-			"idx": 1,
-			"version": "7",
-			"when": 1751058868355,
-			"tag": "0001_mute_havok",
+			"when": 1765067099521,
+			"tag": "0000_heavy_paper_doll",
 			"breakpoints": true
 		}
 	]

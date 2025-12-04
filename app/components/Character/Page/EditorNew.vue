@@ -4,6 +4,71 @@ import { toast } from 'vue-sonner';
 import { cn } from '~~/lib/utils';
 
 const definition = defineModel<Definition>('definition', { required: true });
+const props = defineProps<{
+	lorebooks: Lorebook[];
+	characterId: number;
+}>();
+
+// Local state for lorebooks to avoid mutating prop directly (though we might want to refresh)
+const assignedLorebooks = ref<Lorebook[]>(props.lorebooks);
+const availableLorebooks = ref<Lorebook[]>([]);
+const isAddingLorebook = ref(false);
+const selectedLorebookToAdd = ref<number | null>(null);
+
+async function fetchAvailableLorebooks() {
+	const result = await $fetch<Lorebook[]>('/api/lorebooks');
+	if (result) {
+		// Filter out already assigned ones
+		availableLorebooks.value = result.filter((lb: Lorebook) => !assignedLorebooks.value.some((alb: Lorebook) => alb.id === lb.id));
+	}
+}
+
+async function assignLorebook() {
+	if (!selectedLorebookToAdd.value) return;
+
+	try {
+		await $fetch(`/api/characters/${props.characterId}/lorebooks`, {
+			method: 'POST',
+			body: { lorebook_id: selectedLorebookToAdd.value },
+		});
+
+		// Refresh list
+		const lb = availableLorebooks.value.find((l: Lorebook) => l.id === selectedLorebookToAdd.value);
+		if (lb) {
+			assignedLorebooks.value.push(lb);
+			availableLorebooks.value = availableLorebooks.value.filter((l: Lorebook) => l.id !== selectedLorebookToAdd.value);
+		}
+
+		selectedLorebookToAdd.value = null;
+		isAddingLorebook.value = false;
+		toast.success('Lorebook assigned');
+	} catch (e) {
+		toast.error('Failed to assign lorebook');
+	}
+}
+
+async function unassignLorebook(id: number) {
+	if (!confirm('Unassign this lorebook?')) return;
+
+	try {
+		await $fetch(`/api/characters/${props.characterId}/lorebooks`, {
+			method: 'DELETE',
+			body: { lorebook_id: id },
+		});
+
+		assignedLorebooks.value = assignedLorebooks.value.filter((l: Lorebook) => l.id !== id);
+		toast.success('Lorebook unassigned');
+	} catch (e) {
+		toast.error('Failed to unassign lorebook');
+	}
+}
+
+watch(
+	() => props.lorebooks,
+	(newVal) => {
+		assignedLorebooks.value = newVal;
+	}
+);
 
 const selectedEditor = ref('general');
 const jsonDump = ref<string>('');
@@ -94,6 +159,8 @@ onMounted(async () => {
 						<SelectItem value="examples">Message Examples</SelectItem>
 						<SelectItem value="prompts">Prompt Overrides</SelectItem>
 						<SelectItem value="creator">Creator Metadata</SelectItem>
+						<SelectItem value="creator">Creator Metadata</SelectItem>
+						<SelectItem value="lorebooks">Lorebooks</SelectItem>
 						<SelectItem value="dump">JSON Dump</SelectItem>
 					</SelectGroup>
 				</SelectContent>
@@ -255,6 +322,61 @@ onMounted(async () => {
 			<div v-else-if="selectedEditor === 'dump'" class="flex h-full flex-col flex-nowrap p-4">
 				<Label for="json" class="text-xl">JSON Dump</Label>
 				<Textarea id="json" v-model="jsonDump" spellcheck="true" class="h-full" />
+			</div>
+
+			<div v-else-if="selectedEditor === 'lorebooks'" class="flex h-full flex-col flex-nowrap p-4">
+				<div class="mb-4 flex items-center justify-between">
+					<Label class="text-xl">Assigned Lorebooks</Label>
+					<Popover v-model:open="isAddingLorebook">
+						<PopoverTrigger as-child>
+							<Button size="sm" @click="fetchAvailableLorebooks">
+								<Icon name="lucide:plus" class="mr-2 h-4 w-4" />
+								Assign Lorebook
+							</Button>
+						</PopoverTrigger>
+						<PopoverContent class="w-80">
+							<div class="grid gap-4">
+								<div class="space-y-2">
+									<h4 class="leading-none font-medium">Assign Lorebook</h4>
+									<p class="text-sm text-muted-foreground">Select a lorebook to assign to this character.</p>
+								</div>
+								<div class="grid gap-2">
+									<Select v-model="selectedLorebookToAdd">
+										<SelectTrigger>
+											<SelectValue placeholder="Select lorebook" />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem v-for="lb in availableLorebooks" :key="lb.id" :value="lb.id">
+												{{ lb.name }}
+											</SelectItem>
+										</SelectContent>
+									</Select>
+									<Button :disabled="!selectedLorebookToAdd" @click="assignLorebook">Assign</Button>
+								</div>
+							</div>
+						</PopoverContent>
+					</Popover>
+				</div>
+
+				<div class="flex-1 space-y-2 overflow-y-auto">
+					<div v-if="assignedLorebooks.length === 0" class="p-4 text-center text-muted-foreground">No lorebooks assigned.</div>
+					<Card v-for="book in assignedLorebooks" :key="book.id" class="flex items-center justify-between p-4">
+						<div>
+							<div class="font-medium">{{ book.name }}</div>
+							<div class="text-sm text-muted-foreground">{{ book.description }}</div>
+						</div>
+						<div class="flex items-center gap-2">
+							<Button variant="outline" size="icon" as-child>
+								<NuxtLink :to="`/lorebooks/${book.id}`" target="_blank">
+									<Icon name="lucide:external-link" class="h-4 w-4" />
+								</NuxtLink>
+							</Button>
+							<Button variant="destructive" size="icon" @click="unassignLorebook(book.id)">
+								<Icon name="lucide:trash-2" class="h-4 w-4" />
+							</Button>
+						</div>
+					</Card>
+				</div>
 			</div>
 		</div>
 	</div>

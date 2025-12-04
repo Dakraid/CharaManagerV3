@@ -42,6 +42,10 @@ function isCurrentRoute(target: string) {
 						</div>
 					</NavigationMenuTrigger>
 					<NavigationMenuContent>
+						<NavigationMenuLink :class="cn('mb-1 flex w-full min-w-48 flex-row items-center justify-center gap-2 transition-all', isCurrentRoute('/tag-management'))" href="/lorebooks">
+							<Icon name="lucide:book" size="1.45rem" />
+							<p class="grow">Lorebooks</p>
+						</NavigationMenuLink>
 						<NavigationMenuLink
 							:class="cn('mb-1 flex w-full min-w-48 flex-row items-center justify-center gap-2 transition-all', isCurrentRoute('/tag-management'))"
 							href="/tag-management">

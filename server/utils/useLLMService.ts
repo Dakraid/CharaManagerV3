@@ -85,7 +85,7 @@ class LLMService {
 		let definition_id: number;
 		try {
 			const characterService = await useCharacterService(character_id, this.user_id);
-			const character = await characterService.get(true);
+			const character = (await characterService.get()) as FullCharacter;
 
 			if (!character.definition || !character.definition?.description || !character.definition?.content.data.first_mes) {
 				throw createError({

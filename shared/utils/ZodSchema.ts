@@ -1,6 +1,17 @@
 // noinspection JSUnusedGlobalSymbols
 import * as z from 'zod/v4';
 
+// Lorebooks
+export const lorebookSchema = z.object({
+	name: z.string().optional(),
+	description: z.string().optional(),
+	scan_depth: z.number().optional(),
+	token_budget: z.number().optional(),
+	recursive_scanning: z.boolean().optional(),
+	extensions: z.record(z.any(), z.any()).default({}),
+	entries: z.array(z.any()).default([]),
+});
+
 // Evaluations
 export const scoreSchema = z.object({
 	score: z.number().min(0).max(100),
