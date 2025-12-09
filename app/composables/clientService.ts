@@ -38,7 +38,7 @@ class ClientService {
 				method: 'POST',
 			});
 
-			const cached = this.cacheStore.characterCache[this.getKey()];
+			const cached = undefined; //this.cacheStore.characterCache[this.getKey()];
 			if (cached) {
 				this.characterStore.characterList = cached;
 			} else {
@@ -60,7 +60,7 @@ class ClientService {
 		} catch (error: any) {
 			throw new Error(error);
 		}
-	}, 100);
+	}, 1000);
 
 	async getCharacters(page?: number, preFetch?: boolean) {
 		this.appStore.showOverlay = !preFetch;
@@ -69,7 +69,7 @@ class ClientService {
 	}
 
 	async getCharacter(id: number): Promise<FullCharacter> {
-		const cached = this.cacheStore.fullCharacterCache[id];
+		const cached = undefined; // this.cacheStore.fullCharacterCache[id];
 		if (cached) {
 			return cached;
 		} else {
@@ -100,20 +100,22 @@ class ClientService {
 	}
 
 	async deleteCharacter(id: number): Promise<void> {
-		const response = await $fetch<responseType>('/api/character', {
-			method: 'DELETE',
-			body: {
-				id: id,
-			},
-		});
+		try {
+			await $fetch<responseType>('/api/character', {
+				method: 'DELETE',
+				body: {
+					id: id,
+				},
+			});
 
-		if (response.statusCode === 200) {
 			toast('Successfully deleted character.');
-		} else {
-			toast('Failed to delete character:' + response.message);
+			await this.getCharacters();
+		} catch (error) {
+			toast('Failed to delete character:' + error);
 		}
 
-		await this.getCharacters();
+		this.cacheStore.characterCache = {};
+		this.cacheStore.fullCharacterCache = {};
 	}
 
 	async downloadCharacter(id: number): Promise<void> {

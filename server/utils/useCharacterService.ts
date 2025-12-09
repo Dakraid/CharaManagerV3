@@ -18,7 +18,21 @@ const characterPool = createServicePool<[characterId: number, userId: string], c
 });
 
 export async function useCharacterService(characterId: number, userId: string): Promise<characterService> {
-	return characterPool.useService(characterId, userId);
+	try {
+		return characterPool.useService(characterId, userId);
+	} catch (error: any) {
+		if (error.message === 'Character not found.') {
+			await characterPool.disposeNow(`${characterId}-${userId}`);
+			throw createError({
+				statusCode: StatusCode.NOT_FOUND,
+				message: 'Character not found, invalidating service instance.',
+			});
+		}
+		throw createError({
+			statusCode: StatusCode.INTERNAL_SERVER_ERROR,
+			message: 'Failed to get or create character service instance.',
+		});
+	}
 }
 
 class characterService {
@@ -37,18 +51,31 @@ class characterService {
 		this.user_id = userId;
 		this.character_id = characterId;
 
-		this.db.execute(sql<boolean>`SELECT public.has_read_access(${this.user_id}, ${this.character_id})`).then((result) => {
+		this.db.execute(sql<boolean>`SELECT public.has_read_access(${this.user_id}::uuid, ${this.character_id})`).then((result) => {
 			this.read = result.rows[0]['has_read_access'] == true;
 		});
 
-		this.db.execute(sql<boolean>`SELECT public.has_write_access(${this.user_id}, ${this.character_id})`).then((result) => {
+		this.db.execute(sql<boolean>`SELECT public.has_write_access(${this.user_id}::uuid, ${this.character_id})`).then((result) => {
 			this.write = result.rows[0]['has_write_access'] == true && this.user_id !== '00000000-0000-0000-0000-000000000000';
 		});
+
+		this.db
+			.select()
+			.from(characters)
+			.innerJoin(definitions, eq(definitions.character_id, characters.character_id))
+			.where(and(eq(characters.character_id, this.character_id), eq(characters.owner_id, this.user_id)))
+			.orderBy(desc(definitions.change_date))
+			.limit(1)
+			.then((result) => {
+				if (result.length === 0) {
+					throw new Error('Character not found.');
+				}
+			});
 	}
 
 	async refresh() {
-		const hasRead = await this.db.execute(sql<boolean>`SELECT public.has_read_access(${this.user_id}, ${this.character_id})`);
-		const hasWrite = await this.db.execute(sql<boolean>`SELECT public.has_write_access(${this.user_id}, ${this.character_id})`);
+		const hasRead = await this.db.execute(sql<boolean>`SELECT public.has_read_access(${this.user_id}::uuid, ${this.character_id})`);
+		const hasWrite = await this.db.execute(sql<boolean>`SELECT public.has_write_access(${this.user_id}::uuid, ${this.character_id})`);
 		this.read = hasRead.rows[0]['has_read_access'] == true;
 		this.write = hasWrite.rows[0]['has_write_access'] == true && this.user_id !== '00000000-0000-0000-0000-000000000000';
 	}
@@ -265,6 +292,7 @@ class characterService {
 	async delete(): Promise<responseType> {
 		await this.refresh();
 		if (!this.read || !this.write) {
+			console.log('User does not have write access to this character.');
 			throw createError({
 				statusCode: StatusCode.UNAUTHORIZED,
 				message: 'User does not have write access to this character.',
@@ -280,6 +308,8 @@ class characterService {
 				message: error.message,
 			});
 		}
+
+		await characterPool.disposeNow(`${this.character_id}-${this.user_id}`);
 
 		return { statusCode: StatusCode.OK, message: 'Character deleted successfully.' };
 	}
@@ -302,9 +332,11 @@ class characterService {
 
 				const lorebookService = await useLorebookService(this.user_id);
 
+				const lorebookName = bookData.name && bookData.name !== 'Untitled' ? bookData.name : 'Lorebook of ' + definition.data.name;
+
 				// Create new lorebook
 				const newBook = await lorebookService.create({
-					name: bookData.name,
+					name: lorebookName,
 					description: bookData.description,
 					scan_depth: bookData.scan_depth,
 					token_budget: bookData.token_budget,
@@ -394,14 +426,6 @@ class characterService {
 	}
 
 	async updateEmbeddings(): Promise<responseType> {
-		await this.refresh();
-		if (!this.read || !this.write) {
-			throw createError({
-				statusCode: StatusCode.UNAUTHORIZED,
-				message: 'User does not have write access to this character.',
-			});
-		}
-
 		try {
 			const text = await this.getDefinitionText();
 			if (typeof text !== 'string') {

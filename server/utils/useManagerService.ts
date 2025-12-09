@@ -114,7 +114,7 @@ class managerService {
 
 				const { png, definition } = extractTextAndStripPng(file);
 
-				const matchingOriginals = await tx.select().from(originals).where(eq(originals.file_raw, fileText));
+				const matchingOriginals = await tx.select().from(definitions).where(eq(definitions.description, definition.data.description));
 				const contentHash = await this.db.execute(sql<boolean>`SELECT public.hash_content(${definition})`);
 				const contentHashRaw = (contentHash.rows[0]['hash_content'] as string) || '';
 				const matchingHashes = await tx.select().from(definitions).where(eq(definitions.hash, contentHashRaw));
@@ -131,11 +131,13 @@ class managerService {
 					// Remove from definition to store separately
 					delete definition.data.character_book;
 
+					const lorebookName = bookData.name && bookData.name !== 'Untitled' ? bookData.name : 'Lorebook of ' + definition.data.name;
+
 					const [newBook] = await tx
 						.insert(lorebooks)
 						.values({
 							user_id: this.user_id!,
-							name: bookData.name,
+							name: lorebookName,
 							description: bookData.description,
 							scan_depth: bookData.scan_depth,
 							token_budget: bookData.token_budget,
@@ -206,8 +208,7 @@ class managerService {
 			const characterService = await useCharacterService(characterId, this.user_id!);
 			await characterService.updateEmbeddings();
 		} catch (error: any) {
-			// Ignore errors here, we don't want to block the user from uploading a character.
-			console.error('Error updating embeddings:', error);
+			// Ignore errors here, we don't want to block the user from uploading a character and missing embeddings are handled by the tasks.
 		}
 
 		return result;

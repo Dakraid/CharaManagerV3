@@ -134,6 +134,7 @@ export type Lorebook = {
 	recursive_scanning: boolean | null;
 	extensions: any | null;
 	entries: Entry[];
+	entry_count?: number;
 	create_date: Date;
 	update_date: Date;
 };

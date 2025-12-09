@@ -44,10 +44,11 @@ const prefetchCharacter = async () => {
 
 const fetchImage = async () => {
 	try {
-		const response = await fetch(`/api/image/thumb/${props.character.character_id}`);
+		const response = await fetch(`/api/image/full/${props.character.character_id}`);
 
 		if (!response.ok) {
-			throw new Error('Failed to fetch image');
+			console.error('Failed to fetch image');
+			return;
 		}
 
 		const blob = await response.blob();

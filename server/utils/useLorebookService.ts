@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray } from 'drizzle-orm';
+import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import type { drizzle } from 'drizzle-orm/node-postgres';
 
 const LOREBOOK_TTL_MS = 5 * 60 * 1000;
@@ -25,12 +25,29 @@ export class LorebookService {
 	}
 
 	async list(): Promise<Lorebook[]> {
-		const results = await this.db.select().from(lorebooks).where(eq(lorebooks.user_id, this.user_id)).orderBy(desc(lorebooks.update_date));
+		// Optimize: Fetch only metadata and entry count to improve performance
+		const results = await this.db
+			.select({
+				id: lorebooks.id,
+				user_id: lorebooks.user_id,
+				name: lorebooks.name,
+				description: lorebooks.description,
+				scan_depth: lorebooks.scan_depth,
+				token_budget: lorebooks.token_budget,
+				recursive_scanning: lorebooks.recursive_scanning,
+				extensions: lorebooks.extensions,
+				create_date: lorebooks.create_date,
+				update_date: lorebooks.update_date,
+				entry_count: sql<number>`jsonb_array_length(${lorebooks.entries})`,
+			})
+			.from(lorebooks)
+			.where(eq(lorebooks.user_id, this.user_id))
+			.orderBy(desc(lorebooks.update_date));
 
-		// Cast entries from jsonb to Entry[]
 		return results.map((r) => ({
 			...r,
-			entries: r.entries as any,
+			entries: [],
+			entry_count: Number(r.entry_count),
 		}));
 	}
 

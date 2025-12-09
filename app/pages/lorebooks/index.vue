@@ -55,7 +55,7 @@ onMounted(fetchLorebooks);
 					<CardDescription class="truncate">{{ book.description || 'No description' }}</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<div class="text-sm text-muted-foreground">{{ book.entries.length }} entries</div>
+					<div class="text-sm text-muted-foreground">{{ book.entry_count ?? book.entries.length }} entries</div>
 				</CardContent>
 				<CardFooter class="flex justify-end gap-2">
 					<Button variant="outline" size="icon" @click="router.push(`/lorebooks/${book.id}`)">

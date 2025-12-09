@@ -36,10 +36,10 @@ export async function serveImageById(event: H3Event, id: number, thumbnail: bool
 
 export async function loadImageById(id: number, thumbnail: boolean = false): Promise<Uint8Array> {
 	try {
-		const value = await useCache().getItemRaw<Uint8Array>(`${id}${thumbnail ? '_thumb' : ''}`);
-		if (value) {
-			return value;
-		}
+		// const value = await useCache().getItemRaw<Uint8Array>(`${id}${thumbnail ? '_thumb' : ''}`);
+		// if (value) {
+		// 	return value;
+		// }
 
 		const file = await fs.readFile(path.join('./images', `${id}${thumbnail ? '_thumb.avif' : '.avif'}`));
 		await useCache().setItemRaw(`${id}${thumbnail ? '_thumb' : ''}`, file);
