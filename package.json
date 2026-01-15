@@ -37,7 +37,7 @@
 		"character-card-utils": "^2.0.3",
 		"cron": "^4.3.5",
 		"dayjs-nuxt": "^2.1.11",
-		"diff": "^8.0.2",
+		"diff": "^8.0.3",
 		"dotenv": "^17.2.3",
 		"drizzle-orm": "^0.45.0",
 		"embla-carousel-autoplay": "^8.6.0",
