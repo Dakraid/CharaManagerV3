@@ -88,7 +88,7 @@ export default defineNuxtConfig({
 		// LLM Inference Configuration (OAI-Compatible)
 		llmApiURL: 'https://openrouter.ai/api/v1',
 		llmApiKey: '',
-		llmModel: 'z-ai/glm-4.5',
+		llmModel: 'moonshotai/kimi-k2.5',
 		evaluationPrompt: {
 			systemInstruct: `You are a harsh and brutal writing critic. You will evaluate and judge incoming text based on the following categories, scoring each on a scale from 1 to 100, where 1 is awful and 100 is excellent:
 

@@ -52,11 +52,11 @@ class characterService {
 		this.character_id = characterId;
 
 		this.db.execute(sql<boolean>`SELECT public.has_read_access(${this.user_id}::uuid, ${this.character_id})`).then((result) => {
-			this.read = result.rows[0]['has_read_access'] == true;
+			this.read = result.rows[0]?.['has_read_access'] == true;
 		});
 
 		this.db.execute(sql<boolean>`SELECT public.has_write_access(${this.user_id}::uuid, ${this.character_id})`).then((result) => {
-			this.write = result.rows[0]['has_write_access'] == true && this.user_id !== '00000000-0000-0000-0000-000000000000';
+			this.write = result.rows[0]?.['has_write_access'] == true && this.user_id !== '00000000-0000-0000-0000-000000000000';
 		});
 
 		this.db
@@ -76,8 +76,8 @@ class characterService {
 	async refresh() {
 		const hasRead = await this.db.execute(sql<boolean>`SELECT public.has_read_access(${this.user_id}::uuid, ${this.character_id})`);
 		const hasWrite = await this.db.execute(sql<boolean>`SELECT public.has_write_access(${this.user_id}::uuid, ${this.character_id})`);
-		this.read = hasRead.rows[0]['has_read_access'] == true;
-		this.write = hasWrite.rows[0]['has_write_access'] == true && this.user_id !== '00000000-0000-0000-0000-000000000000';
+		this.read = hasRead.rows[0]?.['has_read_access'] == true;
+		this.write = hasWrite.rows[0]?.['has_write_access'] == true && this.user_id !== '00000000-0000-0000-0000-000000000000';
 	}
 
 	async get(): Promise<FullCharacter | responseType> {
@@ -98,7 +98,7 @@ class characterService {
 				.orderBy(desc(definitions.change_date))
 				.limit(1);
 
-			if (select.length === 0) {
+			if (select.length === 0 || !select[0]) {
 				throw createError({
 					statusCode: StatusCode.NOT_FOUND,
 					message: 'Character not found.',
@@ -146,11 +146,11 @@ class characterService {
 		}
 
 		const definition = select[0];
-		const description = definition.description || definition.content.data.description;
-		const personality = definition.personality || definition.content.data.personality;
-		const scenario = definition.scenario || definition.content.data.scenario;
+		const description = definition?.description || definition?.content.data.description || '';
+		const personality = definition?.personality || definition?.content.data.personality || '';
+		const scenario = definition?.scenario || definition?.content.data.scenario || '';
 		const combinedText = [
-			'# Character Name\n' + definition.content.data.name,
+			'# Character Name\n' + definition?.content.data.name || this.character_id.toString(),
 			'# Description\n' + description,
 			personality ? '\n# Personality\n' + personality : '',
 			scenario ? '\n# Scenario\n' + scenario : '',
@@ -186,7 +186,10 @@ class characterService {
 				.where(eq(definitions.character_id, this.character_id))
 				.orderBy(desc(definitions.change_date))
 				.limit(1);
-			const definition_id = definition_id_select[0].definition_id;
+			const definition_id = definition_id_select[0]?.definition_id;
+			if (definition_id_select.length === 0 || !definition_id) {
+				return undefined;
+			}
 
 			const evaluation_select = await this.db
 				.select({ evaluation: evaluations.evaluation_result })
@@ -195,7 +198,7 @@ class characterService {
 				.orderBy(desc(evaluations.evaluation_date))
 				.limit(1);
 
-			if (evaluation_select.length === 0) {
+			if (evaluation_select.length === 0 || !evaluation_select[0]) {
 				return undefined;
 			}
 
@@ -225,7 +228,10 @@ class characterService {
 				.where(eq(definitions.character_id, this.character_id))
 				.orderBy(desc(definitions.change_date))
 				.limit(1);
-			const definitionRaw = result[0].definition;
+			const definitionRaw = result[0]?.definition;
+			if (!definitionRaw) {
+				return { statusCode: StatusCode.NOT_FOUND, message: 'Character definition not found.' };
+			}
 			definition = safeDestr<V2>(definitionRaw);
 		} catch (error: any) {
 			throw createError({
@@ -251,11 +257,11 @@ class characterService {
 
 		if (lorebooks.length > 0) {
 			// V2 spec allows only one character_book? Or should we merge?
-			// The spec says "The character book is represented as an object in the character_book field".
+			// The spec says, "The character book is represented as an object in the character_book field".
 			// If we have multiple, we might need to merge them or pick one.
 			// For now, let's pick the first one or merge entries if possible.
 			// But V2 `character_book` is a single object.
-			// Let's take the first one for now, or merge entries into a new book.
+			// Let's take the first one for now or merge entries into a new book.
 
 			// Merging strategy: Create a combined book
 			const combinedBook: CharacterBook = {
@@ -268,13 +274,13 @@ class characterService {
 			// If only one, just use it
 			if (lorebooks.length === 1) {
 				definition.data.character_book = {
-					name: lorebooks[0].name || undefined,
-					description: lorebooks[0].description || undefined,
-					scan_depth: lorebooks[0].scan_depth || undefined,
-					token_budget: lorebooks[0].token_budget || undefined,
-					recursive_scanning: lorebooks[0].recursive_scanning || undefined,
-					extensions: lorebooks[0].extensions || {},
-					entries: lorebooks[0].entries,
+					name: lorebooks[0]?.name || undefined,
+					description: lorebooks[0]?.description || undefined,
+					scan_depth: lorebooks[0]?.scan_depth || undefined,
+					token_budget: lorebooks[0]?.token_budget || undefined,
+					recursive_scanning: lorebooks[0]?.recursive_scanning || undefined,
+					extensions: lorebooks[0]?.extensions || {},
+					entries: lorebooks[0]?.entries,
 				};
 			} else {
 				// Merge entries
@@ -334,7 +340,7 @@ class characterService {
 
 				const lorebookName = bookData.name && bookData.name !== 'Untitled' ? bookData.name : 'Lorebook of ' + definition.data.name;
 
-				// Create new lorebook
+				// Create a new lorebook
 				const newBook = await lorebookService.create({
 					name: lorebookName,
 					description: bookData.description,
@@ -403,7 +409,7 @@ class characterService {
 			});
 		}
 
-		let data = await image.bytes();
+		let data: Uint8Array = await image.bytes();
 		if (image.type === 'image/png') {
 			data = cleanPNG(data);
 		}

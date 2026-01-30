@@ -19,26 +19,26 @@ function isCurrentRoute(target: string) {
 				<NavigationMenuItem>
 					<NavigationMenuLink :class="cn('flex w-full flex-row items-center justify-center gap-2 transition-all', isCurrentRoute('/'))" href="/">
 						<Icon name="lucide:home" size="1.5rem" />
-						<p>Home</p>
+						<p class="grow">Home</p>
 					</NavigationMenuLink>
 				</NavigationMenuItem>
 				<NavigationMenuItem>
 					<NavigationMenuLink :class="cn('flex w-full flex-row items-center justify-center gap-2 transition-all', isCurrentRoute('/relations'))" href="/">
 						<Icon name="lucide:network" size="1.5rem" />
-						<p>Relations</p>
+						<p class="grow">Relations</p>
 					</NavigationMenuLink>
 				</NavigationMenuItem>
 				<NavigationMenuItem>
 					<NavigationMenuLink :class="cn('flex w-full flex-row items-center justify-center gap-2 transition-all', isCurrentRoute('/statistics'))" href="/">
 						<Icon name="lucide:chart-area" size="1.5rem" />
-						<p>Statistics</p>
+						<p class="grow">Statistics</p>
 					</NavigationMenuLink>
 				</NavigationMenuItem>
 				<NavigationMenuItem>
-					<NavigationMenuTrigger>
+					<NavigationMenuTrigger class="h-full w-full">
 						<div class="flex w-full flex-row items-center justify-center gap-2">
-							<Icon name="lucide:pencil-ruler" size="1.5rem" />
-							<p>Utilities</p>
+							<Icon name="lucide:pencil-ruler" size="1.45rem" />
+							<p class="grow">Utilities</p>
 						</div>
 					</NavigationMenuTrigger>
 					<NavigationMenuContent>
@@ -82,6 +82,10 @@ function isCurrentRoute(target: string) {
 		grid-template-areas:
 			'logo user'
 			'menu menu';
+
+		p {
+			display: none;
+		}
 	}
 
 	@media (width >= 48rem) {
